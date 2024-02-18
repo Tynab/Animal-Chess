@@ -164,7 +164,6 @@ class Manager:
         - draw_game: Draw game board, pieces, and other elements
         - draw_star: Draw a star on the game board
         - highlight_possible_moves: Highlight possible moves
-        - draw_highlight: Draw a highlight on the game board
 
         Example:
         >>> game_manager = Manager()
@@ -214,24 +213,24 @@ class Manager:
         player_dark = Player('Computer', PlayerLbl.DARK)
         player_light = Player('Player', PlayerLbl.LIGHT)
         pieces_dark = [
-            Piece('Mammoth', PieceLbl.ELEPHANT, 'Elephant of the Challenger', (4, 2), 8, 'assets/pieces/dark/elephant.png', 'assets/artworks/dark/elephant.png'),
+            Piece('Mammoth', PieceLbl.ELEPHANT, 'Elephant of the Challenger', (0, 2), 8, 'assets/pieces/dark/elephant.png', 'assets/artworks/dark/elephant.png'),
             Piece('Smilodon', PieceLbl.LION, 'Lion of the Challenger', (6, 0), 7, 'assets/pieces/dark/lion.png', 'assets/artworks/dark/lion.png'),
             Piece('White Tiger', PieceLbl.TIGER, 'Tiger of the Challenger', (0, 0), 6, 'assets/pieces/dark/tiger.png', 'assets/artworks/dark/tiger.png'),
-            Piece('Black Panther', PieceLbl.LEOPARD, 'Leopard of the Challenger', (2, 2), 5, 'assets/pieces/dark/leopard.png', 'assets/artworks/dark/leopard.png'),
-            Piece('Grey Wolf', PieceLbl.WOLF, 'Wolf of the Challenger', (0, 2), 4, 'assets/pieces/dark/wolf.png', 'assets/artworks/dark/wolf.png'),
-            Piece('Saluki', PieceLbl.DOG, 'Dog of the Challenger', (1, 1), 3, 'assets/pieces/dark/dog.png', 'assets/artworks/dark/dog.png'),
-            Piece('Sphynx', PieceLbl.CAT, 'Cat of the Challenger', (5, 1), 2, 'assets/pieces/dark/cat.png', 'assets/artworks/dark/cat.png'),
+            Piece('Black Panther', PieceLbl.LEOPARD, 'Leopard of the Challenger', (4, 2), 5, 'assets/pieces/dark/leopard.png', 'assets/artworks/dark/leopard.png'),
+            Piece('Grey Wolf', PieceLbl.WOLF, 'Wolf of the Challenger', (2, 2), 4, 'assets/pieces/dark/wolf.png', 'assets/artworks/dark/wolf.png'),
+            Piece('Saluki', PieceLbl.DOG, 'Dog of the Challenger', (5, 1), 3, 'assets/pieces/dark/dog.png', 'assets/artworks/dark/dog.png'),
+            Piece('Sphynx', PieceLbl.CAT, 'Cat of the Challenger', (1, 1), 2, 'assets/pieces/dark/cat.png', 'assets/artworks/dark/cat.png'),
             Piece('Rat', PieceLbl.RAT, 'Rat of the Challenger', (6, 2), 1, 'assets/pieces/dark/rat.png', 'assets/artworks/dark/rat.png')
         ]
         pieces_light = [
-            Piece('Loxodonta', PieceLbl.ELEPHANT, 'Elephant of the Protector', (4, 6), 8, 'assets/pieces/light/elephant.png', 'assets/artworks/light/elephant.png'),
-            Piece('Panthera Leo', PieceLbl.LION, 'Lion of the Protector', (6, 8), 7, 'assets/pieces/light/lion.png', 'assets/artworks/light/lion.png'),
-            Piece('Bengal Tiger', PieceLbl.TIGER, 'Tiger of the Protector', (0, 8), 6, 'assets/pieces/light/tiger.png', 'assets/artworks/light/tiger.png'),
+            Piece('Loxodonta', PieceLbl.ELEPHANT, 'Elephant of the Protector', (6, 6), 8, 'assets/pieces/light/elephant.png', 'assets/artworks/light/elephant.png'),
+            Piece('Panthera Leo', PieceLbl.LION, 'Lion of the Protector', (0, 8), 7, 'assets/pieces/light/lion.png', 'assets/artworks/light/lion.png'),
+            Piece('Bengal Tiger', PieceLbl.TIGER, 'Tiger of the Protector', (6, 8), 6, 'assets/pieces/light/tiger.png', 'assets/artworks/light/tiger.png'),
             Piece('Siberi Leopard', PieceLbl.LEOPARD, 'Leopard of the Protector', (2, 6), 5, 'assets/pieces/light/leopard.png', 'assets/artworks/light/leopard.png'),
-            Piece('Silver Fang', PieceLbl.WOLF, 'Wolf of the Protector', (0, 6), 4, 'assets/pieces/light/wolf.png', 'assets/artworks/light/wolf.png'),
+            Piece('Silver Fang', PieceLbl.WOLF, 'Wolf of the Protector', (4, 6), 4, 'assets/pieces/light/wolf.png', 'assets/artworks/light/wolf.png'),
             Piece('Pitbull', PieceLbl.DOG, 'Dog of the Protector', (1, 7), 3, 'assets/pieces/light/dog.png', 'assets/artworks/light/dog.png'),
             Piece('Wildcat', PieceLbl.CAT, 'Cat of the Protector', (5, 7), 2, 'assets/pieces/light/cat.png', 'assets/artworks/light/cat.png'),
-            Piece('Rat', PieceLbl.RAT, 'Rat of the Protector', (6, 6), 1, 'assets/pieces/light/rat.png', 'assets/artworks/light/rat.png')
+            Piece('Rat', PieceLbl.RAT, 'Rat of the Protector', (0, 6), 1, 'assets/pieces/light/rat.png', 'assets/artworks/light/rat.png')
         ]
 
         # Add pieces to players
@@ -266,9 +265,9 @@ class Manager:
         True
         '''
         c, r = mouse_pos[0] // SPAN, mouse_pos[1] // SPAN
-        for piece_name, piece in self.players[self.current_player].pieces.items():
+        for piece_lbl, piece in self.players[self.current_player].pieces.items():
             if piece.pos == (c, r):
-                self.selected_piece = piece_name
+                self.selected_piece = piece_lbl
                 return True
         return False
 
@@ -295,7 +294,7 @@ class Manager:
         des_pos = (mouse_pos[0] // SPAN, mouse_pos[1] // SPAN)
 
         # Move the selected piece to the new position if possible
-        if self.can_move(selected_piece.name, src_pos, des_pos):
+        if self.can_move(selected_piece.lbl, src_pos, des_pos):
             selected_piece.pos = des_pos
             self.steps.append(Step(self.current_player.value, selected_piece.lbl.value, des_pos))
             self.handle_captures(des_pos)
@@ -320,6 +319,37 @@ class Manager:
         >>> can_move(PieceLbl.LION.value, (3, 4), (3, 5))
         True
         '''
+        # # Check if the move is within the board
+        # if not (0 <= des_pos[0] < W and 0 <= des_pos[1] < H):
+        #     return False
+
+        # # Check if the move is within the same row or column
+        # if abs(src_pos[0] - des_pos[0]) + abs(src_pos[1] - des_pos[1]) != 1:
+        #     return False
+
+        # # Check if the piece is moving to a river square
+        # if piece_lbl not in [PieceLbl.DOG, PieceLbl.RAT] and des_pos in self.RIVERS:
+        #     return False
+
+        # # Check if the piece is moving to its own den
+        # opp = self.current_player == PlayerLbl.DARK and PlayerLbl.LIGHT or PlayerLbl.DARK
+        # if des_pos in self.TRAPS[opp]:
+        #     for opp_piece in self.players[opp].pieces.values():
+        #         if opp_piece.pos == des_pos:
+        #             return False
+
+        # # Check if the piece is moving to an opponent's den
+        # for opp_piece_lbl, opp_piece in self.players[opp].pieces.items():
+        #     if opp_piece.pos == des_pos:
+        #         return self.can_defeat(piece_lbl, opp_piece_lbl)
+
+        # # Check if the piece is moving to a trap
+        # for piece in self.players[self.current_player].pieces.values():
+        #     if piece.pos == des_pos:
+        #         return False
+
+        # return True
+    
         # Check if the destination position is within the game board
         if not (0 <= des_pos[0] < W and 0 <= des_pos[1] < H):
             return False
@@ -399,13 +429,13 @@ class Manager:
         Example:
         >>> handle_captures((3, 4))
         '''
-        opponent = self.current_player == PlayerLbl.LIGHT and PlayerLbl.DARK or PlayerLbl.LIGHT
-        opponent_pieces = self.players[opponent].pieces
-        for lbl, piece in list(opponent_pieces.items()):
+        opp = self.current_player == PlayerLbl.LIGHT and PlayerLbl.DARK or PlayerLbl.LIGHT
+        opp_pieces = self.players[opp].pieces
+        for lbl, piece in list(opp_pieces.items()):
             if piece.pos == des_pos:
-                del opponent_pieces[lbl]
+                del opp_pieces[lbl]
 
-        if des_pos == self.DENS[opponent]:
+        if des_pos == self.DENS[opp]:
             self.game_over = True
             self.game_result = f'{self.current_player.value} Wins!'
 
@@ -466,7 +496,11 @@ class Manager:
                 _screen.blit(piece.img, (piece.pos[0] * SPAN, piece.pos[1] * SPAN))
 
         # Highlight possible moves for the selected piece
-        # self.highlight_possible_moves(self.selected_piece, self.players[self.current_player].pieces[self.selected_piece].pos)
+        if self.selected_piece:
+            for move in self.highlight_possible_moves(self.selected_piece, self.players[self.current_player].pieces[self.selected_piece].pos):
+                highlight_surface = pygame.Surface((SPAN, SPAN), pygame.SRCALPHA)
+                pygame.draw.circle(highlight_surface, (*Color.YELLOW.value, 192), (SPAN // 2, SPAN // 2), SPAN // 3)
+                _screen.blit(highlight_surface, (move[0] * SPAN, move[1] * SPAN))
 
         # Update the display
         pygame.display.flip()
@@ -512,21 +546,7 @@ class Manager:
             if self.can_move(piece_lbl, pos, end_pos):
                 possible_moves.append(end_pos)
         return possible_moves
-
-    def draw_highlight(self, pos):
-        '''
-        Draw a highlight on the game board
-        
-        Args:
-        - position: The position to draw the highlight
-        
-        Example:
-        >>> draw_highlight((3, 4))
-        '''
-        highlight_surface = pygame.Surface((SPAN, SPAN), pygame.SRCALPHA)
-        pygame.draw.circle(highlight_surface, Color.YELLOW.value + (128,), (SPAN // 2, SPAN // 2), SPAN // 3)
-        _screen.blit(highlight_surface, (pos[0] * SPAN, pos[1] * SPAN))
-
+    
 _game_manager = Manager()
 
 def draw_screen(game_manager, end_game=False):
