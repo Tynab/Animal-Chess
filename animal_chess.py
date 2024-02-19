@@ -52,16 +52,16 @@ _clock = pygame.time.Clock()
 # Game variables
 RIVERS = [(x, y) for x in range(1, 6) for y in range(3, 6) if x != 3]
 DENS = {
-    'C': (3, 0),
-    'P': (3, 8)
+    'Dark': (3, 0),
+    'Light': (3, 8)
 }
 TRAPS = {
-    'C': [(2, 0), (3, 1), (4, 0)],
-    'P': [(2, 8), (3, 7), (4, 8)]
+    'Dark': [(2, 0), (3, 1), (4, 0)],
+    'Light': [(2, 8), (3, 7), (4, 8)]
 }
 
 # Game state variables
-_current_player = 'P'
+_current_player = 'Light'
 _selected_piece = None
 _game_over = False
 _game_result = None
@@ -74,17 +74,17 @@ def initialize_game():
     Initialize the game state variables and the pieces on the board.
     '''
     global _current_player, _selected_piece, _game_over, _game_result, _river_images, _pieces
-    _current_player = 'P'
+    _current_player = 'Light'
     _selected_piece = None
     _game_over = False
     _game_result = None
     _river_images = [pygame.transform.scale(pygame.image.load(f'assets/images/river_{x}_{y}.png'), CELL_SIZE) for y in range(2) for x in range(3)]
     _pieces = {}
     poss = {
-        'C': [(0, 0), (6, 0), (1, 1), (5, 1), (0, 2), (2, 2), (4, 2), (6, 2)],
-        'P': [(6, 8), (0, 8), (5, 7), (1, 7), (6, 6), (4, 6), (2, 6), (0, 6)]
+        'Dark': [(0, 0), (6, 0), (1, 1), (5, 1), (0, 2), (2, 2), (4, 2), (6, 2)],
+        'Light': [(6, 8), (0, 8), (5, 7), (1, 7), (6, 6), (4, 6), (2, 6), (0, 6)]
     }
-    for side in ('C', 'P'):
+    for side in ('Dark', 'Light'):
         _pieces[side] = {}
         for i, name in enumerate(('Lion', 'Tiger', 'Cat', 'Dog', 'Elephant', 'Wolf', 'Leopard', 'Rat')):
             _pieces[side][name] = {'pos': poss[side][i], 'img': pygame.transform.scale(pygame.image.load(f'assets/pieces/{side.lower()}/{name.lower()}.png'), CELL_SIZE)}
@@ -139,7 +139,7 @@ def can_move(piece_name, start_pos, end_pos):
     if piece_name not in ['Dog', 'Rat'] and end_pos in RIVERS:
         return False
 
-    opp = 'P' if _current_player == 'C' else 'C'
+    opp = 'Light' if _current_player == 'Dark' else 'Dark'
 
     # Check if the piece is moving to its own den
     if end_pos in TRAPS[opp]:
@@ -239,19 +239,19 @@ def draw_game():
             pygame.draw.rect(_screen, Color.GRAY.value, pygame.Rect(c * SPAN, r * SPAN, SPAN, SPAN), 1)
 
     # Draw dens
-    _screen.blit(pygame.transform.scale(pygame.image.load(f'assets/images/den.png'), CELL_SIZE), (DENS['C'][0] * SPAN, DENS['C'][1] * SPAN))
-    _screen.blit(pygame.transform.scale(pygame.image.load(f'assets/images/den.png'), CELL_SIZE), (DENS['P'][0] * SPAN, DENS['P'][1] * SPAN))
+    _screen.blit(pygame.transform.scale(pygame.image.load(f'assets/images/den.png'), CELL_SIZE), (DENS['Dark'][0] * SPAN, DENS['Dark'][1] * SPAN))
+    _screen.blit(pygame.transform.scale(pygame.image.load(f'assets/images/den.png'), CELL_SIZE), (DENS['Light'][0] * SPAN, DENS['Light'][1] * SPAN))
 
     # Draw traps
-    for trap in TRAPS['C']:
+    for trap in TRAPS['Dark']:
         _screen.blit(pygame.transform.scale(pygame.image.load(f'assets/images/trap.png'), CELL_SIZE), (trap[0] * SPAN, trap[1] * SPAN))
-    for trap in TRAPS['P']:
+    for trap in TRAPS['Light']:
         _screen.blit(pygame.transform.scale(pygame.image.load(f'assets/images/trap.png'), CELL_SIZE), (trap[0] * SPAN, trap[1] * SPAN))
 
     # Draw pieces
     for side in _pieces:
         for piece_info in _pieces[side].values():
-            draw_star(_screen, side == 'C' and Color.ORANGE.value or Color.CYAN.value, (piece_info['pos'][0] * SPAN + 50, piece_info['pos'][1] * SPAN + 50), 40, 20, 192, 20)
+            draw_star(_screen, side == 'Dark' and Color.ORANGE.value or Color.CYAN.value, (piece_info['pos'][0] * SPAN + 50, piece_info['pos'][1] * SPAN + 50), 40, 20, 192, 20)
             _screen.blit(piece_info['img'], (piece_info['pos'][0] * SPAN, piece_info['pos'][1] * SPAN))
         
     # Highlight possible moves for the selected piece with circles
@@ -267,7 +267,7 @@ def switch_player():
     Switch the current player to the other player.
     '''
     global _current_player
-    _current_player = _current_player == 'C' and 'P' or 'C'
+    _current_player = _current_player == 'Dark' and 'Light' or 'Dark'
 
 
 def handle_piece_selection(mouse_pos):
@@ -311,7 +311,7 @@ def handle_piece_move(mouse_pos):
     # Move the selected piece to the new position if possible
     if can_move(_selected_piece, _pieces[_current_player][_selected_piece]['pos'], (c, r)):
         _pieces[_current_player][_selected_piece]['pos'] = (c, r)
-        opp = _current_player == 'C' and 'P' or 'C'
+        opp = _current_player == 'Dark' and 'Light' or 'Dark'
         for opp_piece_name, opp_piece_info in _pieces[opp].items():
             if opp_piece_info['pos'] == (c, r):
                 del _pieces[opp][opp_piece_name]
@@ -329,16 +329,16 @@ def check_game_end():
     '''
     global _game_over, _game_result
 
-    # Check if any of 'C's pieces has entered 'P's den
-    for piece_info in _pieces['C'].values():
-        if piece_info['pos'] == DENS['P']:
+    # Check if any of 'Dark's pieces has entered 'Light's den
+    for piece_info in _pieces['Dark'].values():
+        if piece_info['pos'] == DENS['Light']:
             _game_over = True
             _game_result = 'YOU\nLOSE!!!'
             return
 
-    # Check if any of 'P's pieces has entered 'C's den
-    for piece_info in _pieces['P'].values():
-        if piece_info['pos'] == DENS['C']:
+    # Check if any of 'Light's pieces has entered 'Dark's den
+    for piece_info in _pieces['Light'].values():
+        if piece_info['pos'] == DENS['Dark']:
             _game_over = True
             _game_result = 'YOU\nWIN!!!'
             return
