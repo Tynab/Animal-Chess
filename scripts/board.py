@@ -11,8 +11,13 @@ from scripts.pieces.elephant import Elephant
 from scripts.player import PlayerSide
 
 class Board:
+    '''
+    The board.
+    '''
     def __init__(self):
+        # Create cells
         self.cells = [[Cell(CellLabel.EMPTY, (x, y)) for y in range(GameConstant.HEIGHT.value)] for x in range(GameConstant.WIDTH.value)]
+        # Set labels
         self.cells[CellPosition.RIVER_1_1.value[0]][CellPosition.RIVER_1_1.value[1]].set_label(CellLabel.RIVER)
         self.cells[CellPosition.RIVER_1_2.value[0]][CellPosition.RIVER_1_2.value[1]].set_label(CellLabel.RIVER)
         self.cells[CellPosition.RIVER_1_3.value[0]][CellPosition.RIVER_1_3.value[1]].set_label(CellLabel.RIVER)
@@ -33,6 +38,7 @@ class Board:
         self.cells[CellPosition.LIGHT_TRAP_3.value[0]][CellPosition.LIGHT_TRAP_3.value[1]].set_label(CellLabel.LIGHT_TRAP)
         self.cells[CellPosition.DARK_DEN.value[0]][CellPosition.DARK_DEN.value[1]].set_label(CellLabel.DARK_DEN)
         self.cells[CellPosition.LIGHT_DEN.value[0]][CellPosition.LIGHT_DEN.value[1]].set_label(CellLabel.LIGHT_DEN)
+        # Set images
         self.cells[CellPosition.RIVER_1_1.value[0]][CellPosition.RIVER_1_1.value[1]].set_image(CellImage.RIVER_1.value)
         self.cells[CellPosition.RIVER_1_2.value[0]][CellPosition.RIVER_1_2.value[1]].set_image(CellImage.RIVER_2.value)
         self.cells[CellPosition.RIVER_1_3.value[0]][CellPosition.RIVER_1_3.value[1]].set_image(CellImage.RIVER_3.value)
@@ -53,6 +59,7 @@ class Board:
         self.cells[CellPosition.LIGHT_TRAP_3.value[0]][CellPosition.LIGHT_TRAP_3.value[1]].set_image(CellImage.TRAP.value)
         self.cells[CellPosition.DARK_DEN.value[0]][CellPosition.DARK_DEN.value[1]].set_image(CellImage.DEN.value)
         self.cells[CellPosition.LIGHT_DEN.value[0]][CellPosition.LIGHT_DEN.value[1]].set_image(CellImage.DEN.value)
+        # Set pieces
         self.cells[CellPosition.DARK_RAT.value[0]][CellPosition.DARK_RAT.value[1]].add_piece(Rat(PlayerSide.DARK))
         self.cells[CellPosition.DARK_CAT.value[0]][CellPosition.DARK_CAT.value[1]].add_piece(Cat(PlayerSide.DARK))
         self.cells[CellPosition.DARK_DOG.value[0]][CellPosition.DARK_DOG.value[1]].add_piece(Dog(PlayerSide.DARK))
@@ -71,4 +78,13 @@ class Board:
         self.cells[CellPosition.LIGHT_ELEPHANT.value[0]][CellPosition.LIGHT_ELEPHANT.value[1]].add_piece(Elephant(PlayerSide.LIGHT))
 
     def get_cell(self, position):
+        '''
+        Get the cell at the given position.
+        
+        Args:
+            position (tuple): The position of the cell.
+        
+        Returns:
+            Cell: The cell at the given position.
+        '''
         return self.cells[position[0]][position[1]]

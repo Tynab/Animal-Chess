@@ -3,19 +3,22 @@ from scripts.piece import Piece, PieceName, PieceDetail, PieceAtk, PieceAvatar, 
 from scripts.player import PlayerSide
 
 class Tiger(Piece):
+    '''
+    The Tiger piece.
+    '''
     def __init__(self, side):
         super().__init__(side == PlayerSide.DARK and PieceName.DARK_TIGER or PieceName.LIGHT_TIGER, PieceDetail.TIGER, side == PlayerSide.DARK and CellPosition.DARK_TIGER or CellPosition.LIGHT_TIGER, PieceAtk.TIGER, side, PieceAvatar.DARK_TIGER, PieceArtWork.DARK_TIGER)
 
-    def is_move_valid(self, cell):
-        if not cell.is_in_board():
-            return False
-        if cell.is_occupied_by_own_piece(self.side):
-            return False
-        if not cell.is_defeated_by_own_piece(self):
-            return False
-        return True
-    
     def available_moves(self, board):
+        '''
+        Get available moves for the piece.
+        
+        Args:
+            board (Board): The board.
+        
+        Returns:
+            list: The available moves.
+        '''
         moves = []
         for direction_method in [self.left, self.right, self.up, self.down]:
             next_cell = direction_method(1, board)
@@ -25,6 +28,17 @@ class Tiger(Piece):
         return moves
         
     def jump_over_river(self, position, direction_method, board):
+        '''
+        Jump over the river.
+        
+        Args:
+            position (Cell): The position to move to.
+            direction_method (function): The direction method.
+            board (Board): The board.
+        
+        Returns:
+            Cell: The position to move to.
+        '''
         while position.is_river():
             position = direction_method(1, board)
         return position

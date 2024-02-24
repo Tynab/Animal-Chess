@@ -10,10 +10,20 @@ from scripts.pieces.lion import Lion
 from scripts.pieces.elephant import Elephant
 
 class PlayerSide(Enum):
+    '''
+    The side of the player.
+    
+    Attributes:
+        DARK (str): The dark side.
+        LIGHT (str): The light side.
+    '''
     DARK = 'Dark'
     LIGHT = 'Light'
 
 class Player:
+    '''
+    The player.
+    '''
     def __init__(self, side):
         self.side = side
         self.pieces = [Rat(side), Cat(side), Dog(side), Wolf(side), Leopard(side), Tiger(side), Lion(side), Elephant(side)]
