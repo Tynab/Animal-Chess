@@ -1,13 +1,20 @@
-from scripts.cell import CellPosition
-from scripts.piece import Piece, PieceName, PieceDetail, PieceAtk, PieceAvatar, PieceArtWork
-from scripts.player import PlayerSide
+from scripts.common import PlayerSide, PieceName, PieceDetail, CellPosition, PieceAtk, PieceAvatar, PieceArtWork
+from scripts.piece import Piece
 
 class Tiger(Piece):
     '''
     The Tiger piece.
     '''
     def __init__(self, side):
-        super().__init__(side == PlayerSide.DARK and PieceName.DARK_TIGER or PieceName.LIGHT_TIGER, PieceDetail.TIGER, side == PlayerSide.DARK and CellPosition.DARK_TIGER or CellPosition.LIGHT_TIGER, PieceAtk.TIGER, side, PieceAvatar.DARK_TIGER, PieceArtWork.DARK_TIGER)
+        super().__init__(
+            side == PlayerSide.DARK and PieceName.DARK_TIGER or PieceName.LIGHT_TIGER,
+            PieceDetail.TIGER,
+            side == PlayerSide.DARK and CellPosition.DARK_TIGER or CellPosition.LIGHT_TIGER,
+            PieceAtk.TIGER,
+            side,
+            side == PlayerSide.DARK and PieceAvatar.DARK_TIGER or PieceAvatar.LIGHT_TIGER,
+            side == PlayerSide.DARK and PieceArtWork.DARK_TIGER or PieceArtWork.LIGHT_TIGER
+        )
 
     def available_moves(self, board):
         '''

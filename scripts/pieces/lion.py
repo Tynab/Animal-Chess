@@ -1,13 +1,20 @@
-from scripts.cell import CellPosition
-from scripts.piece import Piece, PieceName, PieceDetail, PieceAtk, PieceAvatar, PieceArtWork
-from scripts.player import PlayerSide
+from scripts.common import PlayerSide, PieceName, PieceDetail, CellPosition, PieceAtk, PieceAvatar, PieceArtWork
+from scripts.piece import Piece
 
 class Lion(Piece):
     '''
     The Lion piece.
     '''
     def __init__(self, side):
-        super().__init__(side == PlayerSide.DARK and PieceName.DARK_LION or PieceName.LIGHT_LION, PieceDetail.LION, side == PlayerSide.DARK and CellPosition.DARK_LION or CellPosition.LIGHT_LION, PieceAtk.LION, side, PieceAvatar.DARK_LION, PieceArtWork.DARK_LION)
+        super().__init__(
+            side == PlayerSide.DARK and PieceName.DARK_LION or PieceName.LIGHT_LION,
+            PieceDetail.LION,
+            side == PlayerSide.DARK and CellPosition.DARK_LION or CellPosition.LIGHT_LION,
+            PieceAtk.LION,
+            side,
+            side == PlayerSide.DARK and PieceAvatar.DARK_LION or PieceAvatar.LIGHT_LION,
+            side == PlayerSide.DARK and PieceArtWork.DARK_LION or PieceArtWork.LIGHT_LION
+        )
 
     def available_moves(self, board):
         '''

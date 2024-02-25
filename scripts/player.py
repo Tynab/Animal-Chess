@@ -1,24 +1,12 @@
-from enum import Enum
-from scripts.cell import CellPosition
-from scripts.pieces.rat import Rat
-from scripts.pieces.cat import Cat
-from scripts.pieces.dog import Dog
-from scripts.pieces.wolf import Wolf
-from scripts.pieces.leopard import Leopard
-from scripts.pieces.tiger import Tiger
-from scripts.pieces.lion import Lion
-from scripts.pieces.elephant import Elephant
-
-class PlayerSide(Enum):
-    '''
-    The side of the player.
-    
-    Attributes:
-        DARK (str): The dark side.
-        LIGHT (str): The light side.
-    '''
-    DARK = 'Dark'
-    LIGHT = 'Light'
+import scripts.pieces.rat as rat
+import scripts.pieces.cat as cat
+import scripts.pieces.dog as dog
+import scripts.pieces.wolf as wolf
+import scripts.pieces.leopard as leopard
+import scripts.pieces.tiger as tiger
+import scripts.pieces.lion as lion
+import scripts.pieces.elephant as elephant
+from scripts.common import PlayerSide, CellPosition
 
 class Player:
     '''
@@ -26,6 +14,6 @@ class Player:
     '''
     def __init__(self, side):
         self.side = side
-        self.pieces = [Rat(side), Cat(side), Dog(side), Wolf(side), Leopard(side), Tiger(side), Lion(side), Elephant(side)]
-        self.den =  side == PlayerSide.DARK and CellPosition.DARK_DEN.value or CellPosition.LIGHT_DEN.value
-        self.traps = side == PlayerSide.DARK and [CellPosition.DARK_TRAP_1.value, CellPosition.DARK_TRAP_2.value, CellPosition.DARK_TRAP_3.value] or [CellPosition.LIGHT_TRAP_1.value, CellPosition.LIGHT_TRAP_2.value, CellPosition.LIGHT_TRAP_3.value]
+        self.pieces = [rat.Rat(side), cat.Cat(side), dog.Dog(side), wolf.Wolf(side), leopard.Leopard(side), tiger.Tiger(side), lion.Lion(side), elephant.Elephant(side)]
+        self.den =  side == PlayerSide.DARK and CellPosition.DARK_DEN or CellPosition.LIGHT_DEN
+        self.traps = side == PlayerSide.DARK and [CellPosition.DARK_TRAP_1, CellPosition.DARK_TRAP_2, CellPosition.DARK_TRAP_3] or [CellPosition.LIGHT_TRAP_1, CellPosition.LIGHT_TRAP_2, CellPosition.LIGHT_TRAP_3]
