@@ -70,8 +70,8 @@ class GameManager:
         '''
         Switch the current player.
         '''
-        self.current_player = self.current_player == self.players[PlayerSide.DARK] and self.players[PlayerSide.DARK] or self.players[PlayerSide.LIGHT]
-        self.opponent_player = self.current_player == self.players[PlayerSide.DARK] and self.players[PlayerSide.LIGHT] or self.players[PlayerSide.DARK]
+        self.current_player = self.current_player == self.players[PlayerSide.DARK] and self.players[PlayerSide.LIGHT] or self.players[PlayerSide.DARK]
+        self.opponent_player = self.current_player == self.players[PlayerSide.DARK] and self.players[PlayerSide.DARK] or self.players[PlayerSide.LIGHT]
     
     def handle_piece_selection(self, mouse_position):
         '''
@@ -81,7 +81,7 @@ class GameManager:
             mouse_position (tuple): The position of the mouse.
         '''
         cell = self.board.get_cell((mouse_position[0] // 100, mouse_position[1] // 100))
-        if cell.piece:
+        if cell.piece and cell.piece.side == self.current_player.side:
             self.selected_piece = cell.piece
 
     def handle_piece_move(self, mouse_position):
