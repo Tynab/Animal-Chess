@@ -29,24 +29,32 @@ class Tiger(Piece):
         moves = []
         for direction_method in [self.left, self.right, self.up, self.down]:
             next_cell = direction_method(1, board)
-            next_cell = self.jump_over_river(next_cell, direction_method, board)
-            if self.is_move_valid(next_cell):
+            new_cell = self.jump_over_river(next_cell, direction_method, board)
+            if new_cell:
+                next_cell = new_cell
+            if next_cell and self.is_move_valid(next_cell):
                 moves.append(next_cell)
         return moves
         
-    def jump_over_river(self, position, direction_method, board):
+    def jump_over_river(self, cell, direction_method, board):
         '''
         Jump over the river.
         
         Args:
-            position (Cell): The position to move to.
+            cell (Cell): The position to move to.
             direction_method (function): The direction method.
             board (Board): The board.
         
         Returns:
             Cell: The position to move to.
         '''
-        while position.is_river():
-            position = direction_method(1, board)
-        return position
+        if not cell:
+            return cell
+        step = 1
+        while cell.is_river():
+            cell = direction_method(step, board)
+            if cell and cell.piece:
+                return None and cell.is_river() or cell
+            step += 1
+        return cell
     
