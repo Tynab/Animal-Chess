@@ -1,6 +1,14 @@
 import scripts.common as common
 from pygame import transform, image
-from scripts.common import CellLabel, Size
+from scripts.common import Size, CellLabel, PlayerSide, PieceAtk
+from scripts.pieces.rat import Rat
+from scripts.pieces.cat import Cat
+from scripts.pieces.dog import Dog
+from scripts.pieces.wolf import Wolf
+from scripts.pieces.leopard import Leopard
+from scripts.pieces.tiger import Tiger
+from scripts.pieces.lion import Lion
+from scripts.pieces.elephant import Elephant
 
 class Cell:
     '''
@@ -39,6 +47,25 @@ class Cell:
         '''
         self.piece = piece
         self.piece.move(self.position)
+        if self.label == CellLabel.DARK_TRAP and self.piece.side == PlayerSide.LIGHT or self.label == CellLabel.LIGHT_TRAP and self.piece.side == PlayerSide.DARK:
+            self.piece.set_atk(0)
+        elif self.piece.atk == 0:
+            if isinstance(self.piece, Rat):
+                self.piece.set_atk(PieceAtk.RAT)
+            elif isinstance(self.piece, Cat):
+                self.piece.set_atk(PieceAtk.CAT)
+            elif isinstance(self.piece, Dog):
+                self.piece.set_atk(PieceAtk.DOG)
+            elif isinstance(self.piece, Wolf):
+                self.piece.set_atk(PieceAtk.WOLF)
+            elif isinstance(self.piece, Leopard):
+                self.piece.set_atk(PieceAtk.LEOPARD)
+            elif isinstance(self.piece, Tiger):
+                self.piece.set_atk(PieceAtk.TIGER)
+            elif isinstance(self.piece, Lion):
+                self.piece.set_atk(PieceAtk.LION)
+            elif isinstance(self.piece, Elephant):
+                self.piece.set_atk(PieceAtk.ELEPHANT)
 
     def remove_piece(self):
         '''

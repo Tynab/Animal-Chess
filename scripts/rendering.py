@@ -34,31 +34,16 @@ def draw_screen(screen, game_manager):
 
     # Draw the start button
     screen.blit(START_BTN_SCALED, START_BTN_RECT.topleft)
-
-    # Enter the loop while waiting for user input
     txt_color = Color.WHITE
-    waiting_for_input = True
-    while waiting_for_input:
-        mouse_pos = mouse.get_pos()
-
-        # Change text color based on mouse hover
-        if START_BTN_RECT.collidepoint(mouse_pos):
-            mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-            txt_color = Color.YELLOW
-        else:
-            mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-            txt_color = Color.WHITE
-
-        # Render and draw the text on the start button
-        txt_surf = FONT_BTN.render('New Game', True, txt_color)
-        screen.blit(START_BTN_SCALED, START_BTN_RECT.topleft)
-        screen.blit(txt_surf, txt_surf.get_rect(center=START_BTN_RECT.center))
-
-        # Update the display
-        display.flip()
-
-    # Reset the mouse cursor
-    mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+    if START_BTN_RECT.collidepoint(mouse.get_pos()):
+        mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        txt_color = Color.YELLOW
+    else:
+        mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        txt_color = Color.WHITE
+    txt_surf = FONT_BTN.render('New Game', True, txt_color)
+    screen.blit(START_BTN_SCALED, START_BTN_RECT.topleft)
+    screen.blit(txt_surf, txt_surf.get_rect(center=START_BTN_RECT.center))
 
 def draw_game(screen, game_manager):
     '''

@@ -1,5 +1,5 @@
 import pygame
-from pygame import display, time
+from pygame import display, time, mouse, event
 
 pygame.init()
 
@@ -8,35 +8,40 @@ import scripts.manager as manager
 import scripts.rendering as rendering
 from scripts.common import Size, GameState
 
+_clock = time.Clock()
 _screen = display.set_mode(Size.BOARD, pygame.SRCALPHA, 32)
-
 display.set_caption(common.TIT)
 
-_clock = time.Clock()
+def main():
+    game_manager = manager.GameManager()
+    running = True
+    while running:
+        # 
+        mouse_position = mouse.get_pos()
+        if game_manager.game_state == GameState.RUNNING:
+            rendering.draw_game(_screen, game_manager)
+            for e in event.get():
+                if e.type == pygame.QUIT:
+                    running = False
+                elif e.type == pygame.MOUSEBUTTONDOWN:
+                    if not game_manager.selected_piece or not game_manager.handle_piece_move(mouse_position):
+                        game_manager.handle_piece_selection(mouse_position)
+        else:
+            rendering.draw_screen(_screen, game_manager)
+            for e in event.get():
+                if e.type == pygame.QUIT:
+                    running = False
+                elif e.type == pygame.MOUSEBUTTONDOWN:
+                    if rendering.START_BTN_RECT.collidepoint(mouse_position):
+                        game_manager = manager.GameManager()
+                        game_manager.set_game_state(GameState.RUNNING)
 
-_game_manager = manager.GameManager()
 
-rendering.draw_game(_screen, _game_manager)
+        # Update the display
+        display.flip()
+        _clock.tick(60)
 
-# Main game loop
-_carry_on = True
-while _carry_on:
-    # Handle events
-    for e in pygame.event.get():
-        if e.type == pygame.QUIT:
-            _carry_on = False
-        elif _game_manager.game_state == GameState.OVER:
-            rendering.draw_screen(_screen, _game_manager)
-        elif e.type == pygame.MOUSEBUTTONDOWN:
-            mouse_position = pygame.mouse.get_pos()
-            if not _game_manager.selected_piece or not _game_manager.handle_piece_move(mouse_position):
-                _game_manager.handle_piece_selection(mouse_position)
+    pygame.quit()
 
-    #
-    rendering.draw_game(_screen, _game_manager)
-
-    # Update the display
-    pygame.display.flip()
-    _clock.tick(60)
-
-pygame.quit()
+if __name__ == '__main__':
+    main()
