@@ -13,6 +13,9 @@ _screen = display.set_mode(Size.BOARD, pygame.SRCALPHA, 32)
 display.set_caption(common.TIT)
 
 def main():
+    '''
+    The main function of the program.
+    '''
     game_manager = manager.GameManager()
     running = True
     while running:

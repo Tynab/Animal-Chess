@@ -68,7 +68,12 @@ def draw_game(screen, game_manager):
     if game_manager.selected_piece:
         for cell in game_manager.selected_piece.available_moves(game_manager.board):
             highlight_surface = Surface((common.SPAN, common.SPAN), pygame.SRCALPHA)
-            draw.circle(highlight_surface, (*Color.YELLOW, 192), (common.SPAN // 2, common.SPAN // 2), common.SPAN // 4)
+            if cell.piece:
+                draw.circle(highlight_surface, (*Color.RED, 192), (common.SPAN // 2, common.SPAN // 2), common.SPAN // 4)
+            elif cell.is_river() or abs(cell.position[0] - game_manager.selected_piece.position[0]) > 1 or abs(cell.position[1] - game_manager.selected_piece.position[1]) > 1:
+                draw.circle(highlight_surface, (*Color.GREEN, 192), (common.SPAN // 2, common.SPAN // 2), common.SPAN // 4)
+            else:
+                draw.circle(highlight_surface, (*Color.YELLOW, 192), (common.SPAN // 2, common.SPAN // 2), common.SPAN // 4)
             screen.blit(highlight_surface, (cell.position[0] * common.SPAN, cell.position[1] * common.SPAN))
 
 def draw_star(surface, color, center, outer_radius, inner_radius, opacity=255, points=5):
