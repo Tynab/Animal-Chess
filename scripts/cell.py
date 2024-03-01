@@ -1,4 +1,3 @@
-import scripts.common as common
 from pygame import transform, image
 from scripts.common import Size, CellLabel, PlayerSide, PieceAtk
 from scripts.pieces.rat import Rat
@@ -10,45 +9,57 @@ from scripts.pieces.tiger import Tiger
 from scripts.pieces.lion import Lion
 from scripts.pieces.elephant import Elephant
 
+import scripts.common as common
+
 class Cell:
-    '''
-    The cell of the board.
-    '''
+    """
+    Represents a cell in the Animal Chess game.
+    """
+
     def __init__(self, label, position):
+        """
+        Initializes a new instance of the Cell class.
+
+        Args:
+            label: The label of the cell.
+            position: The position of the cell.
+        """
         self.label = label
         self.position = position
         self.image = None
         self.piece = None
 
     def set_label(self, label):
-        '''
-        Set the label of the cell.
-        
+        """
+        Sets the label of the cell.
+
         Args:
-            label (CellLabel): The label of the cell.
-        '''
+            label: The new label.
+        """
         self.label = label
 
     def set_image(self, image_path):
-        '''
-        Set the image of the cell.
-        
+        """
+        Sets the image of the cell.
+
         Args:
-            image_path (str): The path of the image.
-        '''
-        self.image = transform.scale(image.load(image_path), Size.CELL)
+            image_path: The path to the new image.
+        """
+        self.image = transform.scale(image.load(image_path), Size.CELL)  # Load and scale the image
 
     def add_piece(self, piece):
-        '''
-        Add a piece to the cell.
-        
+        """
+        Adds a piece to the cell.
+
         Args:
-            piece (Piece): The piece to be added.
-        '''
+            piece: The piece to add.
+        """
         self.piece = piece
-        self.piece.move(self.position)
+        self.piece.move(self.position)  # Move the piece to the cell's position
+        # If the cell is a trap and the piece is of the opposite side, set the piece's attack power to 0
         if self.label == CellLabel.DARK_TRAP and self.piece.side == PlayerSide.LIGHT or self.label == CellLabel.LIGHT_TRAP and self.piece.side == PlayerSide.DARK:
             self.piece.set_atk(0)
+        # If the piece's attack power is 0, set it to the appropriate value based on the type of the piece
         elif self.piece.atk == 0:
             if isinstance(self.piece, Rat):
                 self.piece.set_atk(PieceAtk.RAT)
@@ -68,74 +79,74 @@ class Cell:
                 self.piece.set_atk(PieceAtk.ELEPHANT)
 
     def remove_piece(self):
-        '''
-        Remove the piece from the cell.
-        '''
+        """
+        Removes the piece from the cell.
+        """
         self.piece = None
 
     def is_in_board(self):
-        '''
-        Check if the cell is in the board.
-        
+        """
+        Checks if the cell is within the board.
+
         Returns:
-            bool: True if the cell is in the board, False otherwise.
-        '''
+            True if the cell is within the board, False otherwise.
+        """
         return 0 <= self.position[0] < common.W and 0 <= self.position[1] < common.H
     
     def is_empty(self):
-        '''
-        Check if the cell is empty.
-        
+        """
+        Checks if the cell is empty.
+
         Returns:
-            bool: True if the cell is empty, False otherwise.
-        '''
+            True if the cell is empty, False otherwise.
+        """
         return not self.piece
     
     def is_river(self):
-        '''
-        Check if the cell is river.
-        
+        """
+        Checks if the cell is a river.
+
         Returns:
-            bool: True if the cell is river, False otherwise.
-        '''
+            True if the cell is a river, False otherwise.
+        """
         return self.label == CellLabel.RIVER
     
     def is_opponent_trap(self, side):
-        '''
-        Check if the cell is opponent trap.
-        
+        """
+        Checks if the cell is an opponent's trap.
+
         Args:
-            side (PlayerSide): The side of the player.
-        
+            side: The side of the player.
+
         Returns:
-            bool: True if the cell is opponent trap, False otherwise.
-        '''
+            True if the cell is an opponent's trap, False otherwise.
+        """
         if self.label in [CellLabel.DARK_TRAP, CellLabel.LIGHT_TRAP]:
             return self.label != side
         return False
     
     def is_opponent_den(self, side):
-        '''
-        Check if the cell is opponent den.
-        
+        """
+        Checks if the cell is an opponent's den.
+
         Args:
-            side (PlayerSide): The side of the player.
-            
+            side: The side of the player.
+
         Returns:
-            bool: True if the cell is opponent den, False otherwise.
-        '''
+            True if the cell is an opponent's den, False otherwise.
+        """
         if self.label in [CellLabel.DARK_DEN, CellLabel.LIGHT_DEN]:
             return self.label != side
         return False
     
     def is_occupied_by_own_piece(self, side):
-        '''
-        Check if the cell is occupied by own piece.
-        
+        """
+        Checks if the cell is occupied by a piece of the player's side.
+
         Args:
-            side (PlayerSide): The side of the player.
-        
+            side: The side of the player.
+
         Returns:
-            bool: True if the cell is occupied by own piece, False otherwise.
-        '''
+            True if the cell is occupied by a piece of the player's side, False otherwise.
+        """
         return self.piece and self.piece.side == side
