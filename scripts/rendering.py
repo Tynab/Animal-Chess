@@ -53,20 +53,27 @@ def draw_game(screen, game_manager):
         screen (pygame.Surface): The surface to draw on.
         game_manager (GameManager): The game manager.
     '''
+    cursor_hand = False
     # Draw the game board
     for col in game_manager.board.cells:
         for cell in col:
+            cell_rect = Rect(cell.position[0] * common.SPAN, cell.position[1] * common.SPAN, common.SPAN, common.SPAN)
             draw.rect(screen, Color.WHITE, [cell.position[0] * common.SPAN, cell.position[1] * common.SPAN, common.SPAN, common.SPAN], 0)
             if cell.image:
                 screen.blit(cell.image, (cell.position[0] * common.SPAN, cell.position[1] * common.SPAN))
-            draw.rect(screen, Color.GRAY, Rect(cell.position[0] * common.SPAN, cell.position[1] * common.SPAN, common.SPAN, common.SPAN), 1)
+            draw.rect(screen, Color.GRAY, cell_rect, 1)
             if cell.piece:
+                if cell_rect.collidepoint(mouse.get_pos()) and cell.piece.side == game_manager.current_player.side:
+                    cursor_hand = True
                 draw_star(screen, cell.piece.side == PlayerSide.DARK and Color.ORANGE or Color.CYAN, (cell.position[0] * common.SPAN + 50, cell.position[1] * common.SPAN + 50), 40, 20, 192, 20)
                 screen.blit(cell.piece.image, (cell.position[0] * common.SPAN, cell.position[1] * common.SPAN))
 
     # Highlight possible moves for the selected piece with circles
     if game_manager.selected_piece:
         for cell in game_manager.selected_piece.available_moves(game_manager.board):
+            cell_rect = Rect(cell.position[0] * common.SPAN, cell.position[1] * common.SPAN, common.SPAN, common.SPAN)
+            if cell_rect.collidepoint(mouse.get_pos()):
+                cursor_hand = True
             highlight_surface = Surface((common.SPAN, common.SPAN), pygame.SRCALPHA)
             if cell.piece:
                 draw.circle(highlight_surface, (*Color.RED, 192), (common.SPAN // 2, common.SPAN // 2), common.SPAN // 4)
@@ -75,6 +82,11 @@ def draw_game(screen, game_manager):
             else:
                 draw.circle(highlight_surface, (*Color.YELLOW, 192), (common.SPAN // 2, common.SPAN // 2), common.SPAN // 4)
             screen.blit(highlight_surface, (cell.position[0] * common.SPAN, cell.position[1] * common.SPAN))
+
+    if cursor_hand:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    else:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
 def draw_star(surface, color, center, outer_radius, inner_radius, opacity=255, points=5):
     '''
