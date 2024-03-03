@@ -1,21 +1,25 @@
 import pygame
 from pygame import display, time, mouse, event
-from scripts.common import Size, GameState
 
 pygame.init()
 
 import scripts.common as common
 import scripts.manager as manager
 import scripts.rendering as rendering
+from scripts.common import Size, GameState
 
 _clock = time.Clock()
 _screen = display.set_mode(Size.BOARD, pygame.SRCALPHA, 32)
 display.set_caption(common.TIT)
 
 def main():
+    '''
+    The main function of the program.
+    '''
     game_manager = manager.GameManager()
     running = True
     while running:
+        # 
         mouse_position = mouse.get_pos()
         if game_manager.game_state == GameState.RUNNING:
             rendering.draw_game(_screen, game_manager)
@@ -34,8 +38,12 @@ def main():
                     if rendering.START_BTN_RECT.collidepoint(mouse_position):
                         game_manager = manager.GameManager()
                         game_manager.set_game_state(GameState.RUNNING)
+
+
+        # Update the display
         display.flip()
         _clock.tick(60)
+
     pygame.quit()
 
 if __name__ == '__main__':
