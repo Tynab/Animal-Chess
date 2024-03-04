@@ -1,5 +1,6 @@
 import random
 import scripts.board as board
+import scripts.bot as bot
 import scripts.player as player
 from scripts.common import GameState, PlayerSide, CellPosition
 
@@ -102,13 +103,7 @@ class GameManager:
         source_cell = self.board.get_cell(self.selected_piece.position)
         target_cell = self.board.get_cell((mouse_position[0] // 100, mouse_position[1] // 100))
         if target_cell in self.selected_piece.available_moves(self.board):
-            # self.current_player.remove_piece(self.selected_piece)
-            source_cell.remove_piece()
-            if target_cell.piece:
-                self.opponent_player.remove_piece(target_cell.piece)
-                target_cell.remove_piece()
-            # self.current_player.add_piece(self.selected_piece)
-            target_cell.add_piece(self.selected_piece)
+            self.board.make_move((source_cell.position, target_cell.position))
             self.selected_piece = None
             if self.check_game_end(target_cell):
                 return True
@@ -116,22 +111,27 @@ class GameManager:
             return True
         return False
 
+    # def computer_move(self):
+    #     if self.current_player.side == PlayerSide.DARK:
+    #         dark_pieces = [cell.piece for row in self.board.cells for cell in row if cell.piece and cell.piece.side == PlayerSide.DARK]
+    #         selected_piece = random.choice(dark_pieces)
+    #         available_moves = selected_piece.available_moves(self.board)
+    #         if available_moves:
+    #             source_cell = self.board.get_cell(selected_piece.position)
+    #             target_cell = random.choice(available_moves)
+    #             self.board.make_move((source_cell.position, target_cell.position))
+    #             self.selected_piece = None
+    #             if self.check_game_end(target_cell):
+    #                 return
+    #             self.switch_player()
+
     def computer_move(self):
         if self.current_player.side == PlayerSide.DARK:
-            dark_pieces = [cell.piece for row in self.board.cells for cell in row if cell.piece and cell.piece.side == PlayerSide.DARK]
-            selected_piece = random.choice(dark_pieces)
-            available_moves = selected_piece.available_moves(self.board)
-            if available_moves:
-                source_cell = self.board.get_cell(selected_piece.position)
-                target_cell = random.choice(available_moves)
-                # self.current_player.remove_piece(selected_piece)
-                source_cell.remove_piece()
-                if target_cell.piece:
-                    self.opponent_player.remove_piece(target_cell.piece)
-                    target_cell.remove_piece()
-                # self.current_player.add_piece(selected_piece)
-                target_cell.add_piece(selected_piece)
-                if self.check_game_end(target_cell):
+            cc, move = bot.minimax(self.board, 3, float('-inf'), float('inf'), True)
+            print(cc, move)
+            if move:
+                self.board.make_move(move)
+                if self.check_game_end(self.board.get_cell(move[1])):
                     return
                 self.switch_player()
 

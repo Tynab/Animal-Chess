@@ -11,13 +11,9 @@ import scripts.pieces.elephant as elephant
 from scripts.common import CellLabel, CellImage, CellPosition, PlayerSide
 
 class Board:
-    '''
-    The board.
-    '''
     def __init__(self):
-        # Create cells
+        self.captured_pieces = []
         self.cells = [[cell.Cell(CellLabel.EMPTY, (x, y)) for y in range(common.H)] for x in range(common.W)]
-        # Set labels
         self.cells[CellPosition.RIVER_1_1[0]][CellPosition.RIVER_1_1[1]].set_label(CellLabel.RIVER)
         self.cells[CellPosition.RIVER_1_2[0]][CellPosition.RIVER_1_2[1]].set_label(CellLabel.RIVER)
         self.cells[CellPosition.RIVER_1_3[0]][CellPosition.RIVER_1_3[1]].set_label(CellLabel.RIVER)
@@ -38,7 +34,6 @@ class Board:
         self.cells[CellPosition.LIGHT_TRAP_3[0]][CellPosition.LIGHT_TRAP_3[1]].set_label(CellLabel.LIGHT_TRAP)
         self.cells[CellPosition.DARK_DEN[0]][CellPosition.DARK_DEN[1]].set_label(CellLabel.DARK_DEN)
         self.cells[CellPosition.LIGHT_DEN[0]][CellPosition.LIGHT_DEN[1]].set_label(CellLabel.LIGHT_DEN)
-        # Set images
         self.cells[CellPosition.RIVER_1_1[0]][CellPosition.RIVER_1_1[1]].set_image(CellImage.RIVER_1)
         self.cells[CellPosition.RIVER_1_2[0]][CellPosition.RIVER_1_2[1]].set_image(CellImage.RIVER_2)
         self.cells[CellPosition.RIVER_1_3[0]][CellPosition.RIVER_1_3[1]].set_image(CellImage.RIVER_3)
@@ -59,7 +54,6 @@ class Board:
         self.cells[CellPosition.LIGHT_TRAP_3[0]][CellPosition.LIGHT_TRAP_3[1]].set_image(CellImage.TRAP)
         self.cells[CellPosition.DARK_DEN[0]][CellPosition.DARK_DEN[1]].set_image(CellImage.DEN)
         self.cells[CellPosition.LIGHT_DEN[0]][CellPosition.LIGHT_DEN[1]].set_image(CellImage.DEN)
-        # Set pieces
         self.cells[CellPosition.DARK_RAT[0]][CellPosition.DARK_RAT[1]].add_piece(rat.Rat(PlayerSide.DARK))
         self.cells[CellPosition.DARK_CAT[0]][CellPosition.DARK_CAT[1]].add_piece(cat.Cat(PlayerSide.DARK))
         self.cells[CellPosition.DARK_DOG[0]][CellPosition.DARK_DOG[1]].add_piece(dog.Dog(PlayerSide.DARK))
@@ -76,15 +70,48 @@ class Board:
         self.cells[CellPosition.LIGHT_TIGER[0]][CellPosition.LIGHT_TIGER[1]].add_piece(tiger.Tiger(PlayerSide.LIGHT))
         self.cells[CellPosition.LIGHT_LION[0]][CellPosition.LIGHT_LION[1]].add_piece(lion.Lion(PlayerSide.LIGHT))
         self.cells[CellPosition.LIGHT_ELEPHANT[0]][CellPosition.LIGHT_ELEPHANT[1]].add_piece(elephant.Elephant(PlayerSide.LIGHT))
+        self.pieces = [cell.piece for row in self.cells for cell in row if cell.piece]
 
     def get_cell(self, position):
-        '''
-        Get the cell at the given position.
-        
-        Args:
-            position (tuple): The position of the cell.
-        
-        Returns:
-            Cell: The cell at the given position.
-        '''
         return self.cells[position[0]][position[1]]
+    
+    def get_valid_moves(self, side):
+        valid_moves = []
+        for row in self.cells:
+            for cell in row:
+                if cell.piece and cell.piece.side == side:
+                    valid_moves.extend([(cell.position, move.position) for move in cell.piece.available_moves(self)])
+        return valid_moves
+    
+    def make_move(self, move):
+        source_cell = self.get_cell(move[0])
+        target_cell = self.get_cell(move[1])
+        if target_cell.piece:
+            self.captured_pieces.append((target_cell.piece, move[1]))
+            target_cell.remove_piece()
+        target_cell.add_piece(source_cell.piece)
+        source_cell.remove_piece()
+
+    def undo_move(self, move):
+        source_cell = self.get_cell(move[0])
+        target_cell = self.get_cell(move[1])
+        source_cell.add_piece(target_cell.piece)
+        target_cell.remove_piece()
+        if self.captured_pieces and self.captured_pieces[-1][1] == move[1]:
+            captured_piece, _ = self.captured_pieces.pop()
+            target_cell.add_piece(captured_piece)
+    
+    def is_chessmate(self, piece):
+        current_cell = self.get_cell(piece.position)
+        return piece.side == PlayerSide.DARK and current_cell.label == CellLabel.LIGHT_DEN or current_cell.label == CellLabel.DARK_DEN
+
+    def is_game_over(self):
+        dark_den_piece = self.get_cell(CellPosition.DARK_DEN).piece
+        light_den_piece = self.get_cell(CellPosition.LIGHT_DEN).piece
+        if dark_den_piece and dark_den_piece.side == PlayerSide.LIGHT or light_den_piece and light_den_piece.side == PlayerSide.DARK:
+            return True
+        if not [cell.piece for row in self.cells for cell in row if cell.piece and cell.piece.side == PlayerSide.DARK] or not [cell.piece for row in self.cells for cell in row if cell.piece and cell.piece.side == PlayerSide.LIGHT]:
+            return True
+        else:
+            return False
+    

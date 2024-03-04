@@ -1,11 +1,3 @@
-import scripts.pieces.rat as rat
-import scripts.pieces.cat as cat
-import scripts.pieces.dog as dog
-import scripts.pieces.wolf as wolf
-import scripts.pieces.leopard as leopard
-import scripts.pieces.tiger as tiger
-import scripts.pieces.lion as lion
-import scripts.pieces.elephant as elephant
 from scripts.common import PlayerSide, CellPosition
 
 class Player:
