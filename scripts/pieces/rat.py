@@ -6,6 +6,7 @@ class Rat(Piece):
     '''
     The Rat piece.
     '''
+
     def __init__(self, side):
         super().__init__(
             side == PlayerSide.DARK and PieceName.DARK_RAT or PieceName.LIGHT_RAT,
@@ -17,27 +18,30 @@ class Rat(Piece):
             side == PlayerSide.DARK and PieceArtWork.DARK_RAT or PieceArtWork.LIGHT_RAT
         )
 
+    def clone(self):
+        return Rat(self.side)
+
     def is_defeated_by_own_piece(self, cell):
         '''
         Check if the piece is defeated by own piece.
-        
+
         Args:
             cell (Cell): The cell to move to.
-        
+
         Returns:
             bool: True if the piece is defeated by own piece, False otherwise.
         '''
         if isinstance(cell.piece, elephant.Elephant):
             return True
         return self.atk >= cell.piece.atk
-    
+
     def is_move_valid(self, cell):
         '''
         Check if the move is valid.
-        
+
         Args:
             cell (Cell): The cell to move to.
-        
+
         Returns:
             bool: True if the move is valid, False otherwise.
         '''
@@ -48,3 +52,12 @@ class Rat(Piece):
         if cell.piece and not self.is_defeated_by_own_piece(cell):
             return False
         return True
+
+    def weaker_pieces_positions(self, board):
+        result = [
+            self.side == PlayerSide.DARK and CellPosition.LIGHT_DEN or CellPosition.DARK_DEN]
+        for row in board.cells:
+            for cell in row:
+                if cell.piece and cell.piece.side != self.side and isinstance(cell.piece, elephant.Elephant):
+                    result.append(cell.position)
+        return result

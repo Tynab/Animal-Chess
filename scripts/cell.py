@@ -46,26 +46,26 @@ class Cell:
             piece (Piece): The piece to be added.
         '''
         self.piece = piece
-        self.piece.move(self.position)
+        self.piece.position = self.position
         if self.label == CellLabel.DARK_TRAP and self.piece.side == PlayerSide.LIGHT or self.label == CellLabel.LIGHT_TRAP and self.piece.side == PlayerSide.DARK:
-            self.piece.set_atk(0)
+            self.piece.atk = 0
         elif self.piece.atk == 0:
             if isinstance(self.piece, Rat):
-                self.piece.set_atk(PieceAtk.RAT)
+                self.piece.atk = PieceAtk.RAT
             elif isinstance(self.piece, Cat):
-                self.piece.set_atk(PieceAtk.CAT)
+                self.piece.atk = PieceAtk.CAT
             elif isinstance(self.piece, Dog):
-                self.piece.set_atk(PieceAtk.DOG)
+                self.piece.atk = PieceAtk.DOG
             elif isinstance(self.piece, Wolf):
-                self.piece.set_atk(PieceAtk.WOLF)
+                self.piece.atk = PieceAtk.WOLF
             elif isinstance(self.piece, Leopard):
-                self.piece.set_atk(PieceAtk.LEOPARD)
+                self.piece.atk = PieceAtk.LEOPARD
             elif isinstance(self.piece, Tiger):
-                self.piece.set_atk(PieceAtk.TIGER)
+                self.piece.atk = PieceAtk.TIGER
             elif isinstance(self.piece, Lion):
-                self.piece.set_atk(PieceAtk.LION)
+                self.piece.atk = PieceAtk.LION
             elif isinstance(self.piece, Elephant):
-                self.piece.set_atk(PieceAtk.ELEPHANT)
+                self.piece.atk = PieceAtk.ELEPHANT
 
     def remove_piece(self):
         '''

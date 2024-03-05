@@ -11,8 +11,8 @@ import scripts.pieces.elephant as elephant
 from scripts.common import CellLabel, CellImage, CellPosition, PlayerSide
 
 class Board:
+    
     def __init__(self):
-        self.captured_pieces = []
         self.cells = [[cell.Cell(CellLabel.EMPTY, (x, y)) for y in range(common.H)] for x in range(common.W)]
         self.cells[CellPosition.RIVER_1_1[0]][CellPosition.RIVER_1_1[1]].set_label(CellLabel.RIVER)
         self.cells[CellPosition.RIVER_1_2[0]][CellPosition.RIVER_1_2[1]].set_label(CellLabel.RIVER)
@@ -71,10 +71,19 @@ class Board:
         self.cells[CellPosition.LIGHT_LION[0]][CellPosition.LIGHT_LION[1]].add_piece(lion.Lion(PlayerSide.LIGHT))
         self.cells[CellPosition.LIGHT_ELEPHANT[0]][CellPosition.LIGHT_ELEPHANT[1]].add_piece(elephant.Elephant(PlayerSide.LIGHT))
         self.pieces = [cell.piece for row in self.cells for cell in row if cell.piece]
+        self.captured_pieces = []
 
+    def clone(self):
+        cloned_board = Board()
+        for i in range(common.W):
+            for j in range(common.H):
+                cloned_board.cells[i][j].piece =  self.cells[i][j].piece and self.cells[i][j].piece.clone() or None
+        cloned_board.update_pieces()
+        return cloned_board
+    
     def get_cell(self, position):
         return self.cells[position[0]][position[1]]
-    
+
     def get_valid_moves(self, side):
         valid_moves = []
         for row in self.cells:
@@ -82,7 +91,7 @@ class Board:
                 if cell.piece and cell.piece.side == side:
                     valid_moves.extend([(cell.position, move.position) for move in cell.piece.available_moves(self)])
         return valid_moves
-    
+
     def make_move(self, move):
         source_cell = self.get_cell(move[0])
         target_cell = self.get_cell(move[1])
@@ -91,6 +100,7 @@ class Board:
             target_cell.remove_piece()
         target_cell.add_piece(source_cell.piece)
         source_cell.remove_piece()
+        self.update_pieces()
 
     def undo_move(self, move):
         source_cell = self.get_cell(move[0])
@@ -100,10 +110,10 @@ class Board:
         if self.captured_pieces and self.captured_pieces[-1][1] == move[1]:
             captured_piece, _ = self.captured_pieces.pop()
             target_cell.add_piece(captured_piece)
-    
-    def is_chessmate(self, piece):
-        current_cell = self.get_cell(piece.position)
-        return piece.side == PlayerSide.DARK and current_cell.label == CellLabel.LIGHT_DEN or current_cell.label == CellLabel.DARK_DEN
+        self.update_pieces()
+
+    def update_pieces(self):
+        self.pieces = [cell.piece for row in self.cells for cell in row if cell.piece]
 
     def is_game_over(self):
         dark_den_piece = self.get_cell(CellPosition.DARK_DEN).piece
@@ -114,4 +124,3 @@ class Board:
             return True
         else:
             return False
-    

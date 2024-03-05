@@ -5,6 +5,7 @@ class Dog(Piece):
     '''
     The Dog piece.
     '''
+
     def __init__(self, side):
         super().__init__(
             side == PlayerSide.DARK and PieceName.DARK_DOG or PieceName.LIGHT_DOG,
@@ -15,6 +16,9 @@ class Dog(Piece):
             side == PlayerSide.DARK and PieceAvatar.DARK_DOG or PieceAvatar.LIGHT_DOG,
             side == PlayerSide.DARK and PieceArtWork.DARK_DOG or PieceArtWork.LIGHT_DOG
         )
+
+    def clone(self):
+        return Dog(self.side)
 
     def is_move_valid(self, cell):
         '''

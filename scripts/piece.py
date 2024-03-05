@@ -1,37 +1,23 @@
 import scripts.common as common
 from pygame import transform, image
-from scripts.common import Size
+from scripts.common import Size, PlayerSide, CellPosition
 
 class Piece:
     '''
     The piece.
     '''
-    def __init__(self, name, detail, position, atk, side, image_path, artwork_path):
+    
+    def __init__(self, name, detail, position, atk, side, image_path=None, artwork_path=None):
         self.name = name
-        self.image = transform.scale(image.load(image_path), Size.CELL)
-        self.artwork_ = transform.scale(image.load(artwork_path), Size.ARTWORK)
+        self.image = image_path and transform.scale(image.load(image_path), Size.CELL) or None
+        self.artwork = artwork_path and transform.scale(image.load(artwork_path), Size.ARTWORK) or None
         self.detail = detail
         self.position = position
         self.atk = atk
         self.side = side
 
-    def set_atk(self, atk):
-        '''
-        Set the attack of the piece.
-        
-        Args:
-            atk (PieceAtk): The attack of the piece.
-        '''
-        self.atk = atk
-
-    def move(self, position):
-        '''
-        Move the piece to the given position.
-        
-        Args:
-            position (tuple): The position to move to.
-        '''
-        self.position = position
+    def clone(self):
+        return Piece(self.name, self.detail, self.position, self.atk, self.side)
 
     def left(self, step, board):
         '''
@@ -141,3 +127,11 @@ class Piece:
             if next_cell and self.is_move_valid(next_cell):
                 moves.append(next_cell)
         return moves
+    
+    def weaker_pieces_positions(self, board):
+        result = [self.side == PlayerSide.DARK and CellPosition.LIGHT_DEN or CellPosition.DARK_DEN]
+        for row in board.cells:
+            for cell in row:
+                if cell.piece and cell.piece.side != self.side and cell.piece.atk <= self.atk:
+                    result.append(cell.position)
+        return result

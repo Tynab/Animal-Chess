@@ -21,6 +21,11 @@ class Size:
 
 class ImagePath:
     '''
+    A class that represents the file paths to various images used in the game.
+
+    Attributes:
+        COVER (str): The file path to the cover image.
+        START_BTN (str): The file path to the start button image.
     '''
     COVER = 'assets/images/cover.png'
     START_BTN = 'assets/images/button.png'
@@ -77,6 +82,19 @@ class Color:
     PURPLE = (128, 0, 128)
     CYAN = (0, 255, 255)
     GRAY = (128, 128, 128)
+
+class GameMode:
+    '''
+    A class that represents the game modes.
+
+    Attributes:
+        PvP (int): Player vs Player game mode.
+        PvC (int): Player vs Computer game mode.
+        CvC (int): Computer vs Computer game mode.
+    '''
+    PvP = 1
+    PvC = 2
+    CvC = 3
 
 class GameState:
     '''

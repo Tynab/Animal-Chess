@@ -5,6 +5,7 @@ class Cat(Piece):
     '''
     The Cat piece.
     '''
+
     def __init__(self, side):
         super().__init__(
             side == PlayerSide.DARK and PieceName.DARK_CAT or PieceName.LIGHT_CAT,
@@ -15,3 +16,6 @@ class Cat(Piece):
             side == PlayerSide.DARK and PieceAvatar.DARK_CAT or PieceAvatar.LIGHT_CAT,
             side == PlayerSide.DARK and PieceArtWork.DARK_CAT or PieceArtWork.LIGHT_CAT
         )
+
+    def clone(self):
+        return Cat(self.side)

@@ -5,6 +5,7 @@ class Tiger(Piece):
     '''
     The Tiger piece.
     '''
+
     def __init__(self, side):
         super().__init__(
             side == PlayerSide.DARK and PieceName.DARK_TIGER or PieceName.LIGHT_TIGER,
@@ -16,13 +17,16 @@ class Tiger(Piece):
             side == PlayerSide.DARK and PieceArtWork.DARK_TIGER or PieceArtWork.LIGHT_TIGER
         )
 
+    def clone(self):
+        return Tiger(self.side)
+
     def available_moves(self, board):
         '''
         Get available moves for the piece.
-        
+
         Args:
             board (Board): The board.
-        
+
         Returns:
             list: The available moves.
         '''
@@ -35,16 +39,16 @@ class Tiger(Piece):
             if next_cell and self.is_move_valid(next_cell):
                 moves.append(next_cell)
         return moves
-        
+
     def jump_over_river(self, cell, direction_method, board):
         '''
         Jump over the river.
-        
+
         Args:
             cell (Cell): The position to move to.
             direction_method (function): The direction method.
             board (Board): The board.
-        
+
         Returns:
             Cell: The position to move to.
         '''
@@ -57,4 +61,3 @@ class Tiger(Piece):
                 return None and cell.is_river() or cell
             step += 1
         return cell
-    

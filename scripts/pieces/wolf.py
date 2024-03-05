@@ -5,6 +5,7 @@ class Wolf(Piece):
     '''
     The Wolf piece.
     '''
+
     def __init__(self, side):
         super().__init__(
             side == PlayerSide.DARK and PieceName.DARK_WOLF or PieceName.LIGHT_WOLF,
@@ -15,3 +16,6 @@ class Wolf(Piece):
             side == PlayerSide.DARK and PieceAvatar.DARK_WOLF or PieceAvatar.LIGHT_WOLF,
             side == PlayerSide.DARK and PieceArtWork.DARK_WOLF or PieceArtWork.LIGHT_WOLF
         )
+
+    def clone(self):
+        return Wolf(self.side)

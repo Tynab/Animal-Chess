@@ -5,6 +5,7 @@ class Lion(Piece):
     '''
     The Lion piece.
     '''
+
     def __init__(self, side):
         super().__init__(
             side == PlayerSide.DARK and PieceName.DARK_LION or PieceName.LIGHT_LION,
@@ -16,13 +17,16 @@ class Lion(Piece):
             side == PlayerSide.DARK and PieceArtWork.DARK_LION or PieceArtWork.LIGHT_LION
         )
 
+    def clone(self):
+        return Lion(self.side)
+
     def available_moves(self, board):
         '''
         Get available moves for the piece.
-        
+
         Args:
             board (Board): The board.
-        
+
         Returns:
             list: The available moves.
         '''
@@ -35,16 +39,16 @@ class Lion(Piece):
             if next_cell and self.is_move_valid(next_cell):
                 moves.append(next_cell)
         return moves
-        
+
     def jump_over_river(self, cell, direction_method, board):
         '''
         Jump over the river.
-        
+
         Args:
             cell (Cell): The position to move to.
             direction_method (function): The direction method.
             board (Board): The board.
-        
+
         Returns:
             Cell: The position to move to.
         '''
