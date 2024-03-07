@@ -112,13 +112,26 @@ class GameState:
 class PlayerSide:
     '''
     The side of the player.
-    
+
     Attributes:
         DARK (str): The dark side.
         LIGHT (str): The light side.
     '''
     DARK = 'Dark'
     LIGHT = 'Light'
+
+    @staticmethod
+    def opponent_den_position(side):
+        '''
+        Get the den position of the side.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            tuple: The den position.
+        '''
+        return side == PlayerSide.DARK and CellPosition.LIGHT_DEN or CellPosition.DARK_DEN
 
 class CellLabel:
     '''

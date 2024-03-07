@@ -2,9 +2,6 @@ from scripts.common import PlayerSide, PieceName, PieceDetail, CellPosition, Pie
 from scripts.piece import Piece
 
 class Leopard(Piece):
-    '''
-    The Leopard piece.
-    '''
 
     def __init__(self, side):
         super().__init__(

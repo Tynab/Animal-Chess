@@ -2,9 +2,6 @@ from scripts.piece import Piece
 from scripts.common import PlayerSide, PieceName, PieceDetail, CellPosition, PieceAtk, PieceAvatar, PieceArtWork
 
 class Dog(Piece):
-    '''
-    The Dog piece.
-    '''
 
     def __init__(self, side):
         super().__init__(
@@ -20,20 +17,5 @@ class Dog(Piece):
     def clone(self):
         return Dog(self.side)
 
-    def is_move_valid(self, cell):
-        '''
-        Check if the move is valid.
-
-        Args:
-            cell (Cell): The cell to move to.
-
-        Returns:
-            bool: True if the move is valid, False otherwise.
-        '''
-        if not cell.is_in_board():
-            return False
-        if cell.is_occupied_by_own_piece(self.side):
-            return False
-        if cell.piece and not self.is_defeated_by_own_piece(cell):
-            return False
-        return True
+    def is_cell_valid(self, cell):
+        return cell.is_in_board and not cell.is_occupied_own(self.side) and (not cell.piece or self.can_defeat(cell.piece))

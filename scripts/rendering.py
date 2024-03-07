@@ -65,19 +65,19 @@ def draw_game(screen, game_manager):
             if cell.piece:
                 if cell_rect.collidepoint(mouse.get_pos()) and cell.piece.side == game_manager.current_player.side:
                     cursor_hand = True
-                draw_star(screen, cell.piece.side == PlayerSide.DARK and Color.ORANGE or Color.CYAN, (cell.position[0] * common.SPAN + 50, cell.position[1] * common.SPAN + 50), 40, 20, 192, 20)
+                draw_star(screen, cell.piece.is_dark and Color.ORANGE or Color.CYAN, (cell.position[0] * common.SPAN + 50, cell.position[1] * common.SPAN + 50), 40, 20, 192, 20)
                 screen.blit(cell.piece.image, (cell.position[0] * common.SPAN, cell.position[1] * common.SPAN))
 
     # Highlight possible moves for the selected piece with circles
     if game_manager.selected_piece:
-        for cell in game_manager.selected_piece.available_moves(game_manager.board):
+        for cell in game_manager.selected_piece.available_cells(game_manager.board):
             cell_rect = Rect(cell.position[0] * common.SPAN, cell.position[1] * common.SPAN, common.SPAN, common.SPAN)
             if cell_rect.collidepoint(mouse.get_pos()):
                 cursor_hand = True
             highlight_surface = Surface((common.SPAN, common.SPAN), pygame.SRCALPHA)
             if cell.piece:
                 draw.circle(highlight_surface, (*Color.RED, 192), (common.SPAN // 2, common.SPAN // 2), common.SPAN // 4)
-            elif cell.is_river() or abs(cell.position[0] - game_manager.selected_piece.position[0]) > 1 or abs(cell.position[1] - game_manager.selected_piece.position[1]) > 1:
+            elif cell.is_river or abs(cell.position[0] - game_manager.selected_piece.position[0]) > 1 or abs(cell.position[1] - game_manager.selected_piece.position[1]) > 1:
                 draw.circle(highlight_surface, (*Color.GREEN, 192), (common.SPAN // 2, common.SPAN // 2), common.SPAN // 4)
             else:
                 draw.circle(highlight_surface, (*Color.YELLOW, 192), (common.SPAN // 2, common.SPAN // 2), common.SPAN // 4)

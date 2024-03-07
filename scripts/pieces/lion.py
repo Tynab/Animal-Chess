@@ -2,9 +2,6 @@ from scripts.common import PlayerSide, PieceName, PieceDetail, CellPosition, Pie
 from scripts.piece import Piece
 
 class Lion(Piece):
-    '''
-    The Lion piece.
-    '''
 
     def __init__(self, side):
         super().__init__(
@@ -20,44 +17,17 @@ class Lion(Piece):
     def clone(self):
         return Lion(self.side)
 
-    def available_moves(self, board):
-        '''
-        Get available moves for the piece.
+    def available_cells(self, board):
+        return [cell for direction in [self.left, self.right, self.up, self.down] if (cell := Lion.jump_over_river(direction(1, board), direction, board) or direction(1, board)) and self.is_cell_valid(cell)]
 
-        Args:
-            board (Board): The board.
-
-        Returns:
-            list: The available moves.
-        '''
-        moves = []
-        for direction_method in [self.left, self.right, self.up, self.down]:
-            next_cell = direction_method(1, board)
-            new_cell = self.jump_over_river(next_cell, direction_method, board)
-            if new_cell:
-                next_cell = new_cell
-            if next_cell and self.is_move_valid(next_cell):
-                moves.append(next_cell)
-        return moves
-
-    def jump_over_river(self, cell, direction_method, board):
-        '''
-        Jump over the river.
-
-        Args:
-            cell (Cell): The position to move to.
-            direction_method (function): The direction method.
-            board (Board): The board.
-
-        Returns:
-            Cell: The position to move to.
-        '''
+    @staticmethod
+    def jump_over_river(cell, direction, board):
         if not cell:
             return cell
         step = 1
-        while cell.is_river():
-            cell = direction_method(step, board)
+        while cell.is_river:
+            cell = direction(step, board)
             if cell and cell.piece:
-                return None and cell.is_river() or cell
+                return None and cell.is_river or cell
             step += 1
         return cell

@@ -3,9 +3,6 @@ from scripts.common import CellPosition, PieceAtk, PieceAvatar, PieceArtWork, Pi
 from scripts.piece import Piece
 
 class Rat(Piece):
-    '''
-    The Rat piece.
-    '''
 
     def __init__(self, side):
         super().__init__(
@@ -21,43 +18,11 @@ class Rat(Piece):
     def clone(self):
         return Rat(self.side)
 
-    def is_defeated_by_own_piece(self, cell):
-        '''
-        Check if the piece is defeated by own piece.
+    def can_defeat(self, piece):
+        return isinstance(piece, elephant.Elephant) or self.atk >= piece.atk
 
-        Args:
-            cell (Cell): The cell to move to.
-
-        Returns:
-            bool: True if the piece is defeated by own piece, False otherwise.
-        '''
-        if isinstance(cell.piece, elephant.Elephant):
-            return True
-        return self.atk >= cell.piece.atk
-
-    def is_move_valid(self, cell):
-        '''
-        Check if the move is valid.
-
-        Args:
-            cell (Cell): The cell to move to.
-
-        Returns:
-            bool: True if the move is valid, False otherwise.
-        '''
-        if not cell.is_in_board():
-            return False
-        if cell.is_occupied_by_own_piece(self.side):
-            return False
-        if cell.piece and not self.is_defeated_by_own_piece(cell):
-            return False
-        return True
+    def is_cell_valid(self, cell):
+        return cell.is_in_board and not cell.is_occupied_own(self.side) and (not cell.piece or self.can_defeat(cell.piece))
 
     def weaker_pieces_positions(self, board):
-        result = [
-            self.side == PlayerSide.DARK and CellPosition.LIGHT_DEN or CellPosition.DARK_DEN]
-        for row in board.cells:
-            for cell in row:
-                if cell.piece and cell.piece.side != self.side and isinstance(cell.piece, elephant.Elephant):
-                    result.append(cell.position)
-        return result
+        return [PlayerSide.opponent_den_position(self.side)] + [cell.position for row in board.cells for cell in row if cell.piece and cell.piece.side != self.side and isinstance(cell.piece, elephant.Elephant)]

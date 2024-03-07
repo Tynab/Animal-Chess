@@ -7,7 +7,7 @@ class Player:
     def __init__(self, side, pieces):
         self.side = side
         self.pieces = pieces
-        self.den =  side == PlayerSide.DARK and CellPosition.DARK_DEN or CellPosition.LIGHT_DEN
+        self.den = side == PlayerSide.DARK and CellPosition.DARK_DEN or CellPosition.LIGHT_DEN
         self.traps = side == PlayerSide.DARK and [CellPosition.DARK_TRAP_1, CellPosition.DARK_TRAP_2, CellPosition.DARK_TRAP_3] or [CellPosition.LIGHT_TRAP_1, CellPosition.LIGHT_TRAP_2, CellPosition.LIGHT_TRAP_3]
     
     def add_piece(self, piece):

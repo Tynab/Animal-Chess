@@ -3,9 +3,6 @@ from scripts.common import PlayerSide, PieceName, PieceDetail, CellPosition, Pie
 from scripts.piece import Piece
 
 class Elephant(Piece):
-    '''
-    The Elephant piece.
-    '''
 
     def __init__(self, side):
         super().__init__(
@@ -21,25 +18,8 @@ class Elephant(Piece):
     def clone(self):
         return Elephant(self.side)
 
-    def is_defeated_by_own_piece(self, cell):
-        '''
-        Check if the piece is defeated by own piece.
-
-        Args:
-            cell (Cell): The cell to move to.
-
-        Returns:
-            bool: True if the piece is defeated by own piece, False otherwise.
-        '''
-        if isinstance(cell.piece, rat.Rat):
-            return False
-        return self.atk >= cell.piece.atk
+    def can_defeat(self, piece):
+        return not isinstance(piece, rat.Rat) and self.atk >= piece.atk
 
     def weaker_pieces_positions(self, board):
-        result = [
-            self.side == PlayerSide.DARK and CellPosition.LIGHT_DEN or CellPosition.DARK_DEN]
-        for row in board.cells:
-            for cell in row:
-                if cell.piece and cell.piece.side != self.side and cell.piece.atk <= self.atk and not isinstance(cell.piece, rat.Rat):
-                    result.append(cell.position)
-        return result
+        return [PlayerSide.opponent_den_position(self.side)] + [cell.position for row in board.cells for cell in row if cell.piece and cell.piece.side != self.side and cell.piece.atk <= self.atk and not isinstance(cell.piece, rat.Rat)]

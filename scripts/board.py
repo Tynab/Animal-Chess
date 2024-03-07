@@ -14,26 +14,26 @@ class Board:
     
     def __init__(self):
         self.cells = [[cell.Cell(CellLabel.EMPTY, (x, y)) for y in range(common.H)] for x in range(common.W)]
-        self.cells[CellPosition.RIVER_1_1[0]][CellPosition.RIVER_1_1[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.RIVER_1_2[0]][CellPosition.RIVER_1_2[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.RIVER_1_3[0]][CellPosition.RIVER_1_3[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.RIVER_1_4[0]][CellPosition.RIVER_1_4[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.RIVER_1_5[0]][CellPosition.RIVER_1_5[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.RIVER_1_6[0]][CellPosition.RIVER_1_6[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.RIVER_2_1[0]][CellPosition.RIVER_2_1[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.RIVER_2_2[0]][CellPosition.RIVER_2_2[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.RIVER_2_3[0]][CellPosition.RIVER_2_3[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.RIVER_2_4[0]][CellPosition.RIVER_2_4[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.RIVER_2_5[0]][CellPosition.RIVER_2_5[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.RIVER_2_6[0]][CellPosition.RIVER_2_6[1]].set_label(CellLabel.RIVER)
-        self.cells[CellPosition.DARK_TRAP_1[0]][CellPosition.DARK_TRAP_1[1]].set_label(CellLabel.DARK_TRAP)
-        self.cells[CellPosition.DARK_TRAP_2[0]][CellPosition.DARK_TRAP_2[1]].set_label(CellLabel.DARK_TRAP)
-        self.cells[CellPosition.DARK_TRAP_3[0]][CellPosition.DARK_TRAP_3[1]].set_label(CellLabel.DARK_TRAP)
-        self.cells[CellPosition.LIGHT_TRAP_1[0]][CellPosition.LIGHT_TRAP_1[1]].set_label(CellLabel.LIGHT_TRAP)
-        self.cells[CellPosition.LIGHT_TRAP_2[0]][CellPosition.LIGHT_TRAP_2[1]].set_label(CellLabel.LIGHT_TRAP)
-        self.cells[CellPosition.LIGHT_TRAP_3[0]][CellPosition.LIGHT_TRAP_3[1]].set_label(CellLabel.LIGHT_TRAP)
-        self.cells[CellPosition.DARK_DEN[0]][CellPosition.DARK_DEN[1]].set_label(CellLabel.DARK_DEN)
-        self.cells[CellPosition.LIGHT_DEN[0]][CellPosition.LIGHT_DEN[1]].set_label(CellLabel.LIGHT_DEN)
+        self.cells[CellPosition.RIVER_1_1[0]][CellPosition.RIVER_1_1[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.RIVER_1_2[0]][CellPosition.RIVER_1_2[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.RIVER_1_3[0]][CellPosition.RIVER_1_3[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.RIVER_1_4[0]][CellPosition.RIVER_1_4[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.RIVER_1_5[0]][CellPosition.RIVER_1_5[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.RIVER_1_6[0]][CellPosition.RIVER_1_6[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.RIVER_2_1[0]][CellPosition.RIVER_2_1[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.RIVER_2_2[0]][CellPosition.RIVER_2_2[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.RIVER_2_3[0]][CellPosition.RIVER_2_3[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.RIVER_2_4[0]][CellPosition.RIVER_2_4[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.RIVER_2_5[0]][CellPosition.RIVER_2_5[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.RIVER_2_6[0]][CellPosition.RIVER_2_6[1]].label = CellLabel.RIVER
+        self.cells[CellPosition.DARK_TRAP_1[0]][CellPosition.DARK_TRAP_1[1]].label = CellLabel.DARK_TRAP
+        self.cells[CellPosition.DARK_TRAP_2[0]][CellPosition.DARK_TRAP_2[1]].label = CellLabel.DARK_TRAP
+        self.cells[CellPosition.DARK_TRAP_3[0]][CellPosition.DARK_TRAP_3[1]].label = CellLabel.DARK_TRAP
+        self.cells[CellPosition.LIGHT_TRAP_1[0]][CellPosition.LIGHT_TRAP_1[1]].label = CellLabel.LIGHT_TRAP
+        self.cells[CellPosition.LIGHT_TRAP_2[0]][CellPosition.LIGHT_TRAP_2[1]].label = CellLabel.LIGHT_TRAP
+        self.cells[CellPosition.LIGHT_TRAP_3[0]][CellPosition.LIGHT_TRAP_3[1]].label = CellLabel.LIGHT_TRAP
+        self.cells[CellPosition.DARK_DEN[0]][CellPosition.DARK_DEN[1]].label = CellLabel.DARK_DEN
+        self.cells[CellPosition.LIGHT_DEN[0]][CellPosition.LIGHT_DEN[1]].label = CellLabel.LIGHT_DEN
         self.cells[CellPosition.RIVER_1_1[0]][CellPosition.RIVER_1_1[1]].set_image(CellImage.RIVER_1)
         self.cells[CellPosition.RIVER_1_2[0]][CellPosition.RIVER_1_2[1]].set_image(CellImage.RIVER_2)
         self.cells[CellPosition.RIVER_1_3[0]][CellPosition.RIVER_1_3[1]].set_image(CellImage.RIVER_3)
@@ -70,8 +70,8 @@ class Board:
         self.cells[CellPosition.LIGHT_TIGER[0]][CellPosition.LIGHT_TIGER[1]].add_piece(tiger.Tiger(PlayerSide.LIGHT))
         self.cells[CellPosition.LIGHT_LION[0]][CellPosition.LIGHT_LION[1]].add_piece(lion.Lion(PlayerSide.LIGHT))
         self.cells[CellPosition.LIGHT_ELEPHANT[0]][CellPosition.LIGHT_ELEPHANT[1]].add_piece(elephant.Elephant(PlayerSide.LIGHT))
-        self.pieces = [cell.piece for row in self.cells for cell in row if cell.piece]
         self.captured_pieces = []
+        self.update_pieces()
 
     def clone(self):
         cloned_board = Board()
@@ -84,13 +84,8 @@ class Board:
     def get_cell(self, position):
         return self.cells[position[0]][position[1]]
 
-    def get_valid_moves(self, side):
-        valid_moves = []
-        for row in self.cells:
-            for cell in row:
-                if cell.piece and cell.piece.side == side:
-                    valid_moves.extend([(cell.position, move.position) for move in cell.piece.available_moves(self)])
-        return valid_moves
+    def get_valid_cells(self, side):
+        return [(cell.position, pin.position) for row in self.cells for cell in row if cell.piece and cell.piece.side == side for pin in cell.piece.available_cells(self)]
 
     def make_move(self, move):
         source_cell = self.get_cell(move[0])
@@ -115,12 +110,24 @@ class Board:
     def update_pieces(self):
         self.pieces = [cell.piece for row in self.cells for cell in row if cell.piece]
 
+    @property
+    def is_dark_den_invaded(self):
+        cell = self.get_cell(CellPosition.DARK_DEN)
+        return cell.piece and cell.position == CellPosition.DARK_DEN and cell.piece.side == PlayerSide.LIGHT
+    
+    @property
+    def is_light_den_invaded(self):
+        cell = self.get_cell(CellPosition.LIGHT_DEN)
+        return cell.piece and cell.position == CellPosition.LIGHT_DEN and cell.piece.is_dark
+    
+    @property
+    def is_dark_pieceless(self):
+        return not any(cell.piece and cell.piece.is_dark for row in self.cells for cell in row)
+    
+    @property
+    def is_light_pieceless(self):
+        return not any(cell.piece and cell.piece.side == PlayerSide.LIGHT for row in self.cells for cell in row)
+    
+    @property
     def is_game_over(self):
-        dark_den_piece = self.get_cell(CellPosition.DARK_DEN).piece
-        light_den_piece = self.get_cell(CellPosition.LIGHT_DEN).piece
-        if dark_den_piece and dark_den_piece.side == PlayerSide.LIGHT or light_den_piece and light_den_piece.side == PlayerSide.DARK:
-            return True
-        if not [cell.piece for row in self.cells for cell in row if cell.piece and cell.piece.side == PlayerSide.DARK] or not [cell.piece for row in self.cells for cell in row if cell.piece and cell.piece.side == PlayerSide.LIGHT]:
-            return True
-        else:
-            return False
+        return self.is_dark_den_invaded or self.is_light_den_invaded or self.is_dark_pieceless or self.is_light_pieceless
