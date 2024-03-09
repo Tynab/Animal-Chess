@@ -63,7 +63,7 @@ def draw_game(screen, game_manager):
                 screen.blit(cell.image, (cell.position[0] * common.SPAN, cell.position[1] * common.SPAN))
             draw.rect(screen, Color.GRAY, cell_rect, 1)
             if cell.piece:
-                if cell_rect.collidepoint(mouse.get_pos()) and cell.piece.side == game_manager.current_player.side:
+                if cell_rect.collidepoint(mouse.get_pos()) and cell.piece.side == game_manager.current_player:
                     cursor_hand = True
                 draw_star(screen, cell.piece.is_dark and Color.ORANGE or Color.CYAN, (cell.position[0] * common.SPAN + 50, cell.position[1] * common.SPAN + 50), 40, 20, 192, 20)
                 screen.blit(cell.piece.image, (cell.position[0] * common.SPAN, cell.position[1] * common.SPAN))

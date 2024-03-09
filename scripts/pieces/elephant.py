@@ -5,21 +5,13 @@ from scripts.piece import Piece
 class Elephant(Piece):
 
     def __init__(self, side):
-        super().__init__(
-            side == PlayerSide.DARK and PieceName.DARK_ELEPHANT or PieceName.LIGHT_ELEPHANT,
-            PieceDetail.ELEPHANT,
-            side == PlayerSide.DARK and CellPosition.DARK_ELEPHANT or CellPosition.LIGHT_ELEPHANT,
-            PieceAtk.ELEPHANT,
-            side,
-            side == PlayerSide.DARK and PieceAvatar.DARK_ELEPHANT or PieceAvatar.LIGHT_ELEPHANT,
-            side == PlayerSide.DARK and PieceArtWork.DARK_ELEPHANT or PieceArtWork.LIGHT_ELEPHANT
-        )
+        super().__init__(PieceName.elephant(side), PieceDetail.ELEPHANT, CellPosition.elephant(side), PieceAtk.ELEPHANT, side, PieceAvatar.elephant(side), PieceArtWork.elephant(side))
 
-    def clone(self):
+    def copy(self):
         return Elephant(self.side)
 
     def can_defeat(self, piece):
         return not isinstance(piece, rat.Rat) and self.atk >= piece.atk
 
     def weaker_pieces_positions(self, board):
-        return [PlayerSide.opponent_den_position(self.side)] + [cell.position for row in board.cells for cell in row if cell.piece and cell.piece.side != self.side and cell.piece.atk <= self.atk and not isinstance(cell.piece, rat.Rat)]
+        return [PlayerSide.opponent_den_position(self.side)] + [piece.position for piece in board.pieces_of[PlayerSide.opponent_of(self.side)] if piece.atk < self.atk and not isinstance(piece, rat.Rat)]

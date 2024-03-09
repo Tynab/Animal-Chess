@@ -12,7 +12,7 @@ from scripts.common import CellLabel, CellImage, CellPosition, PlayerSide
 
 class Board:
     
-    def __init__(self):
+    def __init__(self, with_pieces=True):
         self.cells = [[cell.Cell(CellLabel.EMPTY, (x, y)) for y in range(common.H)] for x in range(common.W)]
         self.cells[CellPosition.RIVER_1_1[0]][CellPosition.RIVER_1_1[1]].label = CellLabel.RIVER
         self.cells[CellPosition.RIVER_1_2[0]][CellPosition.RIVER_1_2[1]].label = CellLabel.RIVER
@@ -54,38 +54,40 @@ class Board:
         self.cells[CellPosition.LIGHT_TRAP_3[0]][CellPosition.LIGHT_TRAP_3[1]].set_image(CellImage.TRAP)
         self.cells[CellPosition.DARK_DEN[0]][CellPosition.DARK_DEN[1]].set_image(CellImage.DEN)
         self.cells[CellPosition.LIGHT_DEN[0]][CellPosition.LIGHT_DEN[1]].set_image(CellImage.DEN)
-        self.cells[CellPosition.DARK_RAT[0]][CellPosition.DARK_RAT[1]].add_piece(rat.Rat(PlayerSide.DARK))
-        self.cells[CellPosition.DARK_CAT[0]][CellPosition.DARK_CAT[1]].add_piece(cat.Cat(PlayerSide.DARK))
-        self.cells[CellPosition.DARK_DOG[0]][CellPosition.DARK_DOG[1]].add_piece(dog.Dog(PlayerSide.DARK))
-        self.cells[CellPosition.DARK_WOLF[0]][CellPosition.DARK_WOLF[1]].add_piece(wolf.Wolf(PlayerSide.DARK))
-        self.cells[CellPosition.DARK_LEOPARD[0]][CellPosition.DARK_LEOPARD[1]].add_piece(leopard.Leopard(PlayerSide.DARK))
-        self.cells[CellPosition.DARK_TIGER[0]][CellPosition.DARK_TIGER[1]].add_piece(tiger.Tiger(PlayerSide.DARK))
-        self.cells[CellPosition.DARK_LION[0]][CellPosition.DARK_LION[1]].add_piece(lion.Lion(PlayerSide.DARK))
-        self.cells[CellPosition.DARK_ELEPHANT[0]][CellPosition.DARK_ELEPHANT[1]].add_piece(elephant.Elephant(PlayerSide.DARK))
-        self.cells[CellPosition.LIGHT_RAT[0]][CellPosition.LIGHT_RAT[1]].add_piece(rat.Rat(PlayerSide.LIGHT))
-        self.cells[CellPosition.LIGHT_CAT[0]][CellPosition.LIGHT_CAT[1]].add_piece(cat.Cat(PlayerSide.LIGHT))
-        self.cells[CellPosition.LIGHT_DOG[0]][CellPosition.LIGHT_DOG[1]].add_piece(dog.Dog(PlayerSide.LIGHT))
-        self.cells[CellPosition.LIGHT_WOLF[0]][CellPosition.LIGHT_WOLF[1]].add_piece(wolf.Wolf(PlayerSide.LIGHT))
-        self.cells[CellPosition.LIGHT_LEOPARD[0]][CellPosition.LIGHT_LEOPARD[1]].add_piece(leopard.Leopard(PlayerSide.LIGHT))
-        self.cells[CellPosition.LIGHT_TIGER[0]][CellPosition.LIGHT_TIGER[1]].add_piece(tiger.Tiger(PlayerSide.LIGHT))
-        self.cells[CellPosition.LIGHT_LION[0]][CellPosition.LIGHT_LION[1]].add_piece(lion.Lion(PlayerSide.LIGHT))
-        self.cells[CellPosition.LIGHT_ELEPHANT[0]][CellPosition.LIGHT_ELEPHANT[1]].add_piece(elephant.Elephant(PlayerSide.LIGHT))
+        if with_pieces:
+            self.cells[CellPosition.DARK_RAT[0]][CellPosition.DARK_RAT[1]].add_piece(rat.Rat(PlayerSide.DARK))
+            self.cells[CellPosition.DARK_CAT[0]][CellPosition.DARK_CAT[1]].add_piece(cat.Cat(PlayerSide.DARK))
+            self.cells[CellPosition.DARK_DOG[0]][CellPosition.DARK_DOG[1]].add_piece(dog.Dog(PlayerSide.DARK))
+            self.cells[CellPosition.DARK_WOLF[0]][CellPosition.DARK_WOLF[1]].add_piece(wolf.Wolf(PlayerSide.DARK))
+            self.cells[CellPosition.DARK_LEOPARD[0]][CellPosition.DARK_LEOPARD[1]].add_piece(leopard.Leopard(PlayerSide.DARK))
+            self.cells[CellPosition.DARK_TIGER[0]][CellPosition.DARK_TIGER[1]].add_piece(tiger.Tiger(PlayerSide.DARK))
+            self.cells[CellPosition.DARK_LION[0]][CellPosition.DARK_LION[1]].add_piece(lion.Lion(PlayerSide.DARK))
+            self.cells[CellPosition.DARK_ELEPHANT[0]][CellPosition.DARK_ELEPHANT[1]].add_piece(elephant.Elephant(PlayerSide.DARK))
+            self.cells[CellPosition.LIGHT_RAT[0]][CellPosition.LIGHT_RAT[1]].add_piece(rat.Rat(PlayerSide.LIGHT))
+            self.cells[CellPosition.LIGHT_CAT[0]][CellPosition.LIGHT_CAT[1]].add_piece(cat.Cat(PlayerSide.LIGHT))
+            self.cells[CellPosition.LIGHT_DOG[0]][CellPosition.LIGHT_DOG[1]].add_piece(dog.Dog(PlayerSide.LIGHT))
+            self.cells[CellPosition.LIGHT_WOLF[0]][CellPosition.LIGHT_WOLF[1]].add_piece(wolf.Wolf(PlayerSide.LIGHT))
+            self.cells[CellPosition.LIGHT_LEOPARD[0]][CellPosition.LIGHT_LEOPARD[1]].add_piece(leopard.Leopard(PlayerSide.LIGHT))
+            self.cells[CellPosition.LIGHT_TIGER[0]][CellPosition.LIGHT_TIGER[1]].add_piece(tiger.Tiger(PlayerSide.LIGHT))
+            self.cells[CellPosition.LIGHT_LION[0]][CellPosition.LIGHT_LION[1]].add_piece(lion.Lion(PlayerSide.LIGHT))
+            self.cells[CellPosition.LIGHT_ELEPHANT[0]][CellPosition.LIGHT_ELEPHANT[1]].add_piece(elephant.Elephant(PlayerSide.LIGHT))
         self.captured_pieces = []
         self.update_pieces()
 
-    def clone(self):
-        cloned_board = Board()
-        for i in range(common.W):
-            for j in range(common.H):
-                cloned_board.cells[i][j].piece =  self.cells[i][j].piece and self.cells[i][j].piece.clone() or None
-        cloned_board.update_pieces()
-        return cloned_board
+    def copy(self):
+        board = Board(False)
+        for row in self.cells:
+            for cell in row:
+                if cell.piece:
+                    board.get_cell(cell.position).add_piece(cell.piece.copy())
+        board.update_pieces()
+        return board
     
     def get_cell(self, position):
         return self.cells[position[0]][position[1]]
 
-    def get_valid_cells(self, side):
-        return [(cell.position, pin.position) for row in self.cells for cell in row if cell.piece and cell.piece.side == side for pin in cell.piece.available_cells(self)]
+    def get_valid_moves(self, side):
+        return [(pin.position, cell.position) for pin in self.pieces_of[side] for cell in pin.available_cells(self)]
 
     def make_move(self, move):
         source_cell = self.get_cell(move[0])
@@ -108,12 +110,25 @@ class Board:
         self.update_pieces()
 
     def update_pieces(self):
-        self.pieces = [cell.piece for row in self.cells for cell in row if cell.piece]
+        self.pieces = []
+        self.pieces_of = {
+            PlayerSide.DARK: [],
+            PlayerSide.LIGHT: []
+        }
+        for row in self.cells:
+            for cell in row:
+                if cell.piece:
+                    self.pieces.append(cell.piece)
+                    self.pieces_of[cell.piece.side].append(cell.piece)
+
+    def is_opponent_den_invaded(self, side):
+        cell  = self.get_cell(PlayerSide.opponent_den_position(side))
+        return cell.piece and cell.piece.side == side
 
     @property
     def is_dark_den_invaded(self):
         cell = self.get_cell(CellPosition.DARK_DEN)
-        return cell.piece and cell.position == CellPosition.DARK_DEN and cell.piece.side == PlayerSide.LIGHT
+        return cell.piece and cell.position == CellPosition.DARK_DEN and cell.piece.is_light
     
     @property
     def is_light_den_invaded(self):
@@ -126,7 +141,7 @@ class Board:
     
     @property
     def is_light_pieceless(self):
-        return not any(cell.piece and cell.piece.side == PlayerSide.LIGHT for row in self.cells for cell in row)
+        return not any(cell.piece and cell.piece.is_light for row in self.cells for cell in row)
     
     @property
     def is_game_over(self):

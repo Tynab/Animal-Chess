@@ -121,6 +121,19 @@ class PlayerSide:
     LIGHT = 'Light'
 
     @staticmethod
+    def opponent_of(side):
+        '''
+        Get the opponent side.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The opponent side.
+        '''
+        return side == PlayerSide.DARK and PlayerSide.LIGHT or PlayerSide.DARK
+
+    @staticmethod
     def opponent_den_position(side):
         '''
         Get the den position of the side.
@@ -151,6 +164,19 @@ class CellLabel:
     LIGHT_TRAP = 4
     DARK_DEN = 5
     LIGHT_DEN = 6
+
+    @staticmethod
+    def opponent_trap(side):
+        '''
+        Get the trap label of the opponent side.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            int: The trap label.
+        '''
+        return side == PlayerSide.DARK and CellLabel.LIGHT_TRAP or CellLabel.DARK_TRAP
 
 class CellPosition:
     '''
@@ -230,6 +256,110 @@ class CellPosition:
     LIGHT_TIGER = (0, 8)
     LIGHT_LION = (6, 8)
     LIGHT_ELEPHANT = (0, 6)
+
+    @staticmethod
+    def rat(side):
+        '''
+        Get the position of the rat.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            tuple: The position of the rat.
+        '''
+        return side == PlayerSide.DARK and CellPosition.DARK_RAT or CellPosition.LIGHT_RAT
+    
+    @staticmethod
+    def cat(side):
+        '''
+        Get the position of the cat.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            tuple: The position of the cat.
+        '''
+        return side == PlayerSide.DARK and CellPosition.DARK_CAT or CellPosition.LIGHT_CAT
+    
+    @staticmethod
+    def dog(side):
+        '''
+        Get the position of the dog.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            tuple: The position of the dog.
+        '''
+        return side == PlayerSide.DARK and CellPosition.DARK_DOG or CellPosition.LIGHT_DOG
+    
+    @staticmethod
+    def wolf(side):
+        '''
+        Get the position of the wolf.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            tuple: The position of the wolf.
+        '''
+        return side == PlayerSide.DARK and CellPosition.DARK_WOLF or CellPosition.LIGHT_WOLF
+    
+    @staticmethod
+    def leopard(side):
+        '''
+        Get the position of the leopard.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            tuple: The position of the leopard.
+        '''
+        return side == PlayerSide.DARK and CellPosition.DARK_LEOPARD or CellPosition.LIGHT_LEOPARD
+    
+    @staticmethod
+    def tiger(side):
+        '''
+        Get the position of the tiger.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            tuple: The position of the tiger.
+        '''
+        return side == PlayerSide.DARK and CellPosition.DARK_TIGER or CellPosition.LIGHT_TIGER
+    
+    @staticmethod
+    def lion(side):
+        '''
+        Get the position of the lion.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            tuple: The position of the lion.
+        '''
+        return side == PlayerSide.DARK and CellPosition.DARK_LION or CellPosition.LIGHT_LION
+    
+    @staticmethod
+    def elephant(side):
+        '''
+        Get the position of the elephant.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            tuple: The position of the elephant.
+        '''
+        return side == PlayerSide.DARK and CellPosition.DARK_ELEPHANT or CellPosition.LIGHT_ELEPHANT
 
 class CellImage:
     '''
@@ -332,6 +462,110 @@ class PieceName:
     LIGHT_LION = 'Panthera Leo'
     LIGHT_ELEPHANT = 'Loxodonta'
 
+    @staticmethod
+    def rat(side):
+        '''
+        Get the name of the rat.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The name of the rat.
+        '''
+        return side == PlayerSide.DARK and PieceName.DARK_RAT or PieceName.LIGHT_RAT
+    
+    @staticmethod
+    def cat(side):
+        '''
+        Get the name of the cat.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The name of the cat.
+        '''
+        return side == PlayerSide.DARK and PieceName.DARK_CAT or PieceName.LIGHT_CAT
+    
+    @staticmethod
+    def dog(side):
+        '''
+        Get the name of the dog.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The name of the dog.
+        '''
+        return side == PlayerSide.DARK and PieceName.DARK_DOG or PieceName.LIGHT_DOG
+    
+    @staticmethod
+    def wolf(side):
+        '''
+        Get the name of the wolf.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The name of the wolf.
+        '''
+        return side == PlayerSide.DARK and PieceName.DARK_WOLF or PieceName.LIGHT_WOLF
+    
+    @staticmethod
+    def leopard(side):
+        '''
+        Get the name of the leopard.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The name of the leopard.
+        '''
+        return side == PlayerSide.DARK and PieceName.DARK_LEOPARD or PieceName.LIGHT_LEOPARD
+    
+    @staticmethod
+    def tiger(side):
+        '''
+        Get the name of the tiger.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The name of the tiger.
+        '''
+        return side == PlayerSide.DARK and PieceName.DARK_TIGER or PieceName.LIGHT_TIGER
+    
+    @staticmethod
+    def lion(side):
+        '''
+        Get the name of the lion.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The name of the lion.
+        '''
+        return side == PlayerSide.DARK and PieceName.DARK_LION or PieceName.LIGHT_LION
+    
+    @staticmethod
+    def elephant(side):
+        '''
+        Get the name of the elephant.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The name of the elephant.
+        '''
+        return side == PlayerSide.DARK and PieceName.DARK_ELEPHANT or PieceName.LIGHT_ELEPHANT
+
 class PieceDetail:
     '''
     The detail of the piece.
@@ -427,6 +661,110 @@ class PieceAvatar:
     LIGHT_LION = 'assets/pieces/light/lion.png'
     LIGHT_ELEPHANT = 'assets/pieces/light/elephant.png'
 
+    @staticmethod
+    def rat(side):
+        '''
+        Get the avatar of the rat.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The avatar of the rat.
+        '''
+        return side == PlayerSide.DARK and PieceAvatar.DARK_RAT or PieceAvatar.LIGHT_RAT
+    
+    @staticmethod
+    def cat(side):
+        '''
+        Get the avatar of the cat.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The avatar of the cat.
+        '''
+        return side == PlayerSide.DARK and PieceAvatar.DARK_CAT or PieceAvatar.LIGHT_CAT
+    
+    @staticmethod
+    def dog(side):
+        '''
+        Get the avatar of the dog.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The avatar of the dog.
+        '''
+        return side == PlayerSide.DARK and PieceAvatar.DARK_DOG or PieceAvatar.LIGHT_DOG
+    
+    @staticmethod
+    def wolf(side):
+        '''
+        Get the avatar of the wolf.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The avatar of the wolf.
+        '''
+        return side == PlayerSide.DARK and PieceAvatar.DARK_WOLF or PieceAvatar.LIGHT_WOLF
+    
+    @staticmethod
+    def leopard(side):
+        '''
+        Get the avatar of the leopard.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The avatar of the leopard.
+        '''
+        return side == PlayerSide.DARK and PieceAvatar.DARK_LEOPARD or PieceAvatar.LIGHT_LEOPARD
+    
+    @staticmethod
+    def tiger(side):
+        '''
+        Get the avatar of the tiger.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The avatar of the tiger.
+        '''
+        return side == PlayerSide.DARK and PieceAvatar.DARK_TIGER or PieceAvatar.LIGHT_TIGER
+    
+    @staticmethod
+    def lion(side):
+        '''
+        Get the avatar of the lion.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The avatar of the lion.
+        '''
+        return side == PlayerSide.DARK and PieceAvatar.DARK_LION or PieceAvatar.LIGHT_LION
+    
+    @staticmethod
+    def elephant(side):
+        '''
+        Get the avatar of the elephant.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The avatar of the elephant.
+        '''
+        return side == PlayerSide.DARK and PieceAvatar.DARK_ELEPHANT or PieceAvatar.LIGHT_ELEPHANT
+
 class PieceArtWork:
     '''
     The artwork of the piece.
@@ -466,3 +804,107 @@ class PieceArtWork:
     LIGHT_TIGER = 'assets/artworks/light/tiger.png'
     LIGHT_LION = 'assets/artworks/light/lion.png'
     LIGHT_ELEPHANT = 'assets/artworks/light/elephant.png'
+
+    @staticmethod
+    def rat(side):
+        '''
+        Get the artwork of the rat.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The artwork of the rat.
+        '''
+        return side == PlayerSide.DARK and PieceArtWork.DARK_RAT or PieceArtWork.LIGHT_RAT
+    
+    @staticmethod
+    def cat(side):
+        '''
+        Get the artwork of the cat.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The artwork of the cat.
+        '''
+        return side == PlayerSide.DARK and PieceArtWork.DARK_CAT or PieceArtWork.LIGHT_CAT
+    
+    @staticmethod
+    def dog(side):
+        '''
+        Get the artwork of the dog.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The artwork of the dog.
+        '''
+        return side == PlayerSide.DARK and PieceArtWork.DARK_DOG or PieceArtWork.LIGHT_DOG
+    
+    @staticmethod
+    def wolf(side):
+        '''
+        Get the artwork of the wolf.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The artwork of the wolf.
+        '''
+        return side == PlayerSide.DARK and PieceArtWork.DARK_WOLF or PieceArtWork.LIGHT_WOLF
+    
+    @staticmethod
+    def leopard(side):
+        '''
+        Get the artwork of the leopard.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The artwork of the leopard.
+        '''
+        return side == PlayerSide.DARK and PieceArtWork.DARK_LEOPARD or PieceArtWork.LIGHT_LEOPARD
+    
+    @staticmethod
+    def tiger(side):
+        '''
+        Get the artwork of the tiger.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The artwork of the tiger.
+        '''
+        return side == PlayerSide.DARK and PieceArtWork.DARK_TIGER or PieceArtWork.LIGHT_TIGER
+    
+    @staticmethod
+    def lion(side):
+        '''
+        Get the artwork of the lion.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The artwork of the lion.
+        '''
+        return side == PlayerSide.DARK and PieceArtWork.DARK_LION or PieceArtWork.LIGHT_LION
+    
+    @staticmethod
+    def elephant(side):
+        '''
+        Get the artwork of the elephant.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The artwork of the elephant.
+        '''
+        return side == PlayerSide.DARK and PieceArtWork.DARK_ELEPHANT or PieceArtWork.LIGHT_ELEPHANT

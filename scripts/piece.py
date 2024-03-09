@@ -13,7 +13,7 @@ class Piece:
         self.atk = atk
         self.side = side
 
-    def clone(self):
+    def copy(self):
         return Piece(self.name, self.detail, self.position, self.atk, self.side)
 
     def left(self, step, board):
@@ -39,7 +39,7 @@ class Piece:
     def can_defeat(self, piece):
         return not piece or self.atk >= piece.atk
     
-    def is_cell_valid(self, cell):
+    def is_valid_cell(self, cell):
         if not cell.is_in_board:
             return False
         if cell.is_river:
@@ -54,7 +54,7 @@ class Piece:
         moves = []
         for direction_method in [self.left, self.right, self.up, self.down]:
             next_cell = direction_method(1, board)
-            if next_cell and self.is_cell_valid(next_cell):
+            if next_cell and self.is_valid_cell(next_cell):
                 moves.append(next_cell)
         return moves
     
@@ -62,14 +62,14 @@ class Piece:
         result = [self.is_dark and CellPosition.LIGHT_DEN or CellPosition.DARK_DEN]
         for row in board.cells:
             for cell in row:
-                if cell.piece and cell.piece.side != self.side and cell.piece.atk <= self.atk:
+                if cell.piece and cell.piece.side != self.side and cell.piece.atk < self.atk:
                     result.append(cell.position)
         return result
     
     @property
     def is_dark(self):
         return self.side == PlayerSide.DARK
-    
+
     @property
     def is_light(self):
         return self.side == PlayerSide.LIGHT

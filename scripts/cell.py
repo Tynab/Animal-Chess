@@ -34,12 +34,10 @@ class Cell:
         }
         self.piece = piece
         self.piece.position = self.position
-        if (self.label == CellLabel.DARK_TRAP and self.piece.side == PlayerSide.LIGHT) or (self.label == CellLabel.LIGHT_TRAP and self.piece.is_dark):
+        if (self.label == CellLabel.opponent_trap(piece.side)):
             self.piece.atk = 0
         elif self.piece.atk == 0:
-            piece_type = type(self.piece)
-            if piece_type in piece_atk_map:
-                self.piece.atk = piece_atk_map[piece_type]
+            self.piece.atk = piece_atk_map[type(self.piece)]
 
     def remove_piece(self):
         self.piece = None

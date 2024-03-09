@@ -1,18 +1,10 @@
-from scripts.common import PlayerSide, PieceName, PieceDetail, CellPosition, PieceAtk, PieceAvatar, PieceArtWork
+from scripts.common import PieceName, PieceDetail, CellPosition, PieceAtk, PieceAvatar, PieceArtWork
 from scripts.piece import Piece
 
 class Cat(Piece):
 
     def __init__(self, side):
-        super().__init__(
-            side == PlayerSide.DARK and PieceName.DARK_CAT or PieceName.LIGHT_CAT,
-            PieceDetail.CAT,
-            side == PlayerSide.DARK and CellPosition.DARK_CAT or CellPosition.LIGHT_CAT,
-            PieceAtk.CAT,
-            side,
-            side == PlayerSide.DARK and PieceAvatar.DARK_CAT or PieceAvatar.LIGHT_CAT,
-            side == PlayerSide.DARK and PieceArtWork.DARK_CAT or PieceArtWork.LIGHT_CAT
-        )
+        super().__init__(PieceName.cat(side), PieceDetail.CAT, CellPosition.cat(side), PieceAtk.CAT, side, PieceAvatar.cat(side), PieceArtWork.cat(side))
 
-    def clone(self):
+    def copy(self):
         return Cat(self.side)
