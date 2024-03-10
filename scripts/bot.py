@@ -5,45 +5,81 @@ class Bot:
 
     @staticmethod
     def evaluate_position(board, current_side):
-        return sum((piece.side == current_side and piece.atk * 10 or -piece.atk * 10) for piece in board.pieces)
+        score = 0
+        for piece in board.pieces:
+            if piece.side == PlayerSide.DARK:
+                score += piece.atk * 10
+            else:
+                score -= piece.atk * 10
+        if board.is_opponent_den_invaded(PlayerSide.DARK):
+            score += 900
+        if board.is_opponent_den_invaded(PlayerSide.LIGHT):
+            score -= 900
+        return score
+        # return score + sum((piece.side == PlayerSide.DARK and piece.atk * 10 or -piece.atk * 10) for piece in board.pieces)
 
     @staticmethod
     def minimax_alpha_beta_pruning(board, current_side, depth, alpha, beta, maximizing_player):
-        best_move = None
+        best_moves = []
         if depth == 0 or board.is_game_over:
-            return Bot.evaluate_position(board, current_side), best_move
+            return Bot.evaluate_position(board, current_side), best_moves
         if maximizing_player:
             best_eval = float('-inf')
-            player_side = current_side
+            player_side = PlayerSide.DARK
         else:
             best_eval = float('inf')
-            player_side = PlayerSide.opponent_of(current_side)
-        first_eval = True
-        same_eval = True
-        previous_eval = None
+            player_side = PlayerSide.LIGHT
         for move in board.get_valid_moves(player_side):
+            if move == ((2, 6), (1, 6)) and player_side == PlayerSide.LIGHT:
+                pass
             board.make_move(move)
             eval, _ = Bot.minimax_alpha_beta_pruning(board, current_side, depth - 1, alpha, beta, not maximizing_player)
             board.undo_move(move)
-            if first_eval:
-                previous_eval = eval
-                first_eval = False
-            elif eval != previous_eval:
-                same_eval = False
-            if maximizing_player and eval > best_eval:
-                best_eval = eval
-                best_move = move
+            if maximizing_player:
+                if eval > best_eval:
+                    best_eval = eval
+                    best_moves = [move]
+                elif eval == best_eval:
+                    best_moves.append(move)
                 alpha = max(alpha, eval)
-            elif not maximizing_player and eval < best_eval:
-                best_eval = eval
-                best_move = move
+            else:
+                if eval < best_eval:
+                    best_eval = eval
+                    best_moves = [move]
+                elif eval == best_eval:
+                    best_moves.append(move)
                 beta = min(beta, eval)
-            if beta <= alpha:
+            if beta < alpha:
                 break
-        return same_eval and (best_eval, None) or (best_eval, best_move)
+        return best_eval, best_moves
+
+        # first_eval = True
+        # same_eval = True
+        # previous_eval = None
+        # for move in board.get_valid_moves(player_side):
+        #     board.make_move(move)
+        #     eval, _ = Bot.minimax_alpha_beta_pruning(board, current_side, depth - 1, alpha, beta, not maximizing_player)
+        #     board.undo_move(move)
+        #     if first_eval:
+        #         previous_eval = eval
+        #         first_eval = False
+        #     elif eval != previous_eval:
+        #         same_eval = False
+        #     if maximizing_player and eval > best_eval:
+        #         best_eval = eval
+        #         best_move = move
+        #         alpha = max(alpha, eval)
+        #     elif not maximizing_player and eval < best_eval:
+        #         best_eval = eval
+        #         best_move = move
+        #         beta = min(beta, eval)
+        #     if beta <= alpha:
+        #         break
+        # print(f"Eval: {best_eval}, Move: {best_move}")  # Add this line to print the evaluation and best move
+        # return same_eval and (best_eval, None) or (best_eval, best_move)
 
     @staticmethod
-    def shortest_paths(board, piece, start, ends):
+    def breadth_first_search(board, piece, start, ends):
         board_temp = board.copy()
         piece_temp = piece.copy()
         queue = deque([([start], 0)])

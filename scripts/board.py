@@ -123,26 +123,11 @@ class Board:
 
     def is_opponent_den_invaded(self, side):
         cell  = self.get_cell(PlayerSide.opponent_den_position(side))
-        return cell.piece and cell.piece.side == side
-
-    @property
-    def is_dark_den_invaded(self):
-        cell = self.get_cell(CellPosition.DARK_DEN)
-        return cell.piece and cell.position == CellPosition.DARK_DEN and cell.piece.is_light
+        return cell.is_occupied_own(side)
     
-    @property
-    def is_light_den_invaded(self):
-        cell = self.get_cell(CellPosition.LIGHT_DEN)
-        return cell.piece and cell.position == CellPosition.LIGHT_DEN and cell.piece.is_dark
-    
-    @property
-    def is_dark_pieceless(self):
-        return not any(cell.piece and cell.piece.is_dark for row in self.cells for cell in row)
-    
-    @property
-    def is_light_pieceless(self):
-        return not any(cell.piece and cell.piece.is_light for row in self.cells for cell in row)
+    def is_opponent_pieceless(self, side):
+        return not self.pieces_of[PlayerSide.opponent_of(side)]
     
     @property
     def is_game_over(self):
-        return self.is_dark_den_invaded or self.is_light_den_invaded or self.is_dark_pieceless or self.is_light_pieceless
+        return self.is_opponent_den_invaded(PlayerSide.DARK) or self.is_opponent_pieceless(PlayerSide.DARK) or self.is_opponent_den_invaded(PlayerSide.LIGHT) or self.is_opponent_pieceless(PlayerSide.LIGHT)

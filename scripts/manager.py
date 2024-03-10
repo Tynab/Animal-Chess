@@ -19,19 +19,19 @@ class GameManager:
         self.game_state = GameState.NEW
         self.game_mode = GameMode.PvC
         self.game_result = None
-        self.current_player = PlayerSide.LIGHT
-        self.opponent_player = PlayerSide.opponent_of(self.current_player)
+        self.current_side = PlayerSide.LIGHT
+        self.opponent_side = PlayerSide.opponent_of(self.current_side)
         self.selected_piece = None
 
     def switch_player(self):
-        self.current_player, self.opponent_player = self.opponent_player, self.current_player
-        if self.game_mode == GameMode.PvC and self.current_player == PlayerSide.DARK:
+        self.current_side, self.opponent_side = self.opponent_side, self.current_side
+        if self.game_mode == GameMode.PvC and self.current_side == PlayerSide.DARK:
             self.computer_move()
         self.board.captured_pieces = []
     
     def handle_piece_selection(self, mouse_position):
         cell = self.board.get_cell((mouse_position[0] // 100, mouse_position[1] // 100))
-        if cell.piece and cell.piece.side == self.current_player:
+        if cell.piece and cell.piece.side == self.current_side:
             self.selected_piece = cell.piece
 
     def handle_piece_move(self, mouse_position):
@@ -49,34 +49,39 @@ class GameManager:
         return False
 
     def computer_move(self):
-        if self.game_mode == GameMode.PvC and self.current_player == PlayerSide.DARK:
-            cc = self.board.copy()
-            _, move = Bot.minimax_alpha_beta_pruning(cc, self.current_player, 3, float('-inf'), float('inf'), True)
-            if move:
-                self.board.make_move(move)
-            else:
-                min_path = float('inf')
-                moves = []
-                for piece in self.board.pieces_of[self.current_player]:
-                    paths = Bot.shortest_paths(self.board, piece, piece.position, piece.weaker_pieces_positions(self.board))
-                    if paths and paths[0] and paths[0][0] and paths[0][0][0] < min_path:
+        if self.game_mode == GameMode.PvC and self.current_side == PlayerSide.DARK:
+            _, best_moves = Bot.minimax_alpha_beta_pruning(self.board.copy(), self.current_side, 3, float('-inf'), float('inf'), True)
+            
+            min_path = float('inf')
+            moves = []
+            for piece in self.board.pieces_of[self.current_side]:
+                paths = Bot.breadth_first_search(self.board, piece, piece.position, piece.weaker_pieces_positions(self.board))
+                if paths and paths[0] and paths[0][0]:
+                    if paths[0][0][0] < min_path:
+                        temps = [tuple(path[1][:2]) for path in paths[0]]
+                        if all(temp not in best_moves for temp in temps):
+                            continue
+                        moves = temps
                         min_path = paths[0][0][0]
-                        # move = paths[0][0][1]
-                        # cc = paths[0]
-                        # for c in cc:
-                        #     qq = c[1]
-                        #     moves.append(c[1])
-                        moves = [path[1] for path in paths[0]]
-                if moves:
-                    move = random.choice(moves)
-                    self.board.make_move(move)
+                    elif paths[0][0][0] == min_path:
+                        moves.extend(temps)
+            if best_moves:
+                perfect_moves = list(set(best_moves) & set(moves))
+                if perfect_moves:
+                    move = random.choice(perfect_moves)
+                else:
+                    move = random.choice(best_moves)
+            else:
+                move = random.choice(list(set(moves)))
+            self.board.make_move(move)
+
             if self.check_game_end():
                 return
             self.switch_player()
 
     def check_game_end(self):
-        if len(self.board.pieces_of[self.opponent_player]) == 0 or self.board.is_opponent_den_invaded(self.current_player):
+        if self.board.is_opponent_pieceless(self.current_side) or self.board.is_opponent_den_invaded(self.current_side):
             self.game_state = GameState.OVER
-            self.game_result = f'{self.current_player.upper()}\nWIN!!!'
+            self.game_result = f'{self.current_side.upper()}\nWIN!!!'
             return True
         return False
