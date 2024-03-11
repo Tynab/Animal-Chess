@@ -166,17 +166,31 @@ class CellLabel:
     LIGHT_DEN = 6
 
     @staticmethod
-    def opponent_trap(side):
+    def is_opponent_trap(label, side):
         '''
-        Get the trap label of the opponent side.
+        Check if the label is an opponent trap.
 
         Args:
+            label (int): The label.
             side (str): The side.
 
         Returns:
-            int: The trap label.
+            bool: True if the label is an opponent trap, False otherwise.
         '''
-        return side == PlayerSide.DARK and CellLabel.LIGHT_TRAP or CellLabel.DARK_TRAP
+        return label == CellLabel.DARK_TRAP and side == PlayerSide.LIGHT or label == CellLabel.LIGHT_TRAP and side == PlayerSide.DARK
+    
+    @staticmethod
+    def is_river(label):
+        '''
+        Check if the label is a river.
+
+        Args:
+            label (int): The label.
+
+        Returns:
+            bool: True if the label is a river, False otherwise.
+        '''
+        return label == CellLabel.RIVER
 
 class CellPosition:
     '''

@@ -76,10 +76,7 @@ class Board:
 
     def copy(self):
         board = Board(False)
-        for row in self.cells:
-            for cell in row:
-                if cell.piece:
-                    board.get_cell(cell.position).add_piece(cell.piece.copy())
+        board.cells = [[cell.copy() for cell in row] for row in self.cells]
         board.update_pieces()
         return board
     
@@ -110,24 +107,21 @@ class Board:
         self.update_pieces()
 
     def update_pieces(self):
-        self.pieces = []
+        self.pieces = [cell.piece for row in self.cells for cell in row if cell.piece]
         self.pieces_of = {
             PlayerSide.DARK: [],
             PlayerSide.LIGHT: []
         }
-        for row in self.cells:
-            for cell in row:
-                if cell.piece:
-                    self.pieces.append(cell.piece)
-                    self.pieces_of[cell.piece.side].append(cell.piece)
+        for piece in self.pieces:
+            self.pieces_of[piece.side].append(piece)
 
-    def is_opponent_den_invaded(self, side):
-        cell  = self.get_cell(PlayerSide.opponent_den_position(side))
-        return cell.is_occupied_own(side)
-    
     def is_opponent_pieceless(self, side):
         return not self.pieces_of[PlayerSide.opponent_of(side)]
-    
+
+    def is_opponent_den_invaded(self, side):
+        return self.get_cell(PlayerSide.opponent_den_position(side)).is_occupied_own(side)
+
     @property
     def is_game_over(self):
-        return self.is_opponent_den_invaded(PlayerSide.DARK) or self.is_opponent_pieceless(PlayerSide.DARK) or self.is_opponent_den_invaded(PlayerSide.LIGHT) or self.is_opponent_pieceless(PlayerSide.LIGHT)
+        return any(self.is_opponent_den_invaded(side) or self.is_opponent_pieceless(side) for side in [PlayerSide.DARK, PlayerSide.LIGHT])
+

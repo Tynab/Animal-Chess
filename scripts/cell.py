@@ -1,6 +1,6 @@
 import scripts.common as common
 from pygame import transform, image
-from scripts.common import Size, CellLabel, PlayerSide, PieceAtk
+from scripts.common import Size, CellLabel, PieceAtk
 from scripts.pieces.rat import Rat
 from scripts.pieces.cat import Cat
 from scripts.pieces.dog import Dog
@@ -18,6 +18,13 @@ class Cell:
         self.image = None
         self.piece = None
 
+    def copy(self):
+        cell = Cell(self.label, self.position)
+        cell.image = self.image
+        if self.piece:
+            cell.add_piece(self.piece.copy())
+        return cell
+
     def set_image(self, image_path):
         self.image = transform.scale(image.load(image_path), Size.CELL)
 
@@ -34,10 +41,7 @@ class Cell:
         }
         self.piece = piece
         self.piece.position = self.position
-        if (self.label == CellLabel.opponent_trap(piece.side)):
-            self.piece.atk = 0
-        elif self.piece.atk == 0:
-            self.piece.atk = piece_atk_map[type(self.piece)]
+        self.piece.atk = CellLabel.is_opponent_trap(self.label, piece.side) and float('-inf') or piece_atk_map[type(self.piece)]
 
     def remove_piece(self):
         self.piece = None
@@ -51,4 +55,4 @@ class Cell:
 
     @property
     def is_river(self):
-        return self.label == CellLabel.RIVER
+        return CellLabel.is_river(self.label)

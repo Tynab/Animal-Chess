@@ -6,7 +6,7 @@ pygame.init()
 import scripts.common as common
 import scripts.manager as manager
 import scripts.rendering as rendering
-from scripts.common import Size, GameState
+from scripts.common import Size, GameState, GameMode, PlayerSide
 
 _clock = time.Clock()
 _screen = display.set_mode(Size.BOARD, pygame.SRCALPHA, 32)
@@ -18,13 +18,15 @@ def main():
     while running:
         mouse_position = mouse.get_pos()
         if game_manager.game_state == GameState.RUNNING:
-            rendering.draw_game(_screen, game_manager)
+            if game_manager.game_mode == GameMode.PvC and game_manager.current_side == PlayerSide.DARK:
+                game_manager.computer_move()
             for e in event.get():
                 if e.type == pygame.QUIT:
                     running = False
                 elif e.type == pygame.MOUSEBUTTONDOWN:
                     if not game_manager.selected_piece or not game_manager.handle_piece_move(mouse_position):
                         game_manager.handle_piece_selection(mouse_position)
+            rendering.draw_game(_screen, game_manager)
         else:
             rendering.draw_screen(_screen, game_manager)
             for e in event.get():
