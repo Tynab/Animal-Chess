@@ -41,7 +41,7 @@ class Cell:
         }
         self.piece = piece
         self.piece.position = self.position
-        self.piece.atk = CellLabel.is_opponent_trap(self.label, piece.side) and float('-inf') or piece_atk_map[type(self.piece)]
+        self.piece.atk = 0 if CellLabel.is_opponent_trap(self.label, piece.side) else piece_atk_map[type(self.piece)]
 
     def remove_piece(self):
         self.piece = None

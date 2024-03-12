@@ -1,6 +1,6 @@
 import scripts.common as common
 from pygame import transform, image
-from scripts.common import Size, PlayerSide, CellPosition
+from scripts.common import Size, PlayerSide
 
 class Piece:
 
@@ -17,59 +17,33 @@ class Piece:
         return Piece(self.name, self.detail, self.position, self.atk, self.side)
 
     def left(self, step, board):
-        if self.position[0] - step < 0:
-            return None
-        return board.get_cell((self.position[0] - step, self.position[1]))
+        return None if self.position[0] - step < 0 else board.get_cell((self.position[0] - step, self.position[1]))
     
     def right(self, step, board):
-        if self.position[0] + step >= common.W:
-            return None
-        return board.get_cell((self.position[0] + step, self.position[1]))
+        return None if self.position[0] + step >= common.W else board.get_cell((self.position[0] + step, self.position[1]))
     
     def up(self, step, board):
-        if self.position[1] - step < 0:
-            return None
-        return board.get_cell((self.position[0], self.position[1] - step))
+        return None if self.position[1] - step < 0 else board.get_cell((self.position[0], self.position[1] - step))
     
     def down(self, step, board):
-        if self.position[1] + step >= common.H:
-            return None
-        return board.get_cell((self.position[0], self.position[1] + step))
+        return None if self.position[1] + step >= common.H else board.get_cell((self.position[0], self.position[1] + step))
     
     def can_defeat(self, piece):
         return not piece or self.atk >= piece.atk
-    
+
     def is_valid_cell(self, cell):
-        if not cell.is_in_board:
-            return False
-        if cell.is_river:
-            return False
-        if cell.is_occupied_own(self.side):
-            return False
-        if cell.piece and not self.can_defeat(cell.piece):
-            return False
-        return True
-    
+        return cell.is_in_board and not cell.is_river and not cell.is_occupied_own(self.side) and (not cell.piece or self.can_defeat(cell.piece))
+
     def available_cells(self, board):
-        moves = []
-        for direction_method in [self.left, self.right, self.up, self.down]:
-            next_cell = direction_method(1, board)
-            if next_cell and self.is_valid_cell(next_cell):
-                moves.append(next_cell)
-        return moves
-    
+        return [cell for direction in [self.left, self.right, self.up, self.down] if (cell := direction(1, board)) and self.is_valid_cell(cell)]
+
     def weaker_pieces_positions(self, board):
-        result = [self.is_dark and CellPosition.LIGHT_DEN or CellPosition.DARK_DEN]
-        for row in board.cells:
-            for cell in row:
-                if cell.piece and cell.piece.side != self.side and cell.piece.atk < self.atk:
-                    result.append(cell.position)
-        return result
+        return [PlayerSide.opponent_den_position(self.side)] + [piece.position for piece in board.pieces_of[PlayerSide.opponent_of(self.side)] if piece.atk < self.atk]
     
     @property
     def is_dark(self):
-        return self.side == PlayerSide.DARK
+        return PlayerSide.is_dark(self.side)
 
     @property
     def is_light(self):
-        return self.side == PlayerSide.LIGHT
+        return PlayerSide.is_light(self.side)

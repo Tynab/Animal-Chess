@@ -121,6 +121,32 @@ class PlayerSide:
     LIGHT = 'Light'
 
     @staticmethod
+    def is_dark(side):
+        '''
+        Check if the side is dark.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            bool: True if the side is dark, False otherwise.
+        '''
+        return side == PlayerSide.DARK
+    
+    @staticmethod
+    def is_light(side):
+        '''
+        Check if the side is light.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            bool: True if the side is light, False otherwise.
+        '''
+        return side == PlayerSide.LIGHT
+
+    @staticmethod
     def opponent_of(side):
         '''
         Get the opponent side.
