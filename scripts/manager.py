@@ -42,6 +42,7 @@ class GameManager:
         '''
         self.current_side, self.opponent_side = self.opponent_side, self.current_side
         self.board.captured_pieces.clear()
+        print('\a')
     
     def handle_piece_selection(self, mouse_position):
         '''
@@ -93,17 +94,15 @@ class GameManager:
         
         # Check if the target cell is occupied by the opponent's piece
         return False
-
+    
     def computer_move(self):
         '''
         Make the computer move.
-        
-        Returns:
-            bool: True if the game ends, False otherwise.
         '''
         # Use minimax algorithm with alpha-beta pruning to find the best moves
-        _, best_moves = Bot.minimax_alpha_beta_pruning(self.board.copy(), self.current_side, 3, float('-inf'), float('inf'), True)
-        
+        # _, best_moves = Bot.minimax_alpha_beta_pruning(self.board.copy(), self.current_side, 2, float('-inf'), float('inf'), True)
+        _, best_moves = Bot.minimax(self.board.copy(), self.current_side, 2, True)
+
         # Initialize variables for finding the move with the shortest path
         min_path = float('inf')
         moves = []
@@ -132,18 +131,26 @@ class GameManager:
                 elif path_length == min_path:
                     moves.extend(valid_moves)
         
-        # Choose a random move from the moves with the shortest path or from the best moves
-        move = moves and random.choice(moves) or random.choice(best_moves)
-        
-        # Make the move on the board
-        self.board.make_move(move)
-        
+        # Get the best move
+        if not moves:
+            move = Bot.mcts_move(self.board, self.current_side)
+            best_move = move and move in best_moves and move or random.choice(best_moves)
+        elif len(moves) > 1:
+            move = Bot.mcts_move(self.board, self.current_side)
+            best_move = move and move in moves and move or random.choice(moves)
+        else:
+            best_move = moves[0]
+
+        # best_move = moves and random.choice(moves) or random.choice(best_moves)
+
+        # Make the move
+        self.board.make_move(best_move)
+
         # Check if the game ends
-        if self.check_game_end():
-            return
-        
-        # Switch the player
-        self.switch_player()
+        if self.board.is_game_over:
+            self.game_state = GameState.OVER
+        else:
+            self.switch_player()
 
     def check_game_end(self):
         '''

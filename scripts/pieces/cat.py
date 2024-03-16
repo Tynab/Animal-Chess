@@ -9,14 +9,14 @@ class Cat(Piece):
     - side (PlayerSide): The player side.
     '''
 
-    def __init__(self, side):
+    def __init__(self, side, is_copy=False):
         '''
         Initialize the cat.
         
         Args:
             side (PlayerSide): The player side.
         '''
-        super().__init__(PieceName.cat(side), PieceDetail.CAT, CellPosition.cat(side), PieceAtk.CAT, side, PieceAvatar.cat(side), PieceArtWork.cat(side))
+        super().__init__(PieceName.cat(side), PieceDetail.CAT, CellPosition.cat(side), PieceAtk.CAT, side, None if is_copy else PieceAvatar.cat(side), None if is_copy else PieceArtWork.cat(side))
 
     def copy(self):
         '''
@@ -25,4 +25,4 @@ class Cat(Piece):
         Returns:
             Cat: A new Cat instance.
         '''
-        return Cat(self.side)
+        return Cat(self.side, True)

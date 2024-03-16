@@ -9,14 +9,14 @@ class Leopard(Piece):
     - side (PlayerSide): The player side.
     '''
 
-    def __init__(self, side):
+    def __init__(self, side, is_copy=False):
         '''
         Initialize the leopard.
         
         Args:
             side (PlayerSide): The player side.
         '''
-        super().__init__(PieceName.leopard(side), PieceDetail.LEOPARD, CellPosition.leopard(side), PieceAtk.LEOPARD, side, PieceAvatar.leopard(side), PieceArtWork.leopard(side))
+        super().__init__(PieceName.leopard(side), PieceDetail.LEOPARD, CellPosition.leopard(side), PieceAtk.LEOPARD, side, None if is_copy else PieceAvatar.leopard(side), None if is_copy else PieceArtWork.leopard(side))
 
     def copy(self):
         '''
@@ -25,4 +25,4 @@ class Leopard(Piece):
         Returns:
             Leopard: The copied leopard.
         '''
-        return Leopard(self.side)
+        return Leopard(self.side, True)

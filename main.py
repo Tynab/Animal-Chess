@@ -1,6 +1,7 @@
 import pygame
 from pygame import display, time, mouse, event
 
+# Initialize Pygame
 pygame.init()
 
 import scripts.common as common

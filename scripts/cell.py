@@ -43,9 +43,6 @@ class Cell:
         # Create a new Cell object with the same label and position
         cell = Cell(self.label, self.position)
         
-        # Set the image of the new cell to be the same as the current cell
-        cell.image = self.image
-        
         # If the current cell has a piece, add a copy of the piece to the new cell
         if self.piece:
             cell.add_piece(self.piece.copy())

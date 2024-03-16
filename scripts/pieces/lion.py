@@ -9,14 +9,14 @@ class Lion(Piece):
     - side (PlayerSide): The player side.
     '''
 
-    def __init__(self, side):
+    def __init__(self, side, is_copy=False):
         '''
         Initialize the lion.
         
         Args:
             side (PlayerSide): The player side.
         '''
-        super().__init__(PieceName.lion(side), PieceDetail.LION, CellPosition.lion(side), PieceAtk.LION, side, PieceAvatar.lion(side), PieceArtWork.lion(side))
+        super().__init__(PieceName.lion(side), PieceDetail.LION, CellPosition.lion(side), PieceAtk.LION, side, None if is_copy else PieceAvatar.lion(side), None if is_copy else PieceArtWork.lion(side))
 
     def copy(self):
         '''
@@ -25,7 +25,7 @@ class Lion(Piece):
         Returns:
             Lion: The copied lion.
         '''
-        return Lion(self.side)
+        return Lion(self.side, True)
 
     def available_cells(self, board):
         '''
@@ -66,7 +66,7 @@ class Lion(Piece):
 
             # If the cell is invalid, return None
             if cell and cell.piece:
-                return None and cell.is_river or cell
+                return cell.is_river and None or cell
             
             # Increment the step
             step += 1

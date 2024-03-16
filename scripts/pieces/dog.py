@@ -9,14 +9,14 @@ class Dog(Piece):
     - side (PlayerSide): The player side.
     '''
 
-    def __init__(self, side):
+    def __init__(self, side, is_copy=False):
         '''
         Initialize the dog.
         
         Args:
             side (PlayerSide): The player side.
         '''
-        super().__init__(PieceName.dog(side), PieceDetail.DOG, CellPosition.dog(side), PieceAtk.DOG, side, PieceAvatar.dog(side), PieceArtWork.dog(side))
+        super().__init__(PieceName.dog(side), PieceDetail.DOG, CellPosition.dog(side), PieceAtk.DOG, side, None if is_copy else PieceAvatar.dog(side), None if is_copy else PieceArtWork.dog(side))
 
     def copy(self):
         '''
@@ -25,7 +25,7 @@ class Dog(Piece):
         Returns:
             Dog: The copied dog.
         '''
-        return Dog(self.side)
+        return Dog(self.side, True)
 
     def is_valid_cell(self, cell):
         '''

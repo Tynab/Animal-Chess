@@ -10,14 +10,14 @@ class Rat(Piece):
     - side (PlayerSide): The player side.
     '''
 
-    def __init__(self, side):
+    def __init__(self, side, is_copy=False):
         '''
         Initialize the rat.
         
         Args:
             side (PlayerSide): The player side.
         '''
-        super().__init__(PieceName.rat(side), PieceDetail.RAT, CellPosition.rat(side), PieceAtk.RAT, side, PieceAvatar.rat(side), PieceArtWork.rat(side))
+        super().__init__(PieceName.rat(side), PieceDetail.RAT, CellPosition.rat(side), PieceAtk.RAT, side, None if is_copy else PieceAvatar.rat(side), None if is_copy else PieceArtWork.rat(side))
 
     def copy(self):
         '''
@@ -26,7 +26,7 @@ class Rat(Piece):
         Returns:
             Rat: The copied rat.
         '''
-        return Rat(self.side)
+        return Rat(self.side, True)
 
     def can_defeat(self, piece):
         '''

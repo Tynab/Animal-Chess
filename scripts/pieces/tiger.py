@@ -9,14 +9,14 @@ class Tiger(Piece):
     - side (PlayerSide): The player side.
     '''
 
-    def __init__(self, side):
+    def __init__(self, side, is_copy=False):
         '''
         Initialize the tiger.
         
         Args:
             side (PlayerSide): The player side.
         '''
-        super().__init__(PieceName.tiger(side), PieceDetail.TIGER, CellPosition.tiger(side), PieceAtk.TIGER, side, PieceAvatar.tiger(side), PieceArtWork.tiger(side))
+        super().__init__(PieceName.tiger(side), PieceDetail.TIGER, CellPosition.tiger(side), PieceAtk.TIGER, side, None if is_copy else PieceAvatar.tiger(side), None if is_copy else PieceArtWork.tiger(side))
 
     def copy(self):
         '''
@@ -25,7 +25,7 @@ class Tiger(Piece):
         Returns:
             Tiger: The copied tiger.
         '''
-        return Tiger(self.side)
+        return Tiger(self.side, True)
 
     def available_cells(self, board):
         '''
@@ -66,7 +66,7 @@ class Tiger(Piece):
             
             # If the cell is valid and contains a piece, return None
             if cell and cell.piece:
-                return None and cell.is_river or cell
+                return cell.is_river and None or cell
             
             # Increment the step
             step += 1

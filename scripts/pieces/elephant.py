@@ -10,14 +10,14 @@ class Elephant(Piece):
     - side (PlayerSide): The player side.
     '''
 
-    def __init__(self, side):
+    def __init__(self, side, is_copy=False):
         '''
         Initialize the elephant.
         
         Args:
             side (PlayerSide): The player side.
         '''
-        super().__init__(PieceName.elephant(side), PieceDetail.ELEPHANT, CellPosition.elephant(side), PieceAtk.ELEPHANT, side, PieceAvatar.elephant(side), PieceArtWork.elephant(side))
+        super().__init__(PieceName.elephant(side), PieceDetail.ELEPHANT, CellPosition.elephant(side), PieceAtk.ELEPHANT, side, None if is_copy else PieceAvatar.elephant(side), None if is_copy else PieceArtWork.elephant(side))
 
     def copy(self):
         '''
@@ -26,7 +26,7 @@ class Elephant(Piece):
         Returns:
             Elephant: The copied elephant.
         '''
-        return Elephant(self.side)
+        return Elephant(self.side, True)
 
     def can_defeat(self, piece):
         '''
