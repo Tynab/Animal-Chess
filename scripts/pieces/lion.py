@@ -7,6 +7,18 @@ class Lion(Piece):
     
     Attributes:
     - side (PlayerSide): The player side.
+    - name (PieceName): The piece name.
+    - detail (PieceDetail): The piece detail.
+    - position (CellPosition): The initial position.
+    - atk (PieceAtk): The piece attack value.
+    - avatar (PieceAvatar): The piece avatar.
+    - artwork (PieceArtWork): The piece artwork.
+
+    Methods:
+    - __init__: Initialize the lion.
+    - copy: Creates a copy of the lion.
+    - available_cells: Returns a list of available cells for the lion.
+    - jump_over_river: Jumps over the river.
     '''
 
     def __init__(self, side, is_copy=False):
@@ -15,6 +27,10 @@ class Lion(Piece):
         
         Args:
             side (PlayerSide): The player side.
+            is_copy (bool): True if the piece is a copy, False otherwise.
+
+        Returns:
+            Lion: A new Lion instance.
         '''
         super().__init__(PieceName.lion(side), PieceDetail.LION, CellPosition.lion(side), PieceAtk.LION, side, None if is_copy else PieceAvatar.lion(side), None if is_copy else PieceArtWork.lion(side))
 

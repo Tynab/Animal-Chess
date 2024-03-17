@@ -30,17 +30,13 @@ def handle_events(game_manager, mouse_position):
 
     # Iterate over all the events
     for e in event.get():
-        # Check if the event is a window close event
         if e.type == pygame.QUIT:
             running = False
         elif e.type == pygame.MOUSEBUTTONDOWN:
-            # Check if the game is currently running
             if GameState.is_running(game_manager.game_state):
-                # If there is no selected piece or the piece move is not handled, handle piece selection
                 if not game_manager.selected_piece or not game_manager.handle_piece_move(mouse_position):
                     game_manager.handle_piece_selection(mouse_position)
             else:
-                # If the start button is clicked, reset the game
                 if rendering.START_BTN_RECT.collidepoint(mouse_position):
                     game_manager.reset_game()
 
@@ -52,7 +48,7 @@ def main():
     The main function.
     '''
     # Initialize the game manager and set the running variable to True
-    game_manager = GameManager()
+    game_manager = GameManager(GameMode.CvC)
     running = True
 
     # Main loop
@@ -62,8 +58,7 @@ def main():
 
         # Check if the game is running and it's player vs computer mode with the computer's turn
         if GameState.is_running(game_manager.game_state):
-            # If it's the computer's turn, make the computer move
-            if GameMode.is_pvc(game_manager.game_mode) and PlayerSide.is_dark(game_manager.current_side):
+            if GameMode.is_cvc(game_manager.game_mode) or GameMode.is_pvc(game_manager.game_mode) and PlayerSide.is_dark(game_manager.current_side):
                 game_manager.computer_move()
                 
         # Handle events and update the running variable

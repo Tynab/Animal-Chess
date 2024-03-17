@@ -42,6 +42,9 @@ class Piece:
             side (PlayerSide): The side the piece belongs to.
             image_path (str): The image path of the piece.
             artwork_path (str): The artwork path of the piece.
+
+        Returns:
+            Piece: A new Piece instance.
         '''
         self.name = name
         self.image = image_path and transform.scale(image.load(image_path), Size.CELL) or None

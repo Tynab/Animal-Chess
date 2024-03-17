@@ -7,6 +7,18 @@ class Tiger(Piece):
     
     Attributes:
     - side (PlayerSide): The player side.
+    - name (PieceName): The piece name.
+    - detail (PieceDetail): The piece detail.
+    - position (CellPosition): The initial position.
+    - atk (PieceAtk): The piece attack value.
+    - avatar (PieceAvatar): The piece avatar.
+    - artwork (PieceArtWork): The piece artwork.
+
+    Methods:
+    - __init__: Initialize the tiger.
+    - copy: Creates a copy of the tiger.
+    - available_cells: Returns a list of available cells for the tiger.
+    - jump_over_river: Jumps over the river.
     '''
 
     def __init__(self, side, is_copy=False):
@@ -15,6 +27,10 @@ class Tiger(Piece):
         
         Args:
             side (PlayerSide): The player side.
+            is_copy (bool): True if the piece is a copy, False otherwise.
+        
+        Returns:
+            Tiger: A new Tiger instance.
         '''
         super().__init__(PieceName.tiger(side), PieceDetail.TIGER, CellPosition.tiger(side), PieceAtk.TIGER, side, None if is_copy else PieceAvatar.tiger(side), None if is_copy else PieceArtWork.tiger(side))
 

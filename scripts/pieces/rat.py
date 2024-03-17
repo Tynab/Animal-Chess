@@ -8,6 +8,19 @@ class Rat(Piece):
 
     Attributes:
     - side (PlayerSide): The player side.
+    - name (PieceName): The piece name.
+    - detail (PieceDetail): The piece detail.
+    - position (CellPosition): The initial position.
+    - atk (PieceAtk): The piece attack value.
+    - avatar (PieceAvatar): The piece avatar.
+    - artwork (PieceArtWork): The piece artwork.
+
+    Methods:
+    - __init__: Initialize the rat.
+    - copy: Creates a copy of the rat.
+    - can_defeat: Checks if the rat can defeat the piece.
+    - is_valid_cell: Checks if a cell is a valid move for the piece.
+    - weaker_pieces_positions: Returns a list of positions of weaker pieces.
     '''
 
     def __init__(self, side, is_copy=False):
@@ -16,6 +29,10 @@ class Rat(Piece):
         
         Args:
             side (PlayerSide): The player side.
+            is_copy (bool): True if the piece is a copy, False otherwise.
+
+        Returns:
+            Rat: A new Rat instance.
         '''
         super().__init__(PieceName.rat(side), PieceDetail.RAT, CellPosition.rat(side), PieceAtk.RAT, side, None if is_copy else PieceAvatar.rat(side), None if is_copy else PieceArtWork.rat(side))
 

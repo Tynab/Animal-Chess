@@ -70,6 +70,9 @@ class Color:
     - PURPLE (tuple): The color purple.
     - CYAN (tuple): The color cyan.
     - GRAY (tuple): The color gray.
+
+    Methods:
+    - star_color(side): Returns the color of the star based on the player side.
     '''
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
@@ -104,6 +107,11 @@ class GameMode:
     - PvP (int): Player vs Player game mode.
     - PvC (int): Player vs Computer game mode.
     - CvC (int): Computer vs Computer game mode.
+
+    Methods:
+    - is_pvp(mode): Check if the mode is player vs player.
+    - is_pvc(mode): Check if the mode is player vs computer.
+    - is_cvc(mode): Check if the mode is computer vs computer.
     '''
     PvP = 1
     PvC = 2
@@ -156,6 +164,11 @@ class GameState:
     - NEW (int): The new game state.
     - RUNNING (int): The running game state.
     - OVER (int): The over game state.
+
+    Methods:
+    - is_new(state): Check if the state is new.
+    - is_running(state): Check if the state is running.
+    - is_over(state): Check if the state is over.
     '''
     NEW = 1
     RUNNING = 2
@@ -207,6 +220,13 @@ class PlayerSide:
     Attributes:
     - DARK (str): The dark side.
     - LIGHT (str): The light side.
+
+    Methods:
+    - is_dark(side): Check if the side is dark.
+    - is_light(side): Check if the side is light.
+    - player_den_position(side): Get the den position of the side.
+    - opponent_den_position(side): Get the den position of the side.
+    - opponent_of(side): Get the opponent side.
     '''
     DARK = 'Dark'
     LIGHT = 'Light'
@@ -287,6 +307,12 @@ class CellLabel:
     - LIGHT_TRAP (int): Represents a trap cell for the light side.
     - DARK_DEN (int): Represents a den cell for the dark side.
     - LIGHT_DEN (int): Represents a den cell for the light side.
+
+    Methods:
+    - is_empty(label): Check if the label is empty.
+    - is_player_trap(label, side): Check if the label is a player trap.
+    - is_opponent_trap(label, side): Check if the label is an opponent trap.
+    - is_river(label): Check if the label is a river.
     '''
     EMPTY = 1
     RIVER = 2
@@ -390,6 +416,16 @@ class CellPosition:
     - LIGHT_TIGER (tuple): The position of the light tiger cell.
     - LIGHT_LION (tuple): The position of the light lion cell.
     - LIGHT_ELEPHANT (tuple): The position of the light elephant cell.
+
+    Methods:
+    - rat(side): Get the position of the rat.
+    - cat(side): Get the position of the cat.
+    - dog(side): Get the position of the dog.
+    - wolf(side): Get the position of the wolf.
+    - leopard(side): Get the position of the leopard.
+    - tiger(side): Get the position of the tiger.
+    - lion(side): Get the position of the lion.
+    - elephant(side): Get the position of the elephant.
     '''
     RIVER_1_1 = (1, 3)
     RIVER_1_2 = (2, 3)
@@ -615,6 +651,16 @@ class PieceName:
     - LIGHT_TIGER (str): The name of the light tiger.
     - LIGHT_LION (str): The name of the light lion.
     - LIGHT_ELEPHANT (str): The name of the light elephant.
+
+    Methods:
+    - rat(side): Get the name of the rat.
+    - cat(side): Get the name of the cat.
+    - dog(side): Get the name of the dog.
+    - wolf(side): Get the name of the wolf.
+    - leopard(side): Get the name of the leopard.
+    - tiger(side): Get the name of the tiger.
+    - lion(side): Get the name of the lion.
+    - elephant(side): Get the name of the elephant.
     '''
     DARK_RAT = 'Rat'
     DARK_CAT = 'Sphynx'
@@ -814,6 +860,16 @@ class PieceAvatar:
     - LIGHT_TIGER (str): The avatar of the light tiger.
     - LIGHT_LION (str): The avatar of the light lion.
     - LIGHT_ELEPHANT (str): The avatar of the light elephant.
+
+    Methods:
+    - rat(side): Get the avatar of the rat.
+    - cat(side): Get the avatar of the cat.
+    - dog(side): Get the avatar of the dog.
+    - wolf(side): Get the avatar of the wolf.
+    - leopard(side): Get the avatar of the leopard.
+    - tiger(side): Get the avatar of the tiger.
+    - lion(side): Get the avatar of the lion.
+    - elephant(side): Get the avatar of the elephant.
     '''
     DARK_RAT = 'assets/pieces/dark/rat.png'
     DARK_CAT = 'assets/pieces/dark/cat.png'
@@ -957,7 +1013,16 @@ class PieceArtWork:
     - LIGHT_TIGER (str): The artwork of the light tiger.
     - LIGHT_LION (str): The artwork of the light lion.
     - LIGHT_ELEPHANT (str): The artwork of the light elephant.
-        
+
+    Methods:
+    - rat(side): Get the artwork of the rat.
+    - cat(side): Get the artwork of the cat.
+    - dog(side): Get the artwork of the dog.
+    - wolf(side): Get the artwork of the wolf.
+    - leopard(side): Get the artwork of the leopard.
+    - tiger(side): Get the artwork of the tiger.
+    - lion(side): Get the artwork of the lion.
+    - elephant(side): Get the artwork of the elephant.
     '''
     DARK_RAT = 'assets/artworks/dark/rat.png'
     DARK_CAT = 'assets/artworks/dark/cat.png'

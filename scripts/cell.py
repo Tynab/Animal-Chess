@@ -19,6 +19,16 @@ class Cell:
     - position (tuple): The position.
     - image: The image of the cell.
     - piece: The piece on the cell.
+
+    Methods:
+    - __init__: Initialize the cell.
+    - copy: Copy the cell.
+    - set_image: Set the image of the cell.
+    - add_piece: Add a piece to the cell.
+    - remove_piece: Remove the piece from the cell.
+    - is_occupied_own: Check if the cell is occupied by the player's own piece.
+    - is_in_board: Check if the cell is in the board.
+    - is_river: Check if the cell is a river.
     '''
 
     def __init__(self, label, position):
@@ -27,7 +37,11 @@ class Cell:
         
         Args:
             label (CellLabel): The label.
-            position (tuple): The position.'''
+            position (tuple): The position.
+        
+        Returns:
+            Cell: A new Cell instance.
+        '''
         self.label = label
         self.position = position
         self.image = None

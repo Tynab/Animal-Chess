@@ -67,11 +67,12 @@ def draw_game(screen, game_manager):
 
     # Draw the cells and the pieces on the board
     for col in game_manager.board.cells:
-        # Iterate through the cells in the column
         for cell in col:
             # Calculate the position of the cell
             x, y = cell.position[0] * common.SPAN, cell.position[1] * common.SPAN
             cell_rect = Rect(x, y, common.SPAN, common.SPAN)
+
+            # Draw the cell background
             draw.rect(screen, Color.WHITE, cell_rect, 0)
 
             # Draw the cell image if it exists
@@ -86,8 +87,10 @@ def draw_game(screen, game_manager):
                 # Check if the mouse is hovering over a cell with a piece of the current side
                 cursor_hand |= cell_rect.collidepoint(mouse_pos) and cell.piece.side == game_manager.current_side
 
-                # Draw a star on the cell to represent the piece
+                # Draw the star on the cell if it's the selected piece
                 draw_star(screen, Color.star_color(cell.piece.side), (x + 50, y + 50), 40, 20, 192, 20)
+
+                # Blit the piece image onto the cell
                 screen.blit(cell.piece.image, (x, y))
     
     # Highlight the available cells for the selected piece
@@ -104,13 +107,15 @@ def draw_game(screen, game_manager):
             # Check if the mouse is hovering over a highlighted cell
             cursor_hand |= cell_rect.collidepoint(mouse_pos)
 
-            # Draw a circle on the highlighted cell based on its properties
+            # Draw a circle on the cell to highlight it
             draw.circle(
                 highlight_surface,
                 (*Color.RED, 192) if cell.piece else (*Color.GREEN, 192) if cell.is_river or abs(cell.position[0] - game_manager.selected_piece.position[0]) > 1 or abs(cell.position[1] - game_manager.selected_piece.position[1]) > 1 else (*Color.YELLOW, 192),
                 (common.SPAN // 2, common.SPAN // 2),
                 common.SPAN // 4
             )
+
+            # Blit the highlighted cell onto the highlight surface
             screen.blit(highlight_surface, (x, y))
     
     # Set the cursor based on whether the mouse is hovering over a cell or not
@@ -127,8 +132,8 @@ def draw_star(surface, color, center, outer_radius, inner_radius, opacity=255, p
         center (tuple): The center of the star (x, y).
         outer_radius (int): The radius from the center to the outer point of the star.
         inner_radius (int): The radius from the center to the inner corner of the star.
-        points (int): The number of points the star has.
         opacity (int): The opacity level of the star (0 to 255).
+        points (int): The number of points the star has.
     '''
     # Create a surface to draw the star
     star_surface = Surface((2 * outer_radius, 2 * outer_radius), pygame.SRCALPHA)

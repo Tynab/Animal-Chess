@@ -19,6 +19,21 @@ class Board:
     - captured_pieces: The list of captured pieces.
     - pieces: The list of pieces on the board.
     - pieces_of: The pieces of each player.
+
+    Methods:
+    - __init__: Constructor of the class.
+    - copy: Return a copy of the board.
+    - get_cell: Get the cell at the given position.
+    - get_valid_moves: Get the valid moves for the given side.
+    - make_move: Make a move on the board.
+    - undo_move: Undo a move on the board.
+    - update_pieces: Update the pieces on the board.
+    - is_opponent_pieceless: Check if the opponent has no pieces left.
+    - is_opponent_den_invaded: Check if the opponent's den is invaded.
+    - is_dark_win: Check if the dark side wins.
+    - is_light_win: Check if the light side wins.
+    - is_game_over: Check if the game is over.
+    - winner: Get the winner of the game.
     '''
     
     def __init__(self, with_pieces=True, is_copy=False):
@@ -27,6 +42,10 @@ class Board:
         
         Args:
             with_pieces (bool, optional): Whether to place pieces on the board. Defaults to True.
+            is_copy (bool, optional): True if the board is a copy, False otherwise. Defaults to False.
+
+        Returns:
+            Board: A new Board instance.
         '''
         # Initialize the cells of the board
         self.cells = [[cell.Cell(CellLabel.EMPTY, (x, y)) for y in range(common.H)] for x in range(common.W)]

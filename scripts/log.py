@@ -17,6 +17,9 @@ class Log:
             player (Player): The player.
             piece (Piece): The piece.
             cell (Cell): The cell.
+
+        Returns:
+            Log: A new Log instance.
         '''
         self.player = player.side
         self.piece = piece.__class__.__name__

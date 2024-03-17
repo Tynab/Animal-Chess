@@ -7,6 +7,17 @@ class Dog(Piece):
     
     Attributes:
     - side (PlayerSide): The player side.
+    - name (PieceName): The piece name.
+    - detail (PieceDetail): The piece detail.
+    - position (CellPosition): The initial position.
+    - atk (PieceAtk): The piece attack value.
+    - avatar (PieceAvatar): The piece avatar.
+    - artwork (PieceArtWork): The piece artwork.
+
+    Methods:
+    - __init__: Initialize the dog.
+    - copy: Creates a copy of the dog.
+    - is_valid_cell: Checks if a cell is a valid move for the piece.
     '''
 
     def __init__(self, side, is_copy=False):
@@ -15,6 +26,10 @@ class Dog(Piece):
         
         Args:
             side (PlayerSide): The player side.
+            is_copy (bool): True if the piece is a copy, False otherwise.
+        
+        Returns:
+            Dog: A new Dog instance.
         '''
         super().__init__(PieceName.dog(side), PieceDetail.DOG, CellPosition.dog(side), PieceAtk.DOG, side, None if is_copy else PieceAvatar.dog(side), None if is_copy else PieceArtWork.dog(side))
 

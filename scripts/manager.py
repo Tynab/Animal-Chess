@@ -15,19 +15,56 @@ class GameManager:
     - current_side (PlayerSide): The current side.
     - opponent_side (PlayerSide): The opponent side.
     - selected_piece (Piece): The selected piece.
+
+    Methods:
+    - __init__: Initialize the game manager.
+    - is_game_end: Check if the game ends.
+    - reset_game: Reset the game.
+    - switch_player: Switch the player.
+    - handle_piece_selection: Handle the piece selection.
+    - handle_piece_move: Handle the piece move.
+    - computer_move: Make the computer move.
     '''
 
-    def __init__(self):
+    def __init__(self, game_mode=GameMode.PvC):
         '''
         Initialize the game manager.
+
+        Args:
+            game_mode (GameMode): The game mode.
+
+        Returns:
+            GameManager: A new GameManager instance.
         '''
         self.board = Board()
         self.game_state = GameState.NEW
-        self.game_mode = GameMode.PvC
+        self.game_mode = game_mode
         self.game_result = None
         self.current_side = PlayerSide.LIGHT
         self.opponent_side = PlayerSide.opponent_of(self.current_side)
         self.selected_piece = None
+
+    @property
+    def is_game_end(self):
+        '''
+        Check if the game ends.
+        
+        Returns:
+            bool: True if the game ends, False otherwise.
+        '''
+        # Check if the opponent has no pieces or if the opponent's den is invaded
+        if self.board.is_game_over:
+            # Set the game state to OVER
+            self.game_state = GameState.OVER
+
+            # Set the game result to the current side's win
+            self.game_result = f'{self.board.winner.upper()}\nWIN!!!'
+
+            # Return True to indicate that the game ends
+            return True
+        
+        # Return False to indicate that the game continues
+        return False
 
     def reset_game(self):
         '''
@@ -83,7 +120,7 @@ class GameManager:
             self.selected_piece = None
 
             # Check if the game ends
-            if self.check_game_end():
+            if self.is_game_end:
                 return True
             
             # Switch the player
@@ -99,35 +136,47 @@ class GameManager:
         '''
         Make the computer move.
         '''
+        # Use minimax algorithm with alpha-beta pruning to find the best moves
+        choosen_moves = random.choice([1, 2, 3])
+        _, best_moves = Bot.minimax(self.board.copy(), self.current_side, 2, True) if choosen_moves == 1 else (Bot.minimax_alpha_beta_pruning(self.board.copy(), self.current_side, 2, float('-inf'), float('inf'), True) if choosen_moves == 2 else (None, self.board.get_valid_moves(self.current_side)))
+
+        # Initialize variables for finding the move with the shortest path
+        min_path = float('inf')
+        moves = []
+
+        # Iterate over the pieces of the current side
+        for piece in self.board.pieces_of[self.current_side]:
+            # Find all possible paths for the piece
+            paths = Bot.breadth_first_search(self.board, piece, piece.position, piece.weaker_pieces_positions(self.board))
+            
+            # Check if there are valid paths
+            if paths and paths[0] and paths[0][0]:
+                # Get the length of the first path
+                path_length = paths[0][0][0]
+                
+                # Filter the valid moves based on the best moves
+                valid_moves = [move for move in [tuple(path[1][:2]) for path in paths[0]] if move in best_moves]
+                
+                # Continue to the next piece if there are no valid moves
+                if not valid_moves:
+                    continue
+                
+                # Update the move with the shortest path
+                if path_length < min_path:
+                    min_path = path_length
+                    moves = valid_moves
+                elif path_length == min_path:
+                    moves.extend(valid_moves)
+        
         # Get the best move
-        best_move = Bot.mcts_move(self.board, self.current_side)
+        best_move = random.choice([1, 2]) == 1 and moves and random.choice(moves) or random.choice(best_moves)
 
         # Make the move
         self.board.make_move(best_move)
 
         # Check if the game ends
-        if self.board.is_game_over:
-            self.game_state = GameState.OVER
-        else:
-            self.switch_player()
-
-    def check_game_end(self):
-        '''
-        Check if the game ends.
+        if self.is_game_end:
+            return
         
-        Returns:
-            bool: True if the game ends, False otherwise.
-        '''
-        # Check if the opponent has no pieces or if the opponent's den is invaded
-        if self.board.is_opponent_pieceless(self.current_side) or self.board.is_opponent_den_invaded(self.current_side):
-            # Set the game state to OVER
-            self.game_state = GameState.OVER
-
-            # Set the game result to the current side's win
-            self.game_result = f'{self.current_side.upper()}\nWIN!!!'
-
-            # Return True to indicate that the game ends
-            return True
-        
-        # Return False to indicate that the game continues
-        return False
+        # Switch the player
+        self.switch_player()
