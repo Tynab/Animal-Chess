@@ -29,6 +29,12 @@ class Cell:
     - is_occupied_own: Check if the cell is occupied by the player's own piece.
     - is_in_board: Check if the cell is in the board.
     - is_river: Check if the cell is a river.
+    - is_dark_trap: Check if the cell is a dark trap.
+    - is_light_trap: Check if the cell is a light trap.
+    - is_trap: Check if the cell is a trap.
+    - is_dark_den: Check if the cell is a dark den.
+    - is_light_den: Check if the cell is a light den.
+    - is_den: Check if the cell is a den.
     '''
 
     def __init__(self, label, position):
@@ -138,3 +144,63 @@ class Cell:
             bool: True if the cell is a river, False otherwise.
         '''
         return CellLabel.is_river(self.label)
+    
+    @property
+    def is_dark_trap(self):
+        '''
+        Check if the cell is a dark trap.
+        
+        Returns:
+            bool: True if the cell is a dark trap, False otherwise.
+        '''
+        return CellLabel.is_dark_trap(self.label)
+    
+    @property
+    def is_light_trap(self):
+        '''
+        Check if the cell is a light trap.
+        
+        Returns:
+            bool: True if the cell is a light trap, False otherwise.
+        '''
+        return CellLabel.is_light_trap(self.label)
+    
+    @property
+    def is_trap(self):
+        '''
+        Check if the cell is a trap.
+        
+        Returns:
+            bool: True if the cell is a trap, False otherwise.
+        '''
+        return CellLabel.is_trap(self.label)
+    
+    @property
+    def is_dark_den(self):
+        '''
+        Check if the cell is a dark den.
+        
+        Returns:
+            bool: True if the cell is a dark den, False otherwise.
+        '''
+        return CellLabel.is_dark_den(self.label)
+    
+    @property
+    def is_light_den(self):
+        '''
+        Check if the cell is a light den.
+        
+        Returns:
+            bool: True if the cell is a light den, False otherwise.
+        '''
+        return CellLabel.is_light_den(self.label)
+    
+    @property
+    def is_den(self):
+        '''
+        Check if the cell is a den.
+        
+        Returns:
+            bool: True if the cell is a den, False otherwise.
+        '''
+        return CellLabel.is_den(self.label)

@@ -4,6 +4,69 @@ FPS = 60
 TIT = 'Animal Chess'
 SPAN = 100
 
+class Utils:
+
+    @staticmethod
+    def map_piece_name(piece):
+        piece_symbols = {
+            'rat': 'r',
+            'cat': 'c',
+            'dog': 'd',
+            'wolf': 'w',
+            'leopard': 'p',
+            'tiger': 't',
+            'lion': 'l',
+            'elephant': 'e',
+        }
+
+        symbol = piece_symbols.get(piece.__class__.__name__.lower(), '-')
+        
+        return piece.is_dark and symbol or symbol.upper()
+
+    @staticmethod
+    def winner_to_enum(winner):
+        return 0 if not winner else 1 if PlayerSide.is_light(winner) else -1
+    
+    @staticmethod
+    def enum_to_winner(enum):
+        return PlayerSide.LIGHT if enum == 1 else PlayerSide.DARK if enum == -1 else None
+    
+    @staticmethod
+    def position_to_enum(position):
+        return f'{chr(ord('A') + position[0])}{position[1] + 1}'
+    
+    @staticmethod
+    def enum_to_postion(enum):
+        return (ord(enum[0]) - ord('A'), int(enum[1]) - 1)
+    
+    @staticmethod
+    def move_to_enum(move):
+        return f'{chr(ord('A') + move[0][0])}{move[0][1] + 1}{chr(ord('A') + move[1][0])}{move[1][1] + 1}'
+    
+    @staticmethod
+    def enum_to_move(enum):
+        return ((ord(enum[0]) - ord('A'), int(enum[1]) - 1), (ord(enum[2]) - ord('A'), int(enum[3]) - 1))
+    
+    @staticmethod
+    def cell_piece_to_enum(cell):
+        return cell.piece and Utils.map_piece_name(cell.piece) or '-'
+    
+    @staticmethod
+    def cell_trap_to_enum(cell):
+        return -1 if cell.is_dark_trap else 1 if cell.is_light_trap else 0
+    
+    @staticmethod
+    def cell_den_to_enum(cell):
+        return -1 if cell.is_dark_den else 1 if cell.is_light_den else 0
+    
+    @staticmethod
+    def cell_river_to_enum(cell):
+        return 1 if cell.is_river else 0
+    
+    @staticmethod
+    def board_to_enum(board):
+        return ''.join(Utils.cell_piece_to_enum(cell) for row in board.cells for cell in row)
+
 class Size:
     '''
     A class that represents the sizes of various elements in the game.
@@ -310,9 +373,15 @@ class CellLabel:
 
     Methods:
     - is_empty(label): Check if the label is empty.
+    - is_river(label): Check if the label is a river.
+    - is_dark_trap(label): Check if the label is a dark trap.
+    - is_light_trap(label): Check if the label is a light trap.
+    - is_trap(label): Check if the label is a trap.
+    - is_dark_den(label): Check if the label is a dark den.
+    - is_light_den(label): Check if the label is a light den.
+    - is_den(label): Check if the label is a den.
     - is_player_trap(label, side): Check if the label is a player trap.
     - is_opponent_trap(label, side): Check if the label is an opponent trap.
-    - is_river(label): Check if the label is a river.
     '''
     EMPTY = 1
     RIVER = 2
@@ -335,6 +404,97 @@ class CellLabel:
         return label == CellLabel.EMPTY
     
     @staticmethod
+    def is_river(label):
+        '''
+        Check if the label is a river.
+
+        Args:
+            label (int): The label.
+
+        Returns:
+            bool: True if the label is a river, False otherwise.
+        '''
+        return label == CellLabel.RIVER
+    
+    @staticmethod
+    def is_dark_trap(label):
+        '''
+        Check if the label is a dark trap.
+
+        Args:
+            label (int): The label.
+
+        Returns:
+            bool: True if the label is a dark trap, False otherwise.
+        '''
+        return label == CellLabel.DARK_TRAP
+    
+    @staticmethod
+    def is_light_trap(label):
+        '''
+        Check if the label is a light trap.
+
+        Args:
+            label (int): The label.
+
+        Returns:
+            bool: True if the label is a light trap, False otherwise.
+        '''
+        return label == CellLabel.LIGHT_TRAP
+    
+    @staticmethod
+    def is_trap(label):
+        '''
+        Check if the label is a trap.
+
+        Args:
+            label (int): The label.
+
+        Returns:
+            bool: True if the label is a trap, False otherwise.
+        '''
+        return CellLabel.is_dark_trap(label) or CellLabel.is_light_trap(label)
+    
+    @staticmethod
+    def is_dark_den(label):
+        '''
+        Check if the label is a dark den.
+
+        Args:
+            label (int): The label.
+
+        Returns:
+            bool: True if the label is a dark den, False otherwise.
+        '''
+        return label == CellLabel.DARK_DEN
+    
+    @staticmethod
+    def is_light_den(label):
+        '''
+        Check if the label is a light den.
+
+        Args:
+            label (int): The label.
+
+        Returns:
+            bool: True if the label is a light den, False otherwise.
+        '''
+        return label == CellLabel.LIGHT_DEN
+    
+    @staticmethod
+    def is_den(label):
+        '''
+        Check if the label is a den.
+
+        Args:
+            label (int): The label.
+
+        Returns:
+            bool: True if the label is a den, False otherwise.
+        '''
+        return CellLabel.is_dark_den(label) or CellLabel.is_light_den(label)
+    
+    @staticmethod
     def is_player_trap(label, side):
         '''
         Check if the label is a player trap.
@@ -346,7 +506,7 @@ class CellLabel:
         Returns:
             bool: True if the label is a player trap, False otherwise.
         '''
-        return label == CellLabel.DARK_TRAP and PlayerSide.is_dark(side) or label == CellLabel.LIGHT_TRAP and PlayerSide.is_light(side)
+        return CellLabel.is_dark_trap(label) and PlayerSide.is_dark(side) or CellLabel.is_light_trap(label) and PlayerSide.is_light(side)
 
     @staticmethod
     def is_opponent_trap(label, side):
@@ -360,20 +520,7 @@ class CellLabel:
         Returns:
             bool: True if the label is an opponent trap, False otherwise.
         '''
-        return label == CellLabel.DARK_TRAP and PlayerSide.is_light(side) or label == CellLabel.LIGHT_TRAP and PlayerSide.is_dark(side)
-    
-    @staticmethod
-    def is_river(label):
-        '''
-        Check if the label is a river.
-
-        Args:
-            label (int): The label.
-
-        Returns:
-            bool: True if the label is a river, False otherwise.
-        '''
-        return label == CellLabel.RIVER
+        return CellLabel.is_dark_trap(label) and PlayerSide.is_light(side) or CellLabel.is_light_trap(label) and PlayerSide.is_dark(side)
 
 class CellPosition:
     '''
@@ -590,45 +737,6 @@ class CellImage:
     RIVER_4 = 'assets/images/rivers/river_4.png'
     RIVER_5 = 'assets/images/rivers/river_5.png'
     RIVER_6 = 'assets/images/rivers/river_6.png'
-
-class PieceLabel:
-    '''
-    The label of the piece.
-    
-    Attributes:
-    - DARK_RAT (int): The label of the dark rat.
-    - DARK_CAT (int): The label of the dark cat.
-    - DARK_DOG (int): The label of the dark dog.
-    - DARK_WOLF (int): The label of the dark wolf.
-    - DARK_LEOPARD (int): The label of the dark leopard.
-    - DARK_TIGER (int): The label of the dark tiger.
-    - DARK_LION (int): The label of the dark lion.
-    - DARK_ELEPHANT (int): The label of the dark elephant.
-    - LIGHT_RAT (int): The label of the light rat.
-    - LIGHT_CAT (int): The label of the light cat.
-    - LIGHT_DOG (int): The label of the light dog.
-    - LIGHT_WOLF (int): The label of the light wolf.
-    - LIGHT_LEOPARD (int): The label of the light leopard.
-    - LIGHT_TIGER (int): The label of the light tiger.
-    - LIGHT_LION (int): The label of the light lion.
-    - LIGHT_ELEPHANT (int): The label of the light elephant.
-    '''
-    DARK_RAT = 1
-    DARK_CAT = 2
-    DARK_DOG = 3
-    DARK_WOLF = 4
-    DARK_LEOPARD = 5
-    DARK_TIGER = 6
-    DARK_LION = 7
-    DARK_ELEPHANT = 8
-    LIGHT_RAT = 11
-    LIGHT_CAT = 12
-    LIGHT_DOG = 13
-    LIGHT_WOLF = 14
-    LIGHT_LEOPARD = 15
-    LIGHT_TIGER = 16
-    LIGHT_LION = 17
-    LIGHT_ELEPHANT = 18
 
 class PieceName:
     '''
