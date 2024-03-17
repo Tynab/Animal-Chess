@@ -216,117 +216,127 @@ class Bot:
         
         # Return the paths and the piece
         return paths or None, None
+    
+    @staticmethod
+    def uct_select(node):
+        '''
+        UCT select algorithm.
+        
+        Args:
+            node (MCTSNode): The node.
+            
+        Returns:
+            MCTSNode: The selected node.
+        '''
+        # If the node has no children, return None
+        if not node.parent:
+            return None
+
+        # UCT formula to select a node
+        return max(node.children, key=lambda x: (x.wins / x.visits) + math.sqrt(2 * math.log(node.parent.visits) / x.visits))
+
+    @staticmethod
+    def simulate_random_playout(node):
+        '''
+        Simulate a random playout.
+        
+        Args:
+            node (MCTSNode): The node.
+        
+        Returns:
+            float: The result.
+        '''
+        # Copy the board and the side
+        current_board = node.board.copy()
+        current_side = node.side
+
+        # Simulate a random game
+        while not current_board.is_game_over:
+            # Get the possible moves
+            possible_moves = current_board.get_valid_moves(current_side)
+
+            # If there are no possible moves, break
+            if not possible_moves:
+                break
+
+            # Make a random move
+            current_board.make_move(random.choice(possible_moves))
+            current_side = PlayerSide.opponent_of(current_side)
+
+        # Return the result
+        return 1 if current_board.winner == node.side else 0.5 if current_board.winner is None else 0
+    
+    @staticmethod
+    def backpropagate(node, result):
+        '''
+        Backpropagate the result.
+        
+        Args:
+            node (MCTSNode): The node.
+            result (float): The result.
+        '''
+        while node:
+            node.update(result)
+            node = node.parent
+
+    @staticmethod
+    def mcts(root, iterations):
+        '''
+        Monte Carlo Tree Search algorithm.
+        
+        Args:
+            root (MCTSNode): The root node.
+            iterations (int): The number of iterations.
+        
+        Returns:
+            tuple: The best move.
+        '''
+        # Iterate through the iterations
+        for _ in range(iterations):
+            # Selection
+            node = root
+
+            # Selection
+            while node.children:
+                # Select the child with the highest UCB value
+                selected_node = Bot.uct_select(node)
+
+                # If there are no children, break
+                if not selected_node:
+                    break
+
+                # Update the node
+                node = selected_node
+
+            # Expansion
+            if not node.board.is_game_over:
+                # Add a child for each possible move
+                for move in node.board.get_valid_moves(node.side):
+                    new_board = node.board.copy()
+                    new_board.make_move(move)
+                    node.add_child(MCTSNode(new_board, node, move, PlayerSide.opponent_of(node.side)))
+
+                # Select a random child
+                if node.children:
+                    node = random.choice(node.children)
+
+            # Backpropagation
+            Bot.backpropagate(node, Bot.simulate_random_playout(node))
+
+        # Return the move of the child with the highest visit count
+        return max(root.children, key=lambda x: x.visits).move
 
     @staticmethod
     def mcts_move(board, current_side, iterations=1000):
         '''
-        Monte Carlo Tree Search move.
+        Make a move using the Monte Carlo Tree Search algorithm.
         
         Args:
             board (Board): The board.
             current_side (PlayerSide): The current side.
             iterations (int): The number of iterations.
-            
-        Returns:
-            tuple: The best move.
-        '''
-        # Initialize the root node
-        root = MCTSNode(board, side=current_side)
-
-        # Iterate through the iterations
-        for _ in range(iterations):
-            node = Bot.select_node(root)
-            winner = Bot.simulate_random_game(node.board, node.side)
-            Bot.backpropagate(node, winner)
-        
-        # Return the best move
-        return Bot.best_move(root)
-    
-    @staticmethod
-    def expand_node(node):
-        for move in node.board.get_valid_moves(node.side):
-            temp_board = node.board.copy()
-            temp_board.make_move(move)
-            node.children.append(MCTSNode(temp_board, parent=node, move=move, side=PlayerSide.opponent_of(node.side)))
-
-    @staticmethod
-    def select_node(node):
-        '''
-        Select a node.
-        
-        Args:
-            node (MCTSNode): The node.
-        
-        Returns:
-            MCTSNode: The selected node.
-        '''
-        # Select the node with the highest UCB value
-        while node.children:
-            ucb_values = [child.wins / (child.visits + 1e-4) + math.sqrt(2) * math.sqrt(math.log(node.visits + 1e-4) / (child.visits + 1e-4)) for child in node.children]
-            node = node.children[ucb_values.index(max(ucb_values))]
-
-        # Check if the node has no children
-        if not node.children:
-            Bot.expand_node(node)
-
-        # Expand the node
-        return node
-
-    @staticmethod
-    def simulate_random_game(board, current_side):
-        '''
-        Simulate a random game.
-        
-        Args:
-            board (Board): The board.
-            current_side (PlayerSide): The current side.
-        
-        Returns:
-            PlayerSide: The winner.
-        '''
-        # Initialize the variables
-        temp_board = board.copy()
-        player_side = current_side
-
-        # Simulate the random game
-        while not temp_board.is_game_over:
-            # Get the valid moves
-            valid_moves = temp_board.get_valid_moves(player_side)
-
-            # Check if there are no valid moves
-            if not valid_moves:
-                break
-
-            # Make the move
-            temp_board.make_move(random.choice(valid_moves))
-            player_side = PlayerSide.opponent_of(player_side)
-
-        # Return the winner
-        return PlayerSide.DARK if temp_board.is_opponent_den_invaded(PlayerSide.DARK) else PlayerSide.LIGHT if temp_board.is_opponent_den_invaded(PlayerSide.LIGHT) else None
-
-    @staticmethod
-    def backpropagate(node, winner):
-        '''
-        Backpropagate the winner.
-        
-        Args:
-            node (MCTSNode): The node.
-            winner (PlayerSide): The winner.
-        '''
-        while node:
-            node.visits += 1
-            node.wins += winner == node.side
-            node = node.parent
-
-    @staticmethod
-    def best_move(root):
-        '''
-        Return the best move.
-        
-        Args:
-            root (MCTSNode): The root node.
         
         Returns:
             tuple: The best move.
         '''
-        return root.children and max(root.children, key=lambda child: child.visits).move or None
+        return Bot.mcts(MCTSNode(board, side=current_side), iterations)

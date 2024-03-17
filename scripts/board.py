@@ -240,6 +240,26 @@ class Board:
         return self.get_cell(PlayerSide.opponent_den_position(side)).is_occupied_own(side)
 
     @property
+    def is_dark_win(self):
+        '''
+        Check if the dark side wins.
+        
+        Returns:
+            bool: Whether the dark side wins.
+        '''
+        return self.is_opponent_den_invaded(PlayerSide.LIGHT) or self.is_opponent_pieceless(PlayerSide.LIGHT) or self.get_valid_moves(PlayerSide.LIGHT) == []
+    
+    @property
+    def is_light_win(self):
+        '''
+        Check if the light side wins.
+        
+        Returns:
+            bool: Whether the light side wins.
+        '''
+        return self.is_opponent_den_invaded(PlayerSide.DARK) or self.is_opponent_pieceless(PlayerSide.DARK) or self.get_valid_moves(PlayerSide.DARK) == []
+    
+    @property
     def is_game_over(self):
         '''
         Check if the game is over.
@@ -247,5 +267,15 @@ class Board:
         Returns:
             bool: Whether the game is over.
         '''
-        return any(self.is_opponent_den_invaded(side) or self.is_opponent_pieceless(side) for side in [PlayerSide.DARK, PlayerSide.LIGHT])
+        return self.is_dark_win or self.is_light_win
+    
+    @property
+    def winner(self):
+        '''
+        Get the winner of the game.
+        
+        Returns:
+            PlayerSide: The winner of the game.
+        '''
+        return PlayerSide.DARK if self.is_dark_win else PlayerSide.LIGHT if self.is_light_win else None
 

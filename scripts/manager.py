@@ -99,49 +99,8 @@ class GameManager:
         '''
         Make the computer move.
         '''
-        # Use minimax algorithm with alpha-beta pruning to find the best moves
-        # _, best_moves = Bot.minimax_alpha_beta_pruning(self.board.copy(), self.current_side, 2, float('-inf'), float('inf'), True)
-        _, best_moves = Bot.minimax(self.board.copy(), self.current_side, 2, True)
-
-        # Initialize variables for finding the move with the shortest path
-        min_path = float('inf')
-        moves = []
-        
-        # Iterate over the pieces of the current side
-        for piece in self.board.pieces_of[self.current_side]:
-            # Find all possible paths for the piece
-            paths = Bot.breadth_first_search(self.board, piece, piece.position, piece.weaker_pieces_positions(self.board))
-            
-            # Check if there are valid paths
-            if paths and paths[0] and paths[0][0]:
-                # Get the length of the first path
-                path_length = paths[0][0][0]
-                
-                # Filter the valid moves based on the best moves
-                valid_moves = [move for move in [tuple(path[1][:2]) for path in paths[0]] if move in best_moves]
-                
-                # Continue to the next piece if there are no valid moves
-                if not valid_moves:
-                    continue
-                
-                # Update the move with the shortest path
-                if path_length < min_path:
-                    min_path = path_length
-                    moves = valid_moves
-                elif path_length == min_path:
-                    moves.extend(valid_moves)
-        
         # Get the best move
-        if not moves:
-            move = Bot.mcts_move(self.board, self.current_side)
-            best_move = move and move in best_moves and move or random.choice(best_moves)
-        elif len(moves) > 1:
-            move = Bot.mcts_move(self.board, self.current_side)
-            best_move = move and move in moves and move or random.choice(moves)
-        else:
-            best_move = moves[0]
-
-        # best_move = moves and random.choice(moves) or random.choice(best_moves)
+        best_move = Bot.mcts_move(self.board, self.current_side)
 
         # Make the move
         self.board.make_move(best_move)

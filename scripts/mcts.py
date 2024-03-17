@@ -1,3 +1,4 @@
+
 class MCTSNode:
     '''
     Monte Carlo Tree Search node class.
@@ -29,3 +30,10 @@ class MCTSNode:
         self.children = []
         self.visits = 0
         self.wins = 0
+
+    def add_child(self, child):
+        self.children.append(child)
+
+    def update(self, result):
+        self.visits += 1
+        self.wins += result
