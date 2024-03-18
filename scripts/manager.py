@@ -2,12 +2,14 @@ import random
 from scripts.board import Board
 from scripts.bot import Bot
 from scripts.common import GameState, PlayerSide, GameMode
+from scripts.log import Log
 
 class GameManager:
     '''
     Game manager class.
 
     Attributes:
+    - log (Log): The log.
     - board (Board): The board.
     - game_state (GameState): The game state.
     - game_mode (GameMode): The game mode.
@@ -18,12 +20,12 @@ class GameManager:
 
     Methods:
     - __init__: Initialize the game manager.
-    - is_game_end: Check if the game ends.
     - reset_game: Reset the game.
     - switch_player: Switch the player.
     - handle_piece_selection: Handle the piece selection.
     - handle_piece_move: Handle the piece move.
     - computer_move: Make the computer move.
+    - is_game_end: Check if the game ends.
     '''
 
     def __init__(self, game_mode=GameMode.PvC):
@@ -36,6 +38,7 @@ class GameManager:
         Returns:
             GameManager: A new GameManager instance.
         '''
+        self.log = Log()
         self.board = Board()
         self.game_state = GameState.NEW
         self.game_mode = game_mode
@@ -43,28 +46,6 @@ class GameManager:
         self.current_side = PlayerSide.LIGHT
         self.opponent_side = PlayerSide.opponent_of(self.current_side)
         self.selected_piece = None
-
-    @property
-    def is_game_end(self):
-        '''
-        Check if the game ends.
-        
-        Returns:
-            bool: True if the game ends, False otherwise.
-        '''
-        # Check if the opponent has no pieces or if the opponent's den is invaded
-        if self.board.is_game_over:
-            # Set the game state to OVER
-            self.game_state = GameState.OVER
-
-            # Set the game result to the current side's win
-            self.game_result = f'{self.board.winner.upper()}\nWIN!!!'
-
-            # Return True to indicate that the game ends
-            return True
-        
-        # Return False to indicate that the game continues
-        return False
 
     def reset_game(self):
         '''
@@ -116,13 +97,17 @@ class GameManager:
         # Check if the target cell is in the available cells of the selected piece
         if target_cell in self.selected_piece.available_cells(self.board):
             # Make the move
-            self.board.make_move((source_cell.position, target_cell.position))
+            move = (source_cell.position, target_cell.position)
+            self.board.make_move(move)
             self.selected_piece = None
 
             # Check if the game ends
             if self.is_game_end:
                 return True
             
+            # Log the move
+            self.log.insert_chess_record(self.board, move)
+
             # Switch the player
             self.switch_player()
 
@@ -178,5 +163,30 @@ class GameManager:
         if self.is_game_end:
             return
         
+        # Log the move
+        self.log.insert_chess_record(self.board, best_move)
+
         # Switch the player
         self.switch_player()
+
+    @property
+    def is_game_end(self):
+        '''
+        Check if the game ends.
+        
+        Returns:
+            bool: True if the game ends, False otherwise.
+        '''
+        # Check if the opponent has no pieces or if the opponent's den is invaded
+        if self.board.is_game_over:
+            # Set the game state to OVER
+            self.game_state = GameState.OVER
+
+            # Set the game result to the current side's win
+            self.game_result = f'{self.board.winner.upper()}\nWIN!!!'
+
+            # Return True to indicate that the game ends
+            return True
+        
+        # Return False to indicate that the game continues
+        return False

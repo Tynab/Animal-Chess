@@ -1,24 +1,265 @@
 import os
-import pandas
-from scripts.common import Utils
+import uuid
+from pandas import DataFrame
+from scripts.bot import Bot
+from scripts.common import PlayerSide
 
 class Log:
+    '''
+    Log class.
+    
+    Attributes:
+    - df: The data frame.
+    
+    Methods:
+    - __init__: Initialize the log.
+    - insert_chess_record: Insert the chess record.
+    - save: Save the chess record to a CSV file.
+    - is_move_forbidden: Check if the move is forbidden.
+    - map_piece_name: Map the piece name.
+    - winner_to_enum: Convert the winner to enum.
+    - enum_to_winner: Convert the enum to winner.
+    - position_to_enum: Convert the position to enum.
+    - enum_to_postion: Convert the enum to position.
+    - move_to_enum: Convert the move to enum.
+    - enum_to_move: Convert the enum to move.
+    - cell_piece_to_enum: Convert the cell piece to enum.
+    - cell_trap_to_enum: Convert the cell trap to enum.
+    - cell_den_to_enum: Convert the cell den to enum.
+    - cell_river_to_enum: Convert the cell river to enum.
+    - board_to_enum: Convert the board to enum.
+    '''
 
     def __init__(self):
-        self.chess_df = pandas.DataFrame(columns=['board', 'move', 'winner'])
-        self.position_df = pandas.DataFrame(columns=['position', 'piece', 'den', 'trap', 'river'])
-        self.piece_df = pandas.DataFrame(columns=['piece', 'atk'])
+        '''
+        Initialize the log.
+
+        Returns:
+            Log: A new Log instance.
+        '''
+        self.new_df()
+
+    def new_df(self):
+        '''
+        Create a new data frame.
+        '''
+        self.id = str(uuid.uuid4())
+        self.df = DataFrame(columns=['Id', 'board', 'piece', 'atk', 'move', 'position', 'river', 'trap', 'den', 'score', 'winner'])
 
     def insert_chess_record(self, board, move):
-        self.chess_df = self.chess_df.append({'board': Utils.board_to_enum(board), 'move': Utils.move_to_enum(move), 'winner': Utils.winner_to_enum(board.winner)}, ignore_index=True)
+        '''
+        Insert the chess record.
+        
+        Args:
+            board (Board): The board.
+            move (tuple): The move.
+        '''
+        # Get the cell
+        cell = board.get_cell(move[1])
 
-    def insert_position_record(self, cell):
-        self.position_df = self.position_df.append({'position': Utils.position_to_enum(cell.position), 'piece': Utils.cell_piece_to_enum(cell), 'den': Utils.cell_den_to_enum(cell), 'trap': Utils.cell_trap_to_enum(cell), 'river': Utils.cell_river_to_enum(cell)}, ignore_index=True)
-
-    def insert_piece_record(self, piece):
-        self.piece_df = self.piece_df.append({'piece': Utils.map_piece_name(piece), 'atk': piece.atk}, ignore_index=True)
+        # Append the record
+        self.df = self.df.append({
+            'Id': self.id,
+            'board': Log.board_to_enum(board),
+            'piece': Log.cell_piece_to_enum(cell),
+            'atk': cell.piece.atk,
+            'move': Log.move_to_enum(move),
+            'position': Log.position_to_enum(cell.position),
+            'river': Log.cell_river_to_enum(cell),
+            'trap': Log.cell_trap_to_enum(cell),
+            'den': Log.cell_den_to_enum(cell),
+            'score': Bot.evaluate_position(board, PlayerSide.LIGHT),
+            'winner': Log.winner_to_enum(board.winner)
+        }, ignore_index=True)
 
     def save(self):
-        self.chess_df.to_csv('chess.csv', mode='a', header=not os.path.isfile('chess.csv'), index=False)
-        self.position_df.to_csv('position.csv', mode='a', header=not os.path.isfile('position.csv'), index=False)
-        self.piece_df.to_csv('piece.csv', mode='a', header=not os.path.isfile('piece.csv'), index=False)
+        '''
+        Save the chess record to a CSV file.
+        '''
+        self.df.to_csv('animal_chess.csv', mode='a', header=not os.path.isfile('animal_chess.csv'), index=False)
+        self.new_df()
+
+    def is_move_forbidden(self):
+        '''
+        Check if the move is forbidden.
+        
+        Returns:
+            str: The forbidden move.
+        '''
+        # Get the last 10 moves
+        moves = self.df['move'][-2:-13:-2]
+
+        # Check if the moves are the same
+        return moves.nunique() == 1 and moves[0] or None
+
+    @staticmethod
+    def map_piece_name(piece):
+        '''
+        Map the piece name.
+        
+        Args:
+            piece (Piece): The piece.
+        
+        Returns:
+            str: The symbol.
+        '''
+        # Piece symbols
+        piece_symbols = {
+            'rat': 'r',
+            'cat': 'c',
+            'dog': 'd',
+            'wolf': 'w',
+            'leopard': 'p',
+            'tiger': 't',
+            'lion': 'l',
+            'elephant': 'e',
+        }
+
+        # Get the symbol
+        symbol = piece_symbols.get(piece.__class__.__name__.lower(), '-')
+        
+        # Return the symbol
+        return piece.is_dark and symbol or symbol.upper()
+
+    @staticmethod
+    def winner_to_enum(winner):
+        '''
+        Convert the winner to enum.
+        
+        Args:
+            winner (PlayerSide): The winner.
+        
+        Returns:
+            int: The enum.
+        '''
+        return 0 if not winner else 1 if PlayerSide.is_light(winner) else -1
+    
+    @staticmethod
+    def enum_to_winner(enum):
+        '''
+        Convert the enum to winner.
+        
+        Args:
+            enum (int): The enum.
+            
+        Returns:
+            PlayerSide: The winner.
+        '''
+        return PlayerSide.LIGHT if enum == 1 else PlayerSide.DARK if enum == -1 else None
+    
+    @staticmethod
+    def position_to_enum(position):
+        '''
+        Convert the position to enum.
+        
+        Args:
+            position (tuple): The position.
+            
+        Returns:
+            str: The enum.
+        '''
+        return f'{chr(ord('A') + position[0])}{position[1] + 1}'
+    
+    @staticmethod
+    def enum_to_postion(enum):
+        '''
+        Convert the enum to position.
+        
+        Args:
+            enum (str): The enum.
+            
+        Returns:
+            tuple: The position.
+        '''
+        return (ord(enum[0]) - ord('A'), int(enum[1]) - 1)
+    
+    @staticmethod
+    def move_to_enum(move):
+        '''
+        Convert the move to enum.
+        
+        Args:
+            move (tuple): The move.
+        
+        Returns:
+            str: The enum.
+        '''
+        return f'{chr(ord('A') + move[0][0])}{move[0][1] + 1}{chr(ord('A') + move[1][0])}{move[1][1] + 1}'
+    
+    @staticmethod
+    def enum_to_move(enum):
+        '''
+        Convert the enum to move.
+        
+        Args:
+            enum (str): The enum.
+        
+        Returns:
+            tuple: The move.
+        '''
+        return ((ord(enum[0]) - ord('A'), int(enum[1]) - 1), (ord(enum[2]) - ord('A'), int(enum[3]) - 1))
+    
+    @staticmethod
+    def cell_piece_to_enum(cell):
+        '''
+        Convert the cell piece to enum.
+        
+        Args:
+            cell (Cell): The cell.
+        
+        Returns:
+            str: The enum.
+        '''
+        return cell.piece and Log.map_piece_name(cell.piece) or '-'
+    
+    @staticmethod
+    def cell_trap_to_enum(cell):
+        '''
+        Convert the cell trap to enum.
+        
+        Args:
+            cell (Cell): The cell.
+            
+        Returns:
+            int: The enum.
+        '''
+        return -1 if cell.is_dark_trap else 1 if cell.is_light_trap else 0
+    
+    @staticmethod
+    def cell_den_to_enum(cell):
+        '''
+        Convert the cell den to enum.
+        
+        Args:
+            cell (Cell): The cell.
+            
+        Returns:
+            int: The enum.
+        '''
+        return -1 if cell.is_dark_den else 1 if cell.is_light_den else 0
+    
+    @staticmethod
+    def cell_river_to_enum(cell):
+        '''
+        Convert the cell river to enum.
+        
+        Args:
+            cell (Cell): The cell.
+            
+        Returns:
+            int: The enum.
+        '''
+        return 1 if cell.is_river else 0
+    
+    @staticmethod
+    def board_to_enum(board):
+        '''
+        Convert the board to enum.
+        
+        Args:
+            board (Board): The board.
+            
+        Returns:
+            str: The enum.
+        '''
+        return ''.join(Log.cell_piece_to_enum(cell) for row in board.cells for cell in row)

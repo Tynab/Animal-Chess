@@ -159,17 +159,18 @@ class Board:
         '''
         return self.cells[position[0]][position[1]]
 
-    def get_valid_moves(self, side):
+    def get_valid_moves(self, side, exclude_move=None):
         '''
         Get the valid moves for the given side.
         
         Args:
             side (PlayerSide): The side of the player.
+            exclude_move (tuple, optional): The move to exclude. Defaults to None.
             
         Returns:
             list: The list of valid moves.
         '''
-        return [(pin.position, cell.position) for pin in self.pieces_of[side] for cell in pin.available_cells(self)]
+        return [(pin.position, cell.position) for pin in self.pieces_of[side] for cell in pin.available_cells(self) if (pin.position, cell.position) != exclude_move]
 
     def make_move(self, move):
         '''
@@ -297,4 +298,3 @@ class Board:
             PlayerSide: The winner of the game.
         '''
         return PlayerSide.DARK if self.is_dark_win else PlayerSide.LIGHT if self.is_light_win else None
-

@@ -4,69 +4,6 @@ FPS = 60
 TIT = 'Animal Chess'
 SPAN = 100
 
-class Utils:
-
-    @staticmethod
-    def map_piece_name(piece):
-        piece_symbols = {
-            'rat': 'r',
-            'cat': 'c',
-            'dog': 'd',
-            'wolf': 'w',
-            'leopard': 'p',
-            'tiger': 't',
-            'lion': 'l',
-            'elephant': 'e',
-        }
-
-        symbol = piece_symbols.get(piece.__class__.__name__.lower(), '-')
-        
-        return piece.is_dark and symbol or symbol.upper()
-
-    @staticmethod
-    def winner_to_enum(winner):
-        return 0 if not winner else 1 if PlayerSide.is_light(winner) else -1
-    
-    @staticmethod
-    def enum_to_winner(enum):
-        return PlayerSide.LIGHT if enum == 1 else PlayerSide.DARK if enum == -1 else None
-    
-    @staticmethod
-    def position_to_enum(position):
-        return f'{chr(ord('A') + position[0])}{position[1] + 1}'
-    
-    @staticmethod
-    def enum_to_postion(enum):
-        return (ord(enum[0]) - ord('A'), int(enum[1]) - 1)
-    
-    @staticmethod
-    def move_to_enum(move):
-        return f'{chr(ord('A') + move[0][0])}{move[0][1] + 1}{chr(ord('A') + move[1][0])}{move[1][1] + 1}'
-    
-    @staticmethod
-    def enum_to_move(enum):
-        return ((ord(enum[0]) - ord('A'), int(enum[1]) - 1), (ord(enum[2]) - ord('A'), int(enum[3]) - 1))
-    
-    @staticmethod
-    def cell_piece_to_enum(cell):
-        return cell.piece and Utils.map_piece_name(cell.piece) or '-'
-    
-    @staticmethod
-    def cell_trap_to_enum(cell):
-        return -1 if cell.is_dark_trap else 1 if cell.is_light_trap else 0
-    
-    @staticmethod
-    def cell_den_to_enum(cell):
-        return -1 if cell.is_dark_den else 1 if cell.is_light_den else 0
-    
-    @staticmethod
-    def cell_river_to_enum(cell):
-        return 1 if cell.is_river else 0
-    
-    @staticmethod
-    def board_to_enum(board):
-        return ''.join(Utils.cell_piece_to_enum(cell) for row in board.cells for cell in row)
-
 class Size:
     '''
     A class that represents the sizes of various elements in the game.
@@ -289,6 +226,7 @@ class PlayerSide:
     - is_light(side): Check if the side is light.
     - player_den_position(side): Get the den position of the side.
     - opponent_den_position(side): Get the den position of the side.
+    - player_of(side): Get the player side.
     - opponent_of(side): Get the opponent side.
     '''
     DARK = 'Dark'
@@ -345,6 +283,19 @@ class PlayerSide:
             tuple: The den position.
         '''
         return PlayerSide.is_dark(side) and CellPosition.LIGHT_DEN or CellPosition.DARK_DEN
+    
+    @staticmethod
+    def player_of(side):
+        '''
+        Get the player side.
+
+        Args:
+            side (str): The side.
+
+        Returns:
+            str: The player side.
+        '''
+        return side
 
     @staticmethod
     def opponent_of(side):
@@ -377,11 +328,13 @@ class CellLabel:
     - is_dark_trap(label): Check if the label is a dark trap.
     - is_light_trap(label): Check if the label is a light trap.
     - is_trap(label): Check if the label is a trap.
+    - is_player_trap(label, side): Check if the label is a player trap.
+    - is_opponent_trap(label, side): Check if the label is an opponent trap.
     - is_dark_den(label): Check if the label is a dark den.
     - is_light_den(label): Check if the label is a light den.
     - is_den(label): Check if the label is a den.
-    - is_player_trap(label, side): Check if the label is a player trap.
-    - is_opponent_trap(label, side): Check if the label is an opponent trap.
+    - is_player_den(label, side): Check if the label is a player den.
+    - is_opponent_den(label, side): Check if the label is an opponent den.
     '''
     EMPTY = 1
     RIVER = 2
@@ -456,6 +409,34 @@ class CellLabel:
         return CellLabel.is_dark_trap(label) or CellLabel.is_light_trap(label)
     
     @staticmethod
+    def is_player_trap(label, side):
+        '''
+        Check if the label is a player trap.
+
+        Args:
+            label (int): The label.
+            side (str): The side.
+
+        Returns:
+            bool: True if the label is a player trap, False otherwise.
+        '''
+        return CellLabel.is_dark_trap(label) and PlayerSide.is_dark(side) or CellLabel.is_light_trap(label) and PlayerSide.is_light(side)
+
+    @staticmethod
+    def is_opponent_trap(label, side):
+        '''
+        Check if the label is an opponent trap.
+
+        Args:
+            label (int): The label.
+            side (str): The side.
+
+        Returns:
+            bool: True if the label is an opponent trap, False otherwise.
+        '''
+        return CellLabel.is_dark_trap(label) and PlayerSide.is_light(side) or CellLabel.is_light_trap(label) and PlayerSide.is_dark(side)
+
+    @staticmethod
     def is_dark_den(label):
         '''
         Check if the label is a dark den.
@@ -495,33 +476,33 @@ class CellLabel:
         return CellLabel.is_dark_den(label) or CellLabel.is_light_den(label)
     
     @staticmethod
-    def is_player_trap(label, side):
+    def is_player_den(label, side):
         '''
-        Check if the label is a player trap.
+        Check if the label is a player den.
 
         Args:
             label (int): The label.
             side (str): The side.
 
         Returns:
-            bool: True if the label is a player trap, False otherwise.
+            bool: True if the label is a player den, False otherwise.
         '''
-        return CellLabel.is_dark_trap(label) and PlayerSide.is_dark(side) or CellLabel.is_light_trap(label) and PlayerSide.is_light(side)
-
+        return CellLabel.is_dark_den(label) and PlayerSide.is_dark(side) or CellLabel.is_light_den(label) and PlayerSide.is_light(side)
+    
     @staticmethod
-    def is_opponent_trap(label, side):
+    def is_opponent_den(label, side):
         '''
-        Check if the label is an opponent trap.
+        Check if the label is an opponent den.
 
         Args:
             label (int): The label.
             side (str): The side.
 
         Returns:
-            bool: True if the label is an opponent trap, False otherwise.
+            bool: True if the label is an opponent den, False otherwise.
         '''
-        return CellLabel.is_dark_trap(label) and PlayerSide.is_light(side) or CellLabel.is_light_trap(label) and PlayerSide.is_dark(side)
-
+        return CellLabel.is_dark_den(label) and PlayerSide.is_light(side) or CellLabel.is_light_den(label) and PlayerSide.is_dark(side)
+    
 class CellPosition:
     '''
     The position of the cell.
