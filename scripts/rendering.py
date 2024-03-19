@@ -80,7 +80,7 @@ def draw_game(screen, game_manager):
                 screen.blit(cell.image, (x, y))
             
             # Draw the cell border
-            draw.rect(screen, Color.GRAY, cell_rect, 1)
+            draw.rect(screen, Color.GREY, cell_rect, 1)
 
             # Check if the mouse is hovering over a cell with a piece of the current side
             if cell.piece:
@@ -90,8 +90,11 @@ def draw_game(screen, game_manager):
                 # Draw the star on the cell if it's the selected piece
                 draw_star(screen, Color.star_color(cell.piece.side), (x + 50, y + 50), 40, 20, 192, 20)
 
-                # Blit the piece image onto the cell
-                screen.blit(cell.piece.image, (x, y))
+                # Flip the piece image horizontally if cell.position > 3
+                if cell.position[0] > 3:
+                    screen.blit(transform.flip(cell.piece.image, True, False), (x, y))
+                else:
+                    screen.blit(cell.piece.image, (x, y))
     
     # Highlight the available cells for the selected piece
     if game_manager.selected_piece:

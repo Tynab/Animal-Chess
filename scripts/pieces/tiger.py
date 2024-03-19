@@ -53,7 +53,15 @@ class Tiger(Piece):
         Returns:
             list: The list of available cells.
         '''
-        return [cell for direction in [self.left, self.right, self.up, self.down] if (cell := Tiger.jump_over_river(direction(1, board), direction, board) or direction(1, board)) and self.is_valid_cell(cell)]
+        # Get the available cells in all directions
+        result = [cell for direction in [self.left, self.right, self.up, self.down] if (cell := Tiger.jump_over_river(direction(1, board), direction, board) or direction(1, board)) and self.is_valid_cell(cell)]
+
+        # If the piece is a lion, add the den position to the available cells
+        if board.forbidden_move and board.forbidden_move[0] == self.position and board.forbidden_cell in result:
+            result.remove(board.forbidden_cell)
+
+        # Return the result
+        return result
 
     @staticmethod
     def jump_over_river(cell, direction, board):

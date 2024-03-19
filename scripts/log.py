@@ -1,4 +1,5 @@
 import os
+import pandas
 import uuid
 from pandas import DataFrame
 from scripts.bot import Bot
@@ -57,8 +58,8 @@ class Log:
         # Get the cell
         cell = board.get_cell(move[1])
 
-        # Append the record
-        self.df = self.df.append({
+        # Create a new DataFrame for the record to be inserted
+        new_record = DataFrame([{
             'Id': self.id,
             'board': Log.board_to_enum(board),
             'piece': Log.cell_piece_to_enum(cell),
@@ -70,7 +71,14 @@ class Log:
             'den': Log.cell_den_to_enum(cell),
             'score': Bot.evaluate_position(board, PlayerSide.LIGHT),
             'winner': Log.winner_to_enum(board.winner)
-        }, ignore_index=True)
+        }])
+
+        # Use pd.concat to append the new record
+        self.df = pandas.concat([self.df, new_record], ignore_index=True)
+        
+        # Check if the move is forbidden
+        forbidden_move = self.move_forbidden()
+        board.forbidden_move = forbidden_move and Log.enum_to_move(forbidden_move) or None
 
     def save(self):
         '''
@@ -79,7 +87,7 @@ class Log:
         self.df.to_csv('animal_chess.csv', mode='a', header=not os.path.isfile('animal_chess.csv'), index=False)
         self.new_df()
 
-    def is_move_forbidden(self):
+    def move_forbidden(self):
         '''
         Check if the move is forbidden.
         
@@ -87,10 +95,10 @@ class Log:
             str: The forbidden move.
         '''
         # Get the last 10 moves
-        moves = self.df['move'][-2:-13:-2]
+        moves = self.df['move'][-4:-13:-4]
 
         # Check if the moves are the same
-        return moves.nunique() == 1 and moves[0] or None
+        return moves.iloc[0] if moves.nunique() == 1 and len(moves) == 3 else None
 
     @staticmethod
     def map_piece_name(piece):
@@ -158,7 +166,7 @@ class Log:
         Returns:
             str: The enum.
         '''
-        return f'{chr(ord('A') + position[0])}{position[1] + 1}'
+        return f"{chr(ord('A') + position[0])}{position[1] + 1}"
     
     @staticmethod
     def enum_to_postion(enum):
@@ -184,7 +192,7 @@ class Log:
         Returns:
             str: The enum.
         '''
-        return f'{chr(ord('A') + move[0][0])}{move[0][1] + 1}{chr(ord('A') + move[1][0])}{move[1][1] + 1}'
+        return f"{chr(ord('A') + move[0][0])}{move[0][1] + 1}{chr(ord('A') + move[1][0])}{move[1][1] + 1}"
     
     @staticmethod
     def enum_to_move(enum):

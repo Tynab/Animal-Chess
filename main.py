@@ -48,7 +48,7 @@ def main():
     The main function.
     '''
     # Initialize the game manager and set the running variable to True
-    game_manager = GameManager(GameMode.CvC)
+    game_manager = GameManager(GameMode.PvC)
     running = True
 
     # Main loop

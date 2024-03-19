@@ -19,6 +19,7 @@ class Board:
     - captured_pieces: The list of captured pieces.
     - pieces: The list of pieces on the board.
     - pieces_of: The pieces of each player.
+    - forbidden_move: The forbidden move.
 
     Methods:
     - __init__: Constructor of the class.
@@ -30,6 +31,7 @@ class Board:
     - update_pieces: Update the pieces on the board.
     - is_opponent_pieceless: Check if the opponent has no pieces left.
     - is_opponent_den_invaded: Check if the opponent's den is invaded.
+    - forbidden_cell: Get the forbidden cell.
     - is_dark_win: Check if the dark side wins.
     - is_light_win: Check if the light side wins.
     - is_game_over: Check if the game is over.
@@ -128,6 +130,9 @@ class Board:
         # Update the pieces on the board
         self.update_pieces()
 
+        # Initialize the forbidden move
+        self.forbidden_move = None
+
     def copy(self):
         '''
         Return a copy of the board.
@@ -136,16 +141,16 @@ class Board:
             Board: A new Board instance.
         '''
         # Create a new board instance
-        board = Board(False, True)
+        result = Board(False, True)
         
         # Copy the cells of the current board to the new board
-        board.cells = [[cell.copy() for cell in row] for row in self.cells]
+        result.cells = [[cell.copy() for cell in row] for row in self.cells]
         
         # Update the pieces on the new board
-        board.update_pieces()
+        result.update_pieces()
         
         # Return the new board
-        return board
+        return result
     
     def get_cell(self, position):
         '''
@@ -159,18 +164,17 @@ class Board:
         '''
         return self.cells[position[0]][position[1]]
 
-    def get_valid_moves(self, side, exclude_move=None):
+    def get_valid_moves(self, side):
         '''
         Get the valid moves for the given side.
         
         Args:
             side (PlayerSide): The side of the player.
-            exclude_move (tuple, optional): The move to exclude. Defaults to None.
             
         Returns:
             list: The list of valid moves.
         '''
-        return [(pin.position, cell.position) for pin in self.pieces_of[side] for cell in pin.available_cells(self) if (pin.position, cell.position) != exclude_move]
+        return [(pin.position, cell.position) for pin in self.pieces_of[side] for cell in pin.available_cells(self) if (pin.position, cell.position) != self.forbidden_move]
 
     def make_move(self, move):
         '''
@@ -258,6 +262,16 @@ class Board:
             bool: Whether the opponent's den is invaded.
         '''
         return self.get_cell(PlayerSide.opponent_den_position(side)).is_occupied_own(side)
+    
+    @property
+    def forbidden_cell(self):
+        '''
+        Get the forbidden cell.
+        
+        Returns:
+            tuple: The forbidden cell.
+        '''
+        return self.forbidden_move and self.get_cell(self.forbidden_move[1]) or None
 
     @property
     def is_dark_win(self):
@@ -267,7 +281,15 @@ class Board:
         Returns:
             bool: Whether the dark side wins.
         '''
-        return self.is_opponent_den_invaded(PlayerSide.LIGHT) or self.is_opponent_pieceless(PlayerSide.LIGHT) or self.get_valid_moves(PlayerSide.LIGHT) == []
+        # Get the available moves for the light side
+        available_moves = self.get_valid_moves(PlayerSide.LIGHT)
+
+        # Remove the forbidden move if it exists
+        if self.forbidden_move and self.forbidden_move in available_moves:
+            available_moves.remove(self.forbidden_move)
+        
+        # Check if the dark side wins
+        return self.is_opponent_den_invaded(PlayerSide.LIGHT) or self.is_opponent_pieceless(PlayerSide.LIGHT) or available_moves == []
     
     @property
     def is_light_win(self):
@@ -277,7 +299,15 @@ class Board:
         Returns:
             bool: Whether the light side wins.
         '''
-        return self.is_opponent_den_invaded(PlayerSide.DARK) or self.is_opponent_pieceless(PlayerSide.DARK) or self.get_valid_moves(PlayerSide.DARK) == []
+        # Get the available moves for the light side
+        available_moves = self.get_valid_moves(PlayerSide.DARK)
+
+        # Remove the forbidden move if it exists
+        if self.forbidden_move and self.forbidden_move in available_moves:
+            available_moves.remove(self.forbidden_move)
+        
+        # Check if the dark side wins
+        return self.is_opponent_den_invaded(PlayerSide.DARK) or self.is_opponent_pieceless(PlayerSide.DARK) or available_moves == []
     
     @property
     def is_game_over(self):

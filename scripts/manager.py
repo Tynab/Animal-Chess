@@ -101,13 +101,14 @@ class GameManager:
             self.board.make_move(move)
             self.selected_piece = None
 
-            # Check if the game ends
-            if self.is_game_end:
-                return True
-            
             # Log the move
             self.log.insert_chess_record(self.board, move)
 
+            # Check if the game ends
+            if self.is_game_end:
+                self.log.save()
+                return True
+            
             # Switch the player
             self.switch_player()
 
@@ -159,12 +160,13 @@ class GameManager:
         # Make the move
         self.board.make_move(best_move)
 
-        # Check if the game ends
-        if self.is_game_end:
-            return
-        
         # Log the move
         self.log.insert_chess_record(self.board, best_move)
+
+        # Check if the game ends
+        if self.is_game_end:
+            self.log.save()
+            return
 
         # Switch the player
         self.switch_player()

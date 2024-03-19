@@ -69,7 +69,7 @@ class Color:
     - PINK (tuple): The color pink.
     - PURPLE (tuple): The color purple.
     - CYAN (tuple): The color cyan.
-    - GRAY (tuple): The color gray.
+    - GREY (tuple): The color grey.
 
     Methods:
     - star_color(side): Returns the color of the star based on the player side.
@@ -84,7 +84,7 @@ class Color:
     PINK = (255, 192, 203)
     PURPLE = (128, 0, 128)
     CYAN = (0, 255, 255)
-    GRAY = (128, 128, 128)
+    GREY = (128, 128, 128)
 
     @staticmethod
     def star_color(side):
@@ -107,15 +107,18 @@ class GameMode:
     - PvP (int): Player vs Player game mode.
     - PvC (int): Player vs Computer game mode.
     - CvC (int): Computer vs Computer game mode.
+    - Enless (int): Endless game mode.
 
     Methods:
     - is_pvp(mode): Check if the mode is player vs player.
     - is_pvc(mode): Check if the mode is player vs computer.
     - is_cvc(mode): Check if the mode is computer vs computer.
+    - is_endless(mode): Check if the mode is endless.
     '''
     PvP = 1
     PvC = 2
     CvC = 3
+    Enless = 4
 
     @staticmethod
     def is_pvp(mode):
@@ -155,6 +158,19 @@ class GameMode:
             bool: True if the mode is computer vs computer, False otherwise.
         '''
         return mode == GameMode.CvC
+    
+    @staticmethod
+    def is_endless(mode):
+        '''
+        Check if the mode is endless.
+
+        Args:
+            mode (int): The mode.
+
+        Returns:
+            bool: True if the mode is endless, False otherwise.
+        '''
+        return mode == GameMode.Enless
 
 class GameState:
     '''

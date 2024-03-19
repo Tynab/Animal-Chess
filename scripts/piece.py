@@ -149,7 +149,15 @@ class Piece:
         Returns:
             list: A list of available cells for the piece.
         '''
-        return [cell for direction in [self.left, self.right, self.up, self.down] if (cell := direction(1, board)) and self.is_valid_cell(cell)]
+        # Get the available cells in all directions
+        result = [cell for direction in [self.left, self.right, self.up, self.down] if (cell := direction(1, board)) and self.is_valid_cell(cell)]
+
+        # If the piece is a lion, add the den position to the available cells
+        if board.forbidden_move and board.forbidden_move[0] == self.position and board.forbidden_cell in result:
+            result.remove(board.forbidden_cell)
+
+        # Return the result
+        return result
 
     def weaker_pieces_positions(self, board):
         '''
