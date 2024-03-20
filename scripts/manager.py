@@ -107,6 +107,7 @@ class GameManager:
             # Check if the game ends
             if self.is_game_end:
                 self.log.save()
+                
                 return True
             
             # Switch the player
@@ -166,6 +167,7 @@ class GameManager:
         # Check if the game ends
         if self.is_game_end:
             self.log.save()
+
             return
 
         # Switch the player

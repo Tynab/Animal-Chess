@@ -69,7 +69,7 @@ class Log:
             'river': Log.cell_river_to_enum(cell),
             'trap': Log.cell_trap_to_enum(cell),
             'den': Log.cell_den_to_enum(cell),
-            'score': Bot.evaluate_position(board, PlayerSide.LIGHT),
+            'score': Bot.evaluate_position(board, PlayerSide.DARK),
             'winner': Log.winner_to_enum(board.winner)
         }])
 
@@ -140,7 +140,8 @@ class Log:
         Returns:
             int: The enum.
         '''
-        return 0 if not winner else 1 if PlayerSide.is_light(winner) else -1
+        cc = 0 if not winner else 1 if PlayerSide.is_dark(winner) else -1
+        return 0 if not winner else 1 if PlayerSide.is_dark(winner) else -1
     
     @staticmethod
     def enum_to_winner(enum):
@@ -153,7 +154,7 @@ class Log:
         Returns:
             PlayerSide: The winner.
         '''
-        return PlayerSide.LIGHT if enum == 1 else PlayerSide.DARK if enum == -1 else None
+        return PlayerSide.DARK if enum == 1 else PlayerSide.LIGHT if enum == -1 else None
     
     @staticmethod
     def position_to_enum(position):
@@ -231,7 +232,7 @@ class Log:
         Returns:
             int: The enum.
         '''
-        return -1 if cell.is_dark_trap else 1 if cell.is_light_trap else 0
+        return -1 if cell.is_light_trap else 1 if cell.is_dark_trap else 0
     
     @staticmethod
     def cell_den_to_enum(cell):
@@ -244,7 +245,7 @@ class Log:
         Returns:
             int: The enum.
         '''
-        return -1 if cell.is_dark_den else 1 if cell.is_light_den else 0
+        return -1 if cell.is_light_den else 1 if cell.is_dark_den else 0
     
     @staticmethod
     def cell_river_to_enum(cell):

@@ -63,7 +63,7 @@ def draw_game(screen, game_manager):
     '''
     # Check if the mouse is hovering over a cell and set the cursor accordingly
     cursor_hand = False
-    mouse_pos = pygame.mouse.get_pos()
+    mouse_pos = mouse.get_pos()
 
     # Draw the cells and the pieces on the board
     for col in game_manager.board.cells:
@@ -122,7 +122,7 @@ def draw_game(screen, game_manager):
             screen.blit(highlight_surface, (x, y))
     
     # Set the cursor based on whether the mouse is hovering over a cell or not
-    pygame.mouse.set_cursor(cursor_hand and pygame.SYSTEM_CURSOR_HAND or pygame.SYSTEM_CURSOR_ARROW)
+    mouse.set_cursor(cursor_hand and pygame.SYSTEM_CURSOR_HAND or pygame.SYSTEM_CURSOR_ARROW)
 
 @staticmethod
 def draw_star(surface, color, center, outer_radius, inner_radius, opacity=255, points=5):

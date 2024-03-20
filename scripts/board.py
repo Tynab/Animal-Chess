@@ -249,7 +249,7 @@ class Board:
         Returns:
             bool: Whether the opponent has no pieces left.
         '''
-        return not self.pieces_of[PlayerSide.opponent_of(side)]
+        return not self.pieces_of[side]
 
     def is_opponent_den_invaded(self, side):
         '''
@@ -289,7 +289,7 @@ class Board:
             available_moves.remove(self.forbidden_move)
         
         # Check if the dark side wins
-        return self.is_opponent_den_invaded(PlayerSide.LIGHT) or self.is_opponent_pieceless(PlayerSide.LIGHT) or available_moves == []
+        return self.is_opponent_den_invaded(PlayerSide.DARK) or self.is_opponent_pieceless(PlayerSide.LIGHT) or len(available_moves) == 0
     
     @property
     def is_light_win(self):
@@ -307,7 +307,7 @@ class Board:
             available_moves.remove(self.forbidden_move)
         
         # Check if the dark side wins
-        return self.is_opponent_den_invaded(PlayerSide.DARK) or self.is_opponent_pieceless(PlayerSide.DARK) or available_moves == []
+        return self.is_opponent_den_invaded(PlayerSide.LIGHT) or self.is_opponent_pieceless(PlayerSide.DARK) or len(available_moves) == 0
     
     @property
     def is_game_over(self):

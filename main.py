@@ -9,6 +9,9 @@ import scripts.rendering as rendering
 from scripts.common import Size, GameState, GameMode, PlayerSide
 from scripts.manager import GameManager
 
+LOOP = 1000
+counter = LOOP
+
 # Initialize the clock, screen, and set the window caption
 _clock = time.Clock()
 _screen = display.set_mode(Size.BOARD, pygame.SRCALPHA, 32)
@@ -38,7 +41,13 @@ def handle_events(game_manager, mouse_position):
                     game_manager.handle_piece_selection(mouse_position)
             else:
                 if rendering.START_BTN_RECT.collidepoint(mouse_position):
+                    # Reset game
                     game_manager.reset_game()
+
+                    # Set the game state to running
+                    if GameMode.is_cvc(game_manager.game_mode):
+                        global counter
+                        counter = LOOP
 
     # Return the value of running
     return running
@@ -47,8 +56,9 @@ def main():
     '''
     The main function.
     '''
-    # Initialize the game manager and set the running variable to True
-    game_manager = GameManager(GameMode.PvC)
+    # Initialize the game manager, running
+    global counter
+    game_manager = GameManager(GameMode.CvC)
     running = True
 
     # Main loop
@@ -61,14 +71,24 @@ def main():
             if GameMode.is_cvc(game_manager.game_mode) or GameMode.is_pvc(game_manager.game_mode) and PlayerSide.is_dark(game_manager.current_side):
                 game_manager.computer_move()
                 
-        # Handle events and update the running variable
-        running = handle_events(game_manager, mouse_position)
-
-        # Draw the game or the screen based on the game state
-        if GameState.is_running(game_manager.game_state):
-            rendering.draw_game(_screen, game_manager)
+        # Check if the game mode is CvC and the counter is greater than 0
+        if GameMode.is_cvc(game_manager.game_mode) and counter > 0:
+            # Draw the game or the screen based on the game state
+            if GameState.is_running(game_manager.game_state):
+                rendering.draw_game(_screen, game_manager)
+            else:
+                game_manager.reset_game()
+                counter -= 1
         else:
-            rendering.draw_screen(_screen, game_manager)
+            # Handle events and get the value of running
+            running = handle_events(game_manager, mouse_position)
+
+            # Draw the game or the screen based on the game state
+            if GameState.is_running(game_manager.game_state):
+                rendering.draw_game(_screen, game_manager)
+            else:
+                rendering.draw_screen(_screen, game_manager)
+
         
         # Update the display and limit the frame rate to 60 FPS
         display.flip()
