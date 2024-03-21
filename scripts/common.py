@@ -15,9 +15,12 @@ class Size:
     - START_BTN (tuple): The size of the start button, represented as 190 by 50.
     '''
     BOARD = (W * SPAN, H * SPAN)
+    SUBSCREEN = (500, BOARD[1])
+    TOTAL = (BOARD[0] + SUBSCREEN[0], BOARD[1]) 
     CELL = (SPAN, SPAN)
     ARTWORK = (500, 500)
     START_BTN = (190, 50)
+    PADDING = (10, 10)
 
 class ImagePath:
     '''
@@ -902,24 +905,17 @@ class PieceDetail:
     - LION (str): The detail of the lion.
     - ELEPHANT (str): The detail of the elephant.
     '''
-    RAT = """ATK: 1
-The Rat can enter the River region.
-The Rat has the lowest rank but can defeat an Elephant at the highest rank. This is explained by the Rat running into the ear and nibbling on the Elephant's brain."""
-    CAT = """ATK: 2
-The Cat can defeat the Rat."""
-    DOG = """ATK: 3
-The Dog can enter the River region.
-The Dog can defeat the Cat and Rat."""
-    WOLF = """ATK: 4
-The Wolf can defeat the Dog, Cat and Rat."""
-    LEOPARD = """ATK: 5
-The Leopard can defeat the Wolf, Dog, Cat and Rat."""
-    TIGER = """ATK: 6
-The Tiger can defeat the Leopard, Wolf, Dog, Cat and Rat."""
-    LION = """ATK: 7
-The Lion can defeat the Tiger, Leopard, Wolf, Dog, Cat and Rat."""
-    ELEPHANT = """ATK: 8
-The Elephant can defeat the Lion, Tiger, Leopard, Wolf, Dog and Cat."""
+    RAT = """Effect:
+- The Rat can enter the River region.
+- The Rat has the lowest rank but can defeat an Elephant at the highest rank. This is explained by the Rat running into the ear and nibbling on the Elephant's brain."""
+    CAT = """Description: The Cat can defeat the Rat."""
+    DOG = """Description: The Dog can defeat the Cat and Rat.
+Effect: The Dog can enter the River region."""
+    WOLF = """Description: The Wolf can defeat the Dog, Cat and Rat."""
+    LEOPARD = """Description: The Leopard can defeat the Wolf, Dog, Cat and Rat."""
+    TIGER = """Description: The Tiger can defeat the Leopard, Wolf, Dog, Cat and Rat."""
+    LION = """Description: The Lion can defeat the Tiger, Leopard, Wolf, Dog, Cat and Rat."""
+    ELEPHANT = """Description: The Elephant can defeat the Lion, Tiger, Leopard, Wolf, Dog and Cat."""
 
 class PieceAtk:
     '''

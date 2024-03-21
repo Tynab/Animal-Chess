@@ -86,7 +86,6 @@ class Cell:
         Args:
             piece (Piece): The piece.
         '''
-        # Create a mapping of piece classes to their corresponding attack values
         piece_atk_map = {
             Rat: PieceAtk.RAT,
             Cat: PieceAtk.CAT,
@@ -97,14 +96,8 @@ class Cell:
             Lion: PieceAtk.LION,
             Elephant: PieceAtk.ELEPHANT,
         }
-        
-        # Set the piece of the cell to the given piece
         self.piece = piece
-        
-        # Set the position of the piece to the position of the cell
         self.piece.position = self.position
-        
-        # Set the attack value of the piece based on the type of the piece and the label of the cell
         self.piece.atk = 0 if CellLabel.is_opponent_trap(self.label, piece.side) else piece_atk_map[type(self.piece)]
 
     def remove_piece(self):

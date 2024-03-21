@@ -9,12 +9,13 @@ import scripts.rendering as rendering
 from scripts.common import Size, GameState, GameMode, PlayerSide
 from scripts.manager import GameManager
 
+# Set the loop counter
 LOOP = 1000
 counter = LOOP
 
 # Initialize the clock, screen, and set the window caption
 _clock = time.Clock()
-_screen = display.set_mode(Size.BOARD, pygame.SRCALPHA, 32)
+_screen = display.set_mode(Size.TOTAL, pygame.SRCALPHA, 32)
 display.set_caption(common.TIT)
 
 def handle_events(game_manager, mouse_position):
@@ -48,8 +49,6 @@ def handle_events(game_manager, mouse_position):
                     if GameMode.is_cvc(game_manager.game_mode):
                         global counter
                         counter = LOOP
-
-    # Return the value of running
     return running
 
 def main():
@@ -58,13 +57,14 @@ def main():
     '''
     # Initialize the game manager, running
     global counter
-    game_manager = GameManager(GameMode.CvC)
+    game_manager = GameManager(GameMode.PvC)
     running = True
 
     # Main loop
     while running:
-        # Get the current mouse position
+        # Get the mouse position and handle the piece focus
         mouse_position = mouse.get_pos()
+        game_manager.handle_piece_focus(mouse_position)
 
         # Check if the game is running and it's player vs computer mode with the computer's turn
         if GameState.is_running(game_manager.game_state):
@@ -73,9 +73,9 @@ def main():
                 
         # Check if the game mode is CvC and the counter is greater than 0
         if GameMode.is_cvc(game_manager.game_mode) and counter > 0:
-            # Draw the game or the screen based on the game state
             if GameState.is_running(game_manager.game_state):
-                rendering.draw_game(_screen, game_manager)
+                # rendering.draw_game(_screen, game_manager)
+                pass
             else:
                 game_manager.reset_game()
                 counter -= 1
@@ -89,7 +89,6 @@ def main():
             else:
                 rendering.draw_screen(_screen, game_manager)
 
-        
         # Update the display and limit the frame rate to 60 FPS
         display.flip()
         _clock.tick(60)

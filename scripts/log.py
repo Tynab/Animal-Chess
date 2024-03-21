@@ -55,10 +55,7 @@ class Log:
             board (Board): The board.
             move (tuple): The move.
         '''
-        # Get the cell
         cell = board.get_cell(move[1])
-
-        # Create a new DataFrame for the record to be inserted
         new_record = DataFrame([{
             'Id': self.id,
             'board': Log.board_to_enum(board),
@@ -72,11 +69,7 @@ class Log:
             'score': Bot.evaluate_position(board, PlayerSide.DARK),
             'winner': Log.winner_to_enum(board.winner)
         }])
-
-        # Use pd.concat to append the new record
         self.df = pandas.concat([self.df, new_record], ignore_index=True)
-        
-        # Check if the move is forbidden
         forbidden_move = self.move_forbidden()
         board.forbidden_move = forbidden_move and Log.enum_to_move(forbidden_move) or None
 
@@ -111,7 +104,7 @@ class Log:
         Returns:
             str: The symbol.
         '''
-        # Piece symbols
+        # Map the piece name to symbol
         piece_symbols = {
             'rat': 'r',
             'cat': 'c',
@@ -122,8 +115,6 @@ class Log:
             'lion': 'l',
             'elephant': 'e',
         }
-
-        # Get the symbol
         symbol = piece_symbols.get(piece.__class__.__name__.lower(), '-')
         
         # Return the symbol
@@ -140,7 +131,6 @@ class Log:
         Returns:
             int: The enum.
         '''
-        cc = 0 if not winner else 1 if PlayerSide.is_dark(winner) else -1
         return 0 if not winner else 1 if PlayerSide.is_dark(winner) else -1
     
     @staticmethod

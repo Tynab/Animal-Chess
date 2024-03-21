@@ -21,11 +21,9 @@ def draw_screen(screen, game_manager):
         screen (pygame.Surface): The surface on which to draw the game.
         game_manager (GameManager): The game manager that holds the state of the game.
     '''
-    # Add your code here
+    # Draw the game title
     screen.blit(COVER_SCALED, (0, 0))
     x, y = Size.BOARD[0] / 2, Size.BOARD[1] / 2 + 90
-
-    # Draw the game title
     txt_tit = FONT_TIT.render(common.TIT, True, Color.WHITE)
     screen.blit(txt_tit, txt_tit.get_rect(center=(x, 25)))
 
@@ -71,8 +69,6 @@ def draw_game(screen, game_manager):
             # Calculate the position of the cell
             x, y = cell.position[0] * common.SPAN, cell.position[1] * common.SPAN
             cell_rect = Rect(x, y, common.SPAN, common.SPAN)
-
-            # Draw the cell background
             draw.rect(screen, Color.WHITE, cell_rect, 0)
 
             # Draw the cell image if it exists
@@ -86,8 +82,6 @@ def draw_game(screen, game_manager):
             if cell.piece:
                 # Check if the mouse is hovering over a cell with a piece of the current side
                 cursor_hand |= cell_rect.collidepoint(mouse_pos) and cell.piece.side == game_manager.current_side
-
-                # Draw the star on the cell if it's the selected piece
                 draw_star(screen, Color.star_color(cell.piece.side), (x + 50, y + 50), 40, 20, 192, 20)
 
                 # Flip the piece image horizontally if cell.position > 3
@@ -103,26 +97,51 @@ def draw_game(screen, game_manager):
 
         # Iterate through the available cells of the selected piece
         for cell in game_manager.selected_piece.available_cells(game_manager.board):
-            # Calculate the position of the cell
             x, y = cell.position[0] * common.SPAN, cell.position[1] * common.SPAN
             cell_rect = Rect(x, y, common.SPAN, common.SPAN)
-
-            # Check if the mouse is hovering over a highlighted cell
             cursor_hand |= cell_rect.collidepoint(mouse_pos)
-
-            # Draw a circle on the cell to highlight it
             draw.circle(
                 highlight_surface,
                 (*Color.RED, 192) if cell.piece else (*Color.GREEN, 192) if cell.is_river or abs(cell.position[0] - game_manager.selected_piece.position[0]) > 1 or abs(cell.position[1] - game_manager.selected_piece.position[1]) > 1 else (*Color.YELLOW, 192),
                 (common.SPAN // 2, common.SPAN // 2),
                 common.SPAN // 4
             )
-
-            # Blit the highlighted cell onto the highlight surface
             screen.blit(highlight_surface, (x, y))
     
     # Set the cursor based on whether the mouse is hovering over a cell or not
     mouse.set_cursor(cursor_hand and pygame.SYSTEM_CURSOR_HAND or pygame.SYSTEM_CURSOR_ARROW)
+
+    # Draw the subscreen
+    if game_manager.focused_piece:
+        draw_subscreen(screen, game_manager)
+
+@staticmethod
+def draw_subscreen(screen, game_manager):
+    '''
+    Draw the subscreen on the screen.
+    
+    Args:
+        screen (pygame.Surface): The surface to draw on.
+        game_manager (GameManager): The game manager.
+    '''
+    # Create a subscreen surface and fill it with a grey color
+    subscreen = Surface((Size.SUBSCREEN[0], Size.SUBSCREEN[1]))
+    subscreen.fill(Color.GREY)
+    subscreen.blit(transform.scale(game_manager.focused_piece.artwork, Size.ARTWORK), (0, 0))
+    y_position = Size.ARTWORK[1] + Size.PADDING[1]
+    desciption_text = f'''Name: {game_manager.focused_piece.name}
+Type: {game_manager.focused_piece.__class__.__name__}
+ATK: {game_manager.focused_piece.atk}
+{game_manager.focused_piece.detail}'''
+    
+    # Wrap the description text and render it on the subscreen
+    for line in wrap_text(desciption_text, FONT_BTN, Size.SUBSCREEN[0] - Size.PADDING[0] * 3):
+        detail_text = FONT_BTN.render(line, True, Color.WHITE)
+        subscreen.blit(detail_text, (Size.PADDING[0] * 2, y_position))
+        y_position += detail_text.get_height() + Size.PADDING[1] / 2
+    
+    # Draw the subscreen on the screen
+    screen.blit(subscreen, (Size.BOARD[0], 0))
 
 @staticmethod
 def draw_star(surface, color, center, outer_radius, inner_radius, opacity=255, points=5):
@@ -138,19 +157,10 @@ def draw_star(surface, color, center, outer_radius, inner_radius, opacity=255, p
         opacity (int): The opacity level of the star (0 to 255).
         points (int): The number of points the star has.
     '''
-    # Create a surface to draw the star
     star_surface = Surface((2 * outer_radius, 2 * outer_radius), pygame.SRCALPHA)
-    
-    # Calculate the angle between each point of the star
     angle_between_points = (2 * math.pi) / points
-    
-    # Set the starting angle for drawing the star
     start_angle = math.pi / 2
-    
-    # Calculate the center of the star
     star_center = (outer_radius, outer_radius)
-    
-    # Draw the star polygon on the star surface
     draw.polygon(star_surface, color + (opacity,), [point for pair in [
         (
             (star_center[0] + math.cos(start_angle - i * angle_between_points) * outer_radius, star_center[1] - math.sin(start_angle - i * angle_between_points) * outer_radius),
@@ -158,6 +168,44 @@ def draw_star(surface, color, center, outer_radius, inner_radius, opacity=255, p
         )
         for i in range(points)
     ] for point in pair])
-    
-    # Blit the star surface onto the specified surface
     surface.blit(star_surface, (center[0] - outer_radius, center[1] - outer_radius))
+
+@staticmethod
+def wrap_text(text, font, max_width):
+    '''
+    Wrap the text to fit within the specified width.
+    
+    Args:
+        text (str): The text to wrap.
+        font (pygame.font.Font): The font to use for rendering the text.
+        max_width (int): The maximum width of the wrapped text.
+    
+    Returns:
+        list: The list of wrapped lines.
+    '''
+    # Create a list to hold the wrapped lines
+    wrapped_lines = []
+
+    # Iterate over the lines of the text
+    for line in text.split('\n'):
+        # Create a list to hold the words of the current line
+        current_line = []
+
+        # Split the line into words and iterate over them
+        for word in line.split(' '):
+            # Get the width of the current line with the new word
+            width, _ = font.size(' '.join(current_line + [word]))
+
+            # Append the word to the current line if the width is less than the max width
+            if width <= max_width:
+                current_line.append(word)
+            else:
+                wrapped_lines.append(' '.join(current_line))
+                current_line = [word]
+
+        # Append the current line if it's not empty
+        if current_line:
+            wrapped_lines.append(' '.join(current_line))
+
+    # Return the wrapped lines
+    return wrapped_lines

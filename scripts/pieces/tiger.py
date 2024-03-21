@@ -94,6 +94,6 @@ class Tiger(Piece):
             
             # Increment the step
             step += 1
-        
+
         # Return the cell
         return cell

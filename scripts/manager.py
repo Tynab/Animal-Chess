@@ -1,7 +1,7 @@
 import random
 from scripts.board import Board
 from scripts.bot import Bot
-from scripts.common import GameState, PlayerSide, GameMode
+from scripts.common import GameState, PlayerSide, GameMode, Size
 from scripts.log import Log
 
 class GameManager:
@@ -46,6 +46,7 @@ class GameManager:
         self.current_side = PlayerSide.LIGHT
         self.opponent_side = PlayerSide.opponent_of(self.current_side)
         self.selected_piece = None
+        self.focused_piece = None
 
     def reset_game(self):
         '''
@@ -61,6 +62,21 @@ class GameManager:
         self.current_side, self.opponent_side = self.opponent_side, self.current_side
         self.board.captured_pieces.clear()
         print('\a')
+
+    def handle_piece_focus(self, mouse_position):
+        '''
+        Handle the piece focus.
+        
+        Args:
+            mouse_position (tuple): The mouse position.
+        '''
+        if mouse_position[0] <= Size.BOARD[0] and mouse_position[1] <= Size.BOARD[1]:
+            # Get the cell at the mouse position
+            cell = self.board.get_cell((mouse_position[0] // 100, mouse_position[1] // 100))
+            
+            # Check if the cell has a piece and if it belongs to the current player
+            if cell.piece:
+                self.focused_piece = cell.piece
     
     def handle_piece_selection(self, mouse_position):
         '''
@@ -69,12 +85,13 @@ class GameManager:
         Args:
             mouse_position (tuple): The mouse position.
         '''
-        # Get the cell at the mouse position
-        cell = self.board.get_cell((mouse_position[0] // 100, mouse_position[1] // 100))
-        
-        # Check if the cell has a piece and if it belongs to the current player
-        if cell.piece and cell.piece.side == self.current_side:
-            self.selected_piece = cell.piece
+        if mouse_position[0] <= Size.BOARD[0] and mouse_position[1] <= Size.BOARD[1]:
+            # Get the cell at the mouse position
+            cell = self.board.get_cell((mouse_position[0] // 100, mouse_position[1] // 100))
+            
+            # Check if the cell has a piece and if it belongs to the current player
+            if cell.piece and cell.piece.side == self.current_side:
+                self.selected_piece = cell.piece
 
     def handle_piece_move(self, mouse_position):
         '''
@@ -100,8 +117,6 @@ class GameManager:
             move = (source_cell.position, target_cell.position)
             self.board.make_move(move)
             self.selected_piece = None
-
-            # Log the move
             self.log.insert_chess_record(self.board, move)
 
             # Check if the game ends
@@ -123,11 +138,9 @@ class GameManager:
         '''
         Make the computer move.
         '''
-        # Use minimax algorithm with alpha-beta pruning to find the best moves
+        # Get the best moves
         choosen_moves = random.choice([1, 2, 3])
         _, best_moves = Bot.minimax(self.board.copy(), self.current_side, 2, True) if choosen_moves == 1 else (Bot.minimax_alpha_beta_pruning(self.board.copy(), self.current_side, 2, float('-inf'), float('inf'), True) if choosen_moves == 2 else (None, self.board.get_valid_moves(self.current_side)))
-
-        # Initialize variables for finding the move with the shortest path
         min_path = float('inf')
         moves = []
 
@@ -138,10 +151,8 @@ class GameManager:
             
             # Check if there are valid paths
             if paths and paths[0] and paths[0][0]:
-                # Get the length of the first path
+                # Get the path length and the valid moves
                 path_length = paths[0][0][0]
-                
-                # Filter the valid moves based on the best moves
                 valid_moves = [move for move in [tuple(path[1][:2]) for path in paths[0]] if move in best_moves]
                 
                 # Continue to the next piece if there are no valid moves
@@ -155,13 +166,9 @@ class GameManager:
                 elif path_length == min_path:
                     moves.extend(valid_moves)
         
-        # Get the best move
+        # Make the best move
         best_move = random.choice([1, 2]) == 1 and moves and random.choice(moves) or random.choice(best_moves)
-
-        # Make the move
         self.board.make_move(best_move)
-
-        # Log the move
         self.log.insert_chess_record(self.board, best_move)
 
         # Check if the game ends
@@ -183,10 +190,8 @@ class GameManager:
         '''
         # Check if the opponent has no pieces or if the opponent's den is invaded
         if self.board.is_game_over:
-            # Set the game state to OVER
+            # Set the game state and result
             self.game_state = GameState.OVER
-
-            # Set the game result to the current side's win
             self.game_result = f'{self.board.winner.upper()}\nWIN!!!'
 
             # Return True to indicate that the game ends

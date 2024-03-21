@@ -124,13 +124,9 @@ class Board:
             self.cells[CellPosition.LIGHT_LION[0]][CellPosition.LIGHT_LION[1]].add_piece(lion.Lion(PlayerSide.LIGHT))
             self.cells[CellPosition.LIGHT_ELEPHANT[0]][CellPosition.LIGHT_ELEPHANT[1]].add_piece(elephant.Elephant(PlayerSide.LIGHT))
         
-        # Initialize the list of captured pieces
+        # Initialize the captured pieces
         self.captured_pieces = []
-        
-        # Update the pieces on the board
         self.update_pieces()
-
-        # Initialize the forbidden move
         self.forbidden_move = None
 
     def copy(self):
@@ -140,16 +136,12 @@ class Board:
         Returns:
             Board: A new Board instance.
         '''
-        # Create a new board instance
+        # Create a new board
         result = Board(False, True)
-        
-        # Copy the cells of the current board to the new board
         result.cells = [[cell.copy() for cell in row] for row in self.cells]
-        
-        # Update the pieces on the new board
         result.update_pieces()
-        
-        # Return the new board
+
+        # Copy the captured pieces
         return result
     
     def get_cell(self, position):
@@ -226,10 +218,8 @@ class Board:
         '''
         Update the pieces on the board.
         '''
-        # Get all the pieces on the board
+        # Get the pieces on the board
         self.pieces = [cell.piece for row in self.cells for cell in row if cell.piece]
-        
-        # Separate the pieces by player side
         self.pieces_of = {
             PlayerSide.DARK: [],
             PlayerSide.LIGHT: []
