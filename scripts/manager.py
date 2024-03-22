@@ -70,7 +70,7 @@ class GameManager:
         Args:
             mouse_position (tuple): The mouse position.
         '''
-        if mouse_position[0] <= Size.BOARD[0] and mouse_position[1] <= Size.BOARD[1]:
+        if mouse_position[0] < Size.BOARD[0] and mouse_position[1] < Size.BOARD[1]:
             # Get the cell at the mouse position
             cell = self.board.get_cell((mouse_position[0] // 100, mouse_position[1] // 100))
             
@@ -85,7 +85,7 @@ class GameManager:
         Args:
             mouse_position (tuple): The mouse position.
         '''
-        if mouse_position[0] <= Size.BOARD[0] and mouse_position[1] <= Size.BOARD[1]:
+        if mouse_position[0] < Size.BOARD[0] and mouse_position[1] < Size.BOARD[1]:
             # Get the cell at the mouse position
             cell = self.board.get_cell((mouse_position[0] // 100, mouse_position[1] // 100))
             

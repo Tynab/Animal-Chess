@@ -18,7 +18,7 @@ class Size:
     SUBSCREEN = (500, BOARD[1])
     TOTAL = (BOARD[0] + SUBSCREEN[0], BOARD[1]) 
     CELL = (SPAN, SPAN)
-    ARTWORK = (500, 500)
+    ARTWORK = (480, 480)
     START_BTN = (190, 50)
     PADDING = (10, 10)
 
@@ -43,6 +43,8 @@ class ImagePath:
     '''
     COVER = 'assets/images/cover.png'
     START_BTN = 'assets/images/button.png'
+    GUIDE = 'assets/images/guide.png'
+    CARD = 'assets/images/card.png'
 
 class FontName:
     '''
