@@ -70,9 +70,9 @@ def draw_screen(screen, game_manager):
         txt_color = Color.WHITE
 
     # Render and draw the "New Game" text on the start button
-    txt_surf = FONT_BTN.render('New Game', True, txt_color)
+    txt_surface = FONT_BTN.render('New Game', True, txt_color)
     screen.blit(START_BTN_SCALED, START_BTN_RECT.topleft)
-    screen.blit(txt_surf, txt_surf.get_rect(center=START_BTN_RECT.center))
+    screen.blit(txt_surface, txt_surface.get_rect(center=START_BTN_RECT.center))
 
     # Draw the guide
     draw_guide(screen)
@@ -88,7 +88,7 @@ def draw_game(screen, game_manager):
     '''
     # Check if the mouse is hovering over a cell and set the cursor accordingly
     cursor_hand = False
-    mouse_pos = mouse.get_pos()
+    mouse_position = mouse.get_pos()
 
     # Draw the cells and the pieces on the board
     for col in game_manager.board.cells:
@@ -108,7 +108,7 @@ def draw_game(screen, game_manager):
             # Check if the mouse is hovering over a cell with a piece of the current side
             if cell.piece:
                 # Check if the mouse is hovering over a cell with a piece of the current side
-                cursor_hand |= cell_rect.collidepoint(mouse_pos) and cell.piece.side == game_manager.current_side
+                cursor_hand |= cell_rect.collidepoint(mouse_position) and cell.piece.side == game_manager.current_side
                 draw_star(screen, Color.star_color(cell.piece.side), (x + X_PADDING_STAR, y + X_PADDING_STAR), 40, 20, OPACITY, 20)
 
                 # Flip the piece image horizontally if cell.position > 3
@@ -122,7 +122,7 @@ def draw_game(screen, game_manager):
         for cell in game_manager.selected_piece.available_cells(game_manager.board):
             x, y = cell.position[0] * common.SPAN, cell.position[1] * common.SPAN
             cell_rect = Rect(x, y, common.SPAN, common.SPAN)
-            cursor_hand |= cell_rect.collidepoint(mouse_pos)
+            cursor_hand |= cell_rect.collidepoint(mouse_position)
             draw.circle(
                 HIGHTLIGHT_SURFACE,
                 (*Color.RED, OPACITY) if cell.piece else (*Color.GREEN, OPACITY) if cell.is_river or abs(cell.position[0] - game_manager.selected_piece.position[0]) > 1 or abs(cell.position[1] - game_manager.selected_piece.position[1]) > 1 else (*Color.YELLOW, OPACITY),
@@ -165,14 +165,13 @@ def draw_subscreen(screen, game_manager):
     SUBSCREEN_SURFACE.blit(CARD_SCALED, (0, 0))
     SUBSCREEN_SURFACE.blit(transform.scale(game_manager.focused_piece.artwork, Size.ARTWORK), (Size.PADDING[0], Y_ARTWORK))
     y_position = Y_DESCRIPTION
-    desciption_text = f'''Name: {game_manager.focused_piece.name}
+    
+    # Wrap the description text and render it on the subscreen
+    for line in wrap_text(f'''Name: {game_manager.focused_piece.name}
 Type: {game_manager.focused_piece.side}
 Attribute: {game_manager.focused_piece.__class__.__name__}
 ATK: {game_manager.focused_piece.atk}
-{game_manager.focused_piece.detail}'''
-    
-    # Wrap the description text and render it on the subscreen
-    for line in wrap_text(desciption_text, FONT_BTN, LEN_DESCRIPTION):
+{game_manager.focused_piece.detail}''', FONT_BTN, LEN_DESCRIPTION):
         detail_text = FONT_BTN.render(line, True, Color.WHITE)
         SUBSCREEN_SURFACE.blit(detail_text, (X_DESCRIPTION, y_position))
         y_position += detail_text.get_height() + LINE_SPACE

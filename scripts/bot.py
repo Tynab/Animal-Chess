@@ -181,8 +181,8 @@ class Bot:
             tuple: The paths and the piece.
         '''
         # Initialize the variables
-        board_temp = board.copy()
-        piece_temp = piece.copy()
+        current_board = board.copy()
+        current_piece = piece.copy()
         queue = deque([([start], 0)])
         visited = set()
         paths = []
@@ -193,7 +193,7 @@ class Bot:
             # Dequeue the path and the distance
             path, distance = queue.popleft()
             current_position = path[-1]
-            board_temp.get_cell(current_position).add_piece(piece_temp)
+            current_board.get_cell(current_position).add_piece(current_piece)
 
             # Check if the current position is in the ends
             if current_position in ends and distance <= min_distance:
@@ -216,7 +216,7 @@ class Bot:
                 visited.add(current_position)
 
                 # Add the available cells to the queue
-                for cell in piece_temp.available_cells(board_temp):
+                for cell in current_piece.available_cells(current_board):
                     if cell.position not in visited:
                         queue.append((path + [cell.position], distance + 1))
         

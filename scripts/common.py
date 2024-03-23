@@ -29,17 +29,8 @@ class ImagePath:
     Attributes:
     - COVER (str): The file path to the cover image.
     - START_BTN (str): The file path to the start button image.
-    '''
-    COVER = 'assets/images/cover.png'
-    START_BTN = 'assets/images/button.png'
-
-class ImagePath:
-    '''
-    A class that represents the file paths to various images used in the game.
-
-    Attributes:
-    - COVER (str): The file path to the cover image.
-    - START_BTN (str): The file path to the start button image.
+    - GUIDE (str): The file path to the guide image.
+    - CARD (str): The file path to the card image.
     '''
     COVER = 'assets/images/cover.png'
     START_BTN = 'assets/images/button.png'
@@ -112,18 +103,15 @@ class GameMode:
     - PvP (int): Player vs Player game mode.
     - PvC (int): Player vs Computer game mode.
     - CvC (int): Computer vs Computer game mode.
-    - Enless (int): Endless game mode.
 
     Methods:
     - is_pvp(mode): Check if the mode is player vs player.
     - is_pvc(mode): Check if the mode is player vs computer.
     - is_cvc(mode): Check if the mode is computer vs computer.
-    - is_endless(mode): Check if the mode is endless.
     '''
     PvP = 1
     PvC = 2
     CvC = 3
-    Enless = 4
 
     @staticmethod
     def is_pvp(mode):
@@ -163,19 +151,6 @@ class GameMode:
             bool: True if the mode is computer vs computer, False otherwise.
         '''
         return mode == GameMode.CvC
-    
-    @staticmethod
-    def is_endless(mode):
-        '''
-        Check if the mode is endless.
-
-        Args:
-            mode (int): The mode.
-
-        Returns:
-            bool: True if the mode is endless, False otherwise.
-        '''
-        return mode == GameMode.Enless
 
 class GameState:
     '''

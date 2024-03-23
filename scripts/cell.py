@@ -86,7 +86,9 @@ class Cell:
         Args:
             piece (Piece): The piece.
         '''
-        piece_atk_map = {
+        self.piece = piece
+        self.piece.position = self.position
+        self.piece.atk = 0 if CellLabel.is_opponent_trap(self.label, piece.side) else {
             Rat: PieceAtk.RAT,
             Cat: PieceAtk.CAT,
             Dog: PieceAtk.DOG,
@@ -95,10 +97,7 @@ class Cell:
             Tiger: PieceAtk.TIGER,
             Lion: PieceAtk.LION,
             Elephant: PieceAtk.ELEPHANT,
-        }
-        self.piece = piece
-        self.piece.position = self.position
-        self.piece.atk = 0 if CellLabel.is_opponent_trap(self.label, piece.side) else piece_atk_map[type(self.piece)]
+        }[type(self.piece)]
 
     def remove_piece(self):
         '''

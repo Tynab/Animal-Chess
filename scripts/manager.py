@@ -17,11 +17,13 @@ class GameManager:
     - current_side (PlayerSide): The current side.
     - opponent_side (PlayerSide): The opponent side.
     - selected_piece (Piece): The selected piece.
+    - focused_piece (Piece): The focused piece.
 
     Methods:
     - __init__: Initialize the game manager.
     - reset_game: Reset the game.
     - switch_player: Switch the player.
+    - handle_piece_focus: Handle the piece focus.
     - handle_piece_selection: Handle the piece selection.
     - handle_piece_move: Handle the piece move.
     - computer_move: Make the computer move.
@@ -54,6 +56,8 @@ class GameManager:
         '''
         self.board = Board()
         self.game_state = GameState.RUNNING
+        self.game_result = None
+        self.selected_piece = None
 
     def switch_player(self):
         '''
@@ -121,8 +125,10 @@ class GameManager:
 
             # Check if the game ends
             if self.is_game_end:
+                # Save the log
                 self.log.save()
                 
+                # Return True to indicate that the game ends
                 return True
             
             # Switch the player
@@ -173,8 +179,10 @@ class GameManager:
 
         # Check if the game ends
         if self.is_game_end:
+            # Save the log
             self.log.save()
 
+            # Return to exit the function
             return
 
         # Switch the player

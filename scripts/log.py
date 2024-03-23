@@ -18,8 +18,8 @@ class Log:
     - save: Save the chess record to a CSV file.
     - is_move_forbidden: Check if the move is forbidden.
     - map_piece_name: Map the piece name.
-    - winner_to_enum: Convert the winner to enum.
-    - enum_to_winner: Convert the enum to winner.
+    - side_to_enum: Convert the side to enum.
+    - enum_to_side: Convert the enum to side.
     - position_to_enum: Convert the position to enum.
     - enum_to_postion: Convert the enum to position.
     - move_to_enum: Convert the move to enum.
@@ -45,7 +45,7 @@ class Log:
         Create a new data frame.
         '''
         self.id = str(uuid.uuid4())
-        self.df = DataFrame(columns=['Id', 'board', 'piece', 'atk', 'move', 'position', 'river', 'trap', 'den', 'score', 'winner'])
+        self.df = DataFrame(columns=['Id', 'board', 'side', 'piece', 'atk', 'move', 'position', 'river', 'trap', 'den', 'score', 'winner'])
 
     def insert_chess_record(self, board, move):
         '''
@@ -56,9 +56,10 @@ class Log:
             move (tuple): The move.
         '''
         cell = board.get_cell(move[1])
-        new_record = DataFrame([{
+        self.df = pandas.concat([self.df, DataFrame([{
             'Id': self.id,
             'board': Log.board_to_enum(board),
+            'side': Log.side_to_enum(cell.piece.side),
             'piece': Log.cell_piece_to_enum(cell),
             'atk': cell.piece.atk,
             'move': Log.move_to_enum(move),
@@ -67,9 +68,8 @@ class Log:
             'trap': Log.cell_trap_to_enum(cell),
             'den': Log.cell_den_to_enum(cell),
             'score': Bot.evaluate_position(board, PlayerSide.DARK),
-            'winner': Log.winner_to_enum(board.winner)
-        }])
-        self.df = pandas.concat([self.df, new_record], ignore_index=True)
+            'winner': Log.side_to_enum(board.winner)
+        }])], ignore_index=True)
         forbidden_move = self.move_forbidden()
         board.forbidden_move = forbidden_move and Log.enum_to_move(forbidden_move) or None
 
@@ -105,7 +105,7 @@ class Log:
             str: The symbol.
         '''
         # Map the piece name to symbol
-        piece_symbols = {
+        symbol = {
             'rat': 'r',
             'cat': 'c',
             'dog': 'd',
@@ -114,35 +114,34 @@ class Log:
             'tiger': 't',
             'lion': 'l',
             'elephant': 'e',
-        }
-        symbol = piece_symbols.get(piece.__class__.__name__.lower(), '-')
+        }.get(piece.__class__.__name__.lower(), '-')
         
         # Return the symbol
         return piece.is_dark and symbol or symbol.upper()
 
     @staticmethod
-    def winner_to_enum(winner):
+    def side_to_enum(side):
         '''
-        Convert the winner to enum.
-        
+        Convert the side to enum.
+
         Args:
-            winner (PlayerSide): The winner.
+            side (PlayerSide): The side.
         
         Returns:
             int: The enum.
         '''
-        return 0 if not winner else 1 if PlayerSide.is_dark(winner) else -1
+        return 0 if not side else 1 if PlayerSide.is_dark(side) else -1
     
     @staticmethod
-    def enum_to_winner(enum):
+    def enum_to_side(enum):
         '''
-        Convert the enum to winner.
-        
+        Convert the enum to side.
+
         Args:
             enum (int): The enum.
-            
+        
         Returns:
-            PlayerSide: The winner.
+            PlayerSide: The side.
         '''
         return PlayerSide.DARK if enum == 1 else PlayerSide.LIGHT if enum == -1 else None
     
