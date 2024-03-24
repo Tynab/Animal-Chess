@@ -1,2 +1,0 @@
-# Animal-Chess
- Animal Chess
