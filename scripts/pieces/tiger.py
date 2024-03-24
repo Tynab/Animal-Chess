@@ -1,5 +1,5 @@
-from scripts.common import PieceName, PieceDetail, CellPosition, PieceAtk, PieceAvatar, PieceArtWork
-from scripts.piece import Piece
+from scripts.common import *
+from scripts.piece import *
 
 class Tiger(Piece):
     '''
@@ -7,13 +7,7 @@ class Tiger(Piece):
     
     Attributes:
     - side (PlayerSide): The player side.
-    - name (PieceName): The piece name.
-    - detail (PieceDetail): The piece detail.
-    - position (CellPosition): The initial position.
-    - atk (PieceAtk): The piece attack value.
-    - avatar (PieceAvatar): The piece avatar.
-    - artwork (PieceArtWork): The piece artwork.
-
+    
     Methods:
     - __init__: Initialize the tiger.
     - copy: Creates a copy of the tiger.
@@ -28,7 +22,7 @@ class Tiger(Piece):
         Args:
             side (PlayerSide): The player side.
             is_copy (bool): True if the piece is a copy, False otherwise.
-        
+            
         Returns:
             Tiger: A new Tiger instance.
         '''
@@ -39,7 +33,7 @@ class Tiger(Piece):
         Creates a copy of the tiger.
         
         Returns:
-            Tiger: The copied tiger.
+            Tiger: A new Tiger instance.
         '''
         return Tiger(self.side, True)
 
@@ -51,12 +45,12 @@ class Tiger(Piece):
             board (Board): The board.
             
         Returns:
-            list: The list of available cells.
+            list: A list of available cells for the tiger.
         '''
-        # Get the available cells in all directions
+        # Initialize the result
         result = [cell for direction in [self.left, self.right, self.up, self.down] if (cell := Tiger.jump_over_river(direction(1, board), direction, board) or direction(1, board)) and self.is_valid_cell(cell)]
 
-        # If the piece is a lion, add the den position to the available cells
+        # Remove the forbidden cell if the forbidden move is the same as the tiger's position
         if board.forbidden_move and board.forbidden_move[0] == self.position and board.forbidden_cell in result:
             result.remove(board.forbidden_cell)
 
@@ -69,10 +63,10 @@ class Tiger(Piece):
         Jumps over the river.
         
         Args:
-            cell (Cell): The cell.
-            direction (function): The direction.
+            cell (Cell): The current cell.
+            direction (function): The direction function.
             board (Board): The board.
-        
+            
         Returns:
             Cell: The cell.
         '''
@@ -80,7 +74,7 @@ class Tiger(Piece):
         if not cell:
             return cell
         
-        # Set the step to 1
+        # Initialize the step
         step = 1
 
         # While the cell is a river, get the next cell
@@ -88,7 +82,7 @@ class Tiger(Piece):
             # Get the next cell
             cell = direction(step, board)
             
-            # If the cell is valid and contains a piece, return None
+            # Return the cell if it is occupied
             if cell and cell.piece:
                 return cell.is_river and None or cell
             

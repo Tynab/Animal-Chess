@@ -1,5 +1,5 @@
-from scripts.common import PieceName, PieceDetail, CellPosition, PieceAtk, PieceAvatar, PieceArtWork
-from scripts.piece import Piece
+from scripts.common import *
+from scripts.piece import *
 
 class Wolf(Piece):
     '''
@@ -7,13 +7,7 @@ class Wolf(Piece):
     
     Attributes:
     - side (PlayerSide): The player side.
-    - name (PieceName): The piece name.
-    - detail (PieceDetail): The piece detail.
-    - position (CellPosition): The initial position.
-    - atk (PieceAtk): The piece attack value.
-    - avatar (PieceAvatar): The piece avatar.
-    - artwork (PieceArtWork): The piece artwork.
-
+    
     Methods:
     - __init__: Initialize the wolf.
     - copy: Creates a copy of the wolf.
@@ -26,7 +20,7 @@ class Wolf(Piece):
         Args:
             side (PlayerSide): The player side.
             is_copy (bool): True if the piece is a copy, False otherwise.
-
+            
         Returns:
             Wolf: A new Wolf instance.
         '''
@@ -37,6 +31,6 @@ class Wolf(Piece):
         Creates a copy of the wolf.
         
         Returns:
-            Wolf: The copied wolf.
+            Wolf: A new Wolf instance.
         '''
         return Wolf(self.side, True)

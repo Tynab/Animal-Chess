@@ -1,27 +1,24 @@
 import asyncio
 import pygame
-from pygame import display, time, mouse, event, Color
+from pygame import *
 
 # Initialize Pygame
 pygame.init()
 
 import scripts.common as common
 import scripts.rendering as rendering
-from scripts.common import Size, GameState, GameMode, PlayerSide, Color
-from scripts.manager import GameManager
+from scripts.common import *
+from scripts.manager import *
 
-# Set the loop counter
+# Constants
 LOOP = 1000
 
-# Set the global variables
-_counter = LOOP
+# Global variables
 _game_mode = GameMode.PvC
-
-# Set the screen and clock
-_clock = time.Clock()
+_counter = LOOP
 _screen = display.set_mode(Size.TOTAL, pygame.SRCALPHA, 32)
 
-# Set the window caption
+# Set the window title
 display.set_caption(common.TIT)
 
 def handle_events(game_manager, mouse_position):
@@ -50,10 +47,7 @@ def handle_events(game_manager, mouse_position):
 
                     # Set the game state to running
                     if GameMode.is_cvc(game_manager.game_mode):
-                        # Set the global variables
                         global _counter
-
-                        # Reset the counter
                         _counter = LOOP
 
     # Return True if the game should continue running
@@ -61,16 +55,17 @@ def handle_events(game_manager, mouse_position):
 
 async def main():
     '''
-    The main function.
+    The main function of the game.
     '''
-    # Initialize the game manager
+    # Declare global variables
+    global _counter
+
+    # Initialize the game clock and the game manager
+    clock = time.Clock()
     game_manager = GameManager(_game_mode)
     running = True
 
-    # Set the global variables
-    global _counter
-
-    # Main loop
+    # Run the game loop
     while running:
         # Fill the screen with white color
         _screen.fill(Color.WHITE)
@@ -100,16 +95,15 @@ async def main():
                 running = handle_events(game_manager, mouse.get_pos())
                 rendering.draw_screen(_screen, game_manager)
 
-        # Update the display and limit the frame rate to 60 FPS
+        # Update the display
         display.flip()
-        _clock.tick(60)
+        clock.tick(60)
 
-    # Quit the game
+        # Wait for a while
+        await asyncio.sleep(0)
+
+    # Quit Pygame
     pygame.quit()
 
-    # Wait for the next frame
-    await asyncio.sleep(0)
-
 # Run the main function
-# if __name__ == '__main__':
 asyncio.run(main())

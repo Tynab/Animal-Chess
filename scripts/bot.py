@@ -1,23 +1,16 @@
-from collections import deque
-from scripts.common import PlayerSide
+from collections import *
+from scripts.common import *
 
 class Bot:
     '''
-    Bot class.
-
-    Attributes:
-    - name: The name of the bot.
-    - side: The side of the bot.
-    - depth: The depth of the bot.
-    - algorithm: The algorithm of the bot.
+    The bot.
 
     Methods:
-    - __init__: Initialize the bot.
-    - make_move: Make a move.
-    - evaluate_position: Evaluate the position of the board.
-    - minimax: Minimax algorithm.
-    - minimax_alpha_beta_pruning: Minimax algorithm with alpha-beta pruning.
-    - breadth_first_search: Breadth-first search algorithm.
+    - get_move(self, board): Get the move.
+    - evaluate_position(board, current_side): Evaluate the position of the board.
+    - minimax(board, current_side, depth, maximizing_player): Minimax algorithm.
+    - minimax_alpha_beta_pruning(board, current_side, depth, alpha, beta, maximizing_player): Minimax algorithm with alpha-beta pruning.
+    - breadth_first_search(board, piece, start, ends): Breadth-first search algorithm.
     '''
 
     @staticmethod
@@ -28,22 +21,22 @@ class Bot:
         Args:
             board (Board): The board.
             current_side (PlayerSide): The current side.
-            
+        
         Returns:
             int: The score.
         '''
         # Initialize the score
         score = 0
         
-        # Check if the opponent's den is invaded
+        # Check if the current player's den is invaded by the opponent
         if board.is_opponent_den_invaded(current_side):
             score += 900
         
-        # Check if the current player's den is invaded by the opponent
+        # Check if the opponent's den is invaded by the current player
         if board.is_opponent_den_invaded(PlayerSide.opponent_of(current_side)):
             score -= 900
         
-        # Calculate the score based on the pieces on the board
+        # Iterate through the pieces
         return score + sum((piece.side == current_side and piece.atk * 10 or -piece.atk * 10) for piece in board.pieces)
     
     @staticmethod
@@ -56,7 +49,7 @@ class Bot:
             current_side (PlayerSide): The current side.
             depth (int): The depth.
             maximizing_player (bool): The maximizing player.
-            
+        
         Returns:
             tuple: The best evaluation and the best moves.
         '''
@@ -111,7 +104,7 @@ class Bot:
             alpha (int): The alpha value.
             beta (int): The beta value.
             maximizing_player (bool): The maximizing player.
-            
+        
         Returns:
             tuple: The best evaluation and the best moves.
         '''
@@ -180,7 +173,7 @@ class Bot:
         Returns:
             tuple: The paths and the piece.
         '''
-        # Initialize the variables
+        # Initialize the current board, the current piece, the queue, the visited set, the paths, and the minimum distance
         current_board = board.copy()
         current_piece = piece.copy()
         queue = deque([([start], 0)])
@@ -190,23 +183,23 @@ class Bot:
 
         # Iterate through the queue
         while queue:
-            # Dequeue the path and the distance
+            # Get the path and the distance
             path, distance = queue.popleft()
             current_position = path[-1]
             current_board.get_cell(current_position).add_piece(current_piece)
 
             # Check if the current position is in the ends
             if current_position in ends and distance <= min_distance:
-                # Update the paths and the minimum distance
+                # Update the minimum distance
                 if distance < min_distance:
                     paths.clear()
                     min_distance = distance
                 
-                # Add the path
+                # Add the path to the paths
                 paths.append((distance, path))
                 ends.remove(current_position)
 
-                # Check if there are no ends
+                # Check if there are no more ends
                 if not ends:
                     break
 
@@ -215,7 +208,7 @@ class Bot:
                 # Add the current position to the visited set
                 visited.add(current_position)
 
-                # Add the available cells to the queue
+                # Iterate through the available cells
                 for cell in current_piece.available_cells(current_board):
                     if cell.position not in visited:
                         queue.append((path + [cell.position], distance + 1))

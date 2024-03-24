@@ -1,8 +1,8 @@
-import math
+import math as m
 import pygame
 import scripts.common as common
-from pygame import Surface, Rect, draw, transform, image, font, mouse
-from scripts.common import Color, ImagePath, Size, FontName, GameState
+from pygame import *
+from scripts.common import *
 
 COVER_SCALED = transform.scale(image.load(ImagePath.COVER), Size.BOARD)
 START_BTN_SCALED = transform.scale(image.load(ImagePath.START_BTN), Size.START_BTN)
@@ -22,14 +22,14 @@ FONT_TIT = font.SysFont(FontName.TIT, 45, bold=True)
 FONT_BTN = font.SysFont(FontName.BTN, 23, bold=True)
 FONT_RES = font.SysFont(FontName.TXT, 57, bold=True)
 
+ANGLE = 2 * m.pi
+ANGLE_START = m.pi / 2
+
 OPACITY = 192
 
 LINE_SPACE = Size.PADDING[1] / 2
 
 LEN_DESCRIPTION = Size.SUBSCREEN[0] - Size.PADDING[0] * 3
-
-ANGLE = 2 * math.pi
-ANGLE_START = math.pi / 2
 
 COORDINATE = (common.SPAN // 2, common.SPAN // 2)
 
@@ -42,7 +42,7 @@ def draw_screen(screen, game_manager):
     '''
     Draws the game screen based on the current state of the game.
 
-    Parameters:
+    Args:
         screen (pygame.Surface): The surface on which to draw the game.
         game_manager (GameManager): The game manager that holds the state of the game.
     '''
@@ -199,8 +199,8 @@ def draw_star(surface, color, center, outer_radius, inner_radius, opacity=255, p
     star_center = (outer_radius, outer_radius)
     draw.polygon(star_surface, color + (opacity,), [point for pair in [
         (
-            (star_center[0] + math.cos(start_angle - i * angle_between_points) * outer_radius, star_center[1] - math.sin(start_angle - i * angle_between_points) * outer_radius),
-            (star_center[0] + math.cos(start_angle - (i + 0.5) * angle_between_points) * inner_radius, star_center[1] - math.sin(start_angle - (i + 0.5) * angle_between_points) * inner_radius)
+            (star_center[0] + m.cos(start_angle - i * angle_between_points) * outer_radius, star_center[1] - m.sin(start_angle - i * angle_between_points) * outer_radius),
+            (star_center[0] + m.cos(start_angle - (i + 0.5) * angle_between_points) * inner_radius, star_center[1] - m.sin(start_angle - (i + 0.5) * angle_between_points) * inner_radius)
         )
         for i in range(points)
     ] for point in pair])

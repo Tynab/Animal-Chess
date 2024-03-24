@@ -1,5 +1,5 @@
-from scripts.common import PieceName, PieceDetail, CellPosition, PieceAtk, PieceAvatar, PieceArtWork
-from scripts.piece import Piece
+from scripts.common import *
+from scripts.piece import *
 
 class Leopard(Piece):
     '''
@@ -7,13 +7,7 @@ class Leopard(Piece):
     
     Attributes:
     - side (PlayerSide): The player side.
-    - name (PieceName): The piece name.
-    - detail (PieceDetail): The piece detail.
-    - position (CellPosition): The initial position.
-    - atk (PieceAtk): The piece attack value.
-    - avatar (PieceAvatar): The piece avatar.
-    - artwork (PieceArtWork): The piece artwork.
-
+    
     Methods:
     - __init__: Initialize the leopard.
     - copy: Creates a copy of the leopard.
@@ -37,6 +31,6 @@ class Leopard(Piece):
         Creates a copy of the leopard.
         
         Returns:
-            Leopard: The copied leopard.
+            Leopard: A new Leopard instance.
         '''
         return Leopard(self.side, True)

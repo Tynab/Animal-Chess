@@ -1,5 +1,5 @@
-from scripts.common import PieceName, PieceDetail, CellPosition, PieceAtk, PieceAvatar, PieceArtWork
-from scripts.piece import Piece
+from scripts.common import *
+from scripts.piece import *
 
 class Dog(Piece):
     '''
@@ -7,22 +7,16 @@ class Dog(Piece):
     
     Attributes:
     - side (PlayerSide): The player side.
-    - name (PieceName): The piece name.
-    - detail (PieceDetail): The piece detail.
-    - position (CellPosition): The initial position.
-    - atk (PieceAtk): The piece attack value.
-    - avatar (PieceAvatar): The piece avatar.
-    - artwork (PieceArtWork): The piece artwork.
-
+    
     Methods:
-    - __init__: Initialize the dog.
+    - __init__: Initializes the dog.
     - copy: Creates a copy of the dog.
     - is_valid_cell: Checks if a cell is a valid move for the piece.
     '''
 
     def __init__(self, side, is_copy=False):
         '''
-        Initialize the dog.
+        Initializes the dog.
         
         Args:
             side (PlayerSide): The player side.
@@ -38,7 +32,7 @@ class Dog(Piece):
         Creates a copy of the dog.
         
         Returns:
-            Dog: The copied dog.
+            Dog: A new Dog instance.
         '''
         return Dog(self.side, True)
 
@@ -47,9 +41,9 @@ class Dog(Piece):
         Checks if a cell is a valid move for the piece.
         
         Args:
-            cell (Cell): The cell.
+            cell (Cell): The cell to check.
         
         Returns:
-            bool: True if the cell is a valid move for the piece, False otherwise.
+            bool: True if the cell is a valid move, False otherwise.
         '''
         return cell.is_in_board and not cell.is_occupied_own(self.side) and (not cell.piece or self.can_defeat(cell.piece))

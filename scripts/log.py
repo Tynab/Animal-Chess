@@ -1,48 +1,52 @@
 import os
 import pandas
 import uuid
-from pandas import DataFrame
-from scripts.bot import Bot
-from scripts.common import PlayerSide
+from pandas import *
+from scripts.bot import *
+from scripts.common import *
 
 class Log:
     '''
-    Log class.
-    
+    The log.
+
     Attributes:
-    - df: The data frame.
+    - id (str): The ID.
+    - df (DataFrame): The data frame.
     
     Methods:
-    - __init__: Initialize the log.
-    - insert_chess_record: Insert the chess record.
-    - save: Save the chess record to a CSV file.
-    - is_move_forbidden: Check if the move is forbidden.
-    - map_piece_name: Map the piece name.
-    - side_to_enum: Convert the side to enum.
-    - enum_to_side: Convert the enum to side.
-    - position_to_enum: Convert the position to enum.
-    - enum_to_postion: Convert the enum to position.
-    - move_to_enum: Convert the move to enum.
-    - enum_to_move: Convert the enum to move.
-    - cell_piece_to_enum: Convert the cell piece to enum.
-    - cell_trap_to_enum: Convert the cell trap to enum.
-    - cell_den_to_enum: Convert the cell den to enum.
-    - cell_river_to_enum: Convert the cell river to enum.
-    - board_to_enum: Convert the board to enum.
+    - __init__(self): Initialize the log.
+    - new_df(self): Create a new data frame.
+    - insert_chess_record(self, board, move): Insert the chess record.
+    - save(self): Save the chess record to a CSV file.
+    - map_piece_name(piece): Map the piece name.
+    - side_to_enum(side): Convert the side to enum.
+    - enum_to_side(enum): Convert the enum to side.
+    - position_to_enum(position): Convert the position to enum.
+    - enum_to_postion(enum): Convert the enum to position.
+    - move_to_enum(move): Convert the move to enum.
+    - enum_to_move(enum): Convert the enum to move.
+    - cell_piece_to_enum(cell): Convert the cell piece to enum.
+    - cell_trap_to_enum(cell): Convert the cell trap to enum.
+    - cell_den_to_enum(cell): Convert the cell den to enum.
+    - cell_river_to_enum(cell): Convert the cell river to enum.
+    - board_to_enum(board): Convert the board to enum.
     '''
 
     def __init__(self):
         '''
         Initialize the log.
-
+        
         Returns:
-            Log: A new Log instance.
+            Log: The log.
         '''
         self.new_df()
 
     def new_df(self):
         '''
         Create a new data frame.
+        
+        Returns:
+            DataFrame: The data frame.
         '''
         self.id = str(uuid.uuid4())
         self.df = DataFrame(columns=['Id', 'board', 'side', 'piece', 'atk', 'move', 'position', 'river', 'trap', 'den', 'score', 'winner'])
@@ -70,8 +74,6 @@ class Log:
             'score': Bot.evaluate_position(board, PlayerSide.DARK),
             'winner': Log.side_to_enum(board.winner)
         }])], ignore_index=True)
-        forbidden_move = self.move_forbidden()
-        board.forbidden_move = forbidden_move and Log.enum_to_move(forbidden_move) or None
 
     def save(self):
         '''
@@ -79,19 +81,6 @@ class Log:
         '''
         self.df.to_csv('animal_chess.csv', mode='a', header=not os.path.isfile('animal_chess.csv'), index=False)
         self.new_df()
-
-    def move_forbidden(self):
-        '''
-        Check if the move is forbidden.
-        
-        Returns:
-            str: The forbidden move.
-        '''
-        # Get the last 10 moves
-        moves = self.df['move'][-4:-13:-4]
-
-        # Check if the moves are the same
-        return moves.iloc[0] if moves.nunique() == 1 and len(moves) == 3 else None
 
     @staticmethod
     def map_piece_name(piece):
@@ -104,7 +93,7 @@ class Log:
         Returns:
             str: The symbol.
         '''
-        # Map the piece name to symbol
+        # Map the piece name
         symbol = {
             'rat': 'r',
             'cat': 'c',
@@ -123,7 +112,7 @@ class Log:
     def side_to_enum(side):
         '''
         Convert the side to enum.
-
+        
         Args:
             side (PlayerSide): The side.
         
@@ -136,7 +125,7 @@ class Log:
     def enum_to_side(enum):
         '''
         Convert the enum to side.
-
+        
         Args:
             enum (int): The enum.
         
@@ -152,7 +141,7 @@ class Log:
         
         Args:
             position (tuple): The position.
-            
+        
         Returns:
             str: The enum.
         '''
@@ -178,7 +167,7 @@ class Log:
         
         Args:
             move (tuple): The move.
-        
+            
         Returns:
             str: The enum.
         '''
@@ -204,7 +193,7 @@ class Log:
         
         Args:
             cell (Cell): The cell.
-        
+            
         Returns:
             str: The enum.
         '''
@@ -217,7 +206,7 @@ class Log:
         
         Args:
             cell (Cell): The cell.
-            
+        
         Returns:
             int: The enum.
         '''
@@ -256,7 +245,7 @@ class Log:
         
         Args:
             board (Board): The board.
-            
+        
         Returns:
             str: The enum.
         '''

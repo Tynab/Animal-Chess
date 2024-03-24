@@ -1,6 +1,6 @@
 import scripts.pieces.rat as rat
-from scripts.common import PlayerSide, PieceName, PieceDetail, CellPosition, PieceAtk, PieceAvatar, PieceArtWork
-from scripts.piece import Piece
+from scripts.common import *
+from scripts.piece import *
 
 class Elephant(Piece):
     '''
@@ -8,15 +8,9 @@ class Elephant(Piece):
     
     Attributes:
     - side (PlayerSide): The player side.
-    - name (PieceName): The piece name.
-    - detail (PieceDetail): The piece detail.
-    - position (CellPosition): The initial position.
-    - atk (PieceAtk): The piece attack value.
-    - avatar (PieceAvatar): The piece avatar.
-    - artwork (PieceArtWork): The piece artwork.
-
+    
     Methods:
-    - __init__: Initialize the elephant.
+    - __init__: Initializes the elephant.
     - copy: Creates a copy of the elephant.
     - can_defeat: Checks if the elephant can defeat the piece.
     - weaker_pieces_positions: Returns a list of positions of weaker pieces.
@@ -24,12 +18,12 @@ class Elephant(Piece):
 
     def __init__(self, side, is_copy=False):
         '''
-        Initialize the elephant.
+        Initializes the elephant.
         
         Args:
             side (PlayerSide): The player side.
             is_copy (bool): True if the piece is a copy, False otherwise.
-
+        
         Returns:
             Elephant: A new Elephant instance.
         '''
@@ -40,7 +34,7 @@ class Elephant(Piece):
         Creates a copy of the elephant.
         
         Returns:
-            Elephant: The copied elephant.
+            Elephant: A new Elephant instance.
         '''
         return Elephant(self.side, True)
 
@@ -49,8 +43,8 @@ class Elephant(Piece):
         Checks if the elephant can defeat the piece.
         
         Args:
-            piece (Piece): The piece.
-            
+            piece (Piece): The piece to defeat.
+        
         Returns:
             bool: True if the elephant can defeat the piece, False otherwise.
         '''
@@ -64,6 +58,6 @@ class Elephant(Piece):
             board (Board): The board.
         
         Returns:
-            list: The list of positions of weaker pieces.
+            list: A list of positions of weaker pieces.
         '''
         return [PlayerSide.opponent_den_position(self.side)] + [piece.position for piece in board.pieces_of[PlayerSide.opponent_of(self.side)] if piece.atk < self.atk and not isinstance(piece, rat.Rat)]

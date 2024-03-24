@@ -9,14 +9,17 @@ class Size:
     A class that represents the sizes of various elements in the game.
 
     Attributes:
-    - BOARD (tuple): The size of the game board, calculated as width times span by height times span.
-    - CELL (tuple): The size of a cell on the game board, represented as span by span.
-    - ARTWORK (tuple): The size of the artwork, represented as 500 by 500.
-    - START_BTN (tuple): The size of the start button, represented as 190 by 50.
+    - BOARD (tuple): The size of the game board.
+    - SUBSCREEN (tuple): The size of the subscreen.
+    - TOTAL (tuple): The total size of the game window.
+    - CELL (tuple): The size of each cell on the game board.
+    - ARTWORK (tuple): The size of the artwork images.
+    - START_BTN (tuple): The size of the start button.
+    - PADDING (tuple): The padding size for elements.
     '''
     BOARD = (W * SPAN, H * SPAN)
     SUBSCREEN = (500, BOARD[1])
-    TOTAL = (BOARD[0] + SUBSCREEN[0], BOARD[1]) 
+    TOTAL = (BOARD[0] + SUBSCREEN[0], BOARD[1])
     CELL = (SPAN, SPAN)
     ARTWORK = (480, 480)
     START_BTN = (190, 50)

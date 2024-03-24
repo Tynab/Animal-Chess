@@ -1,33 +1,32 @@
 import scripts.common as common
-from pygame import transform, image
-from scripts.common import Size, PlayerSide
+from pygame import *
+from scripts.common import *
 
 class Piece:
     '''
-    Represents a piece in the game.
-
+    The piece.
+    
     Attributes:
-    - name: The name of the piece.
-    - image: The image of the piece.
-    - artwork: The artwork of the piece.
-    - detail: The details of the piece.
-    - position: The position of the piece on the board.
-    - atk: The attack power of the piece.
-    - side: The side the piece belongs to.
-
+    - name (str): The name.
+    - image (Surface): The image.
+    - artwork (Surface): The artwork.
+    - detail (str): The detail.
+    - position (tuple): The position.
+    - atk (int): The attack power.
+    - side (PlayerSide): The side.
+    
     Methods:
-    - __init__: Initializes a new instance of the Piece class.
-    - copy: Creates a copy of the piece.
-    - left: Returns the cell to the left of the piece.
-    - right: Returns the cell to the right of the piece.
-    - up: Returns the cell above the piece.
-    - down: Returns the cell below the piece.
-    - can_defeat: Checks if the piece can defeat another piece.
-    - is_valid_cell: Checks if a cell is a valid move for the piece.
-    - available_cells: Returns a list of available cells for the piece.
-    - weaker_pieces_positions: Returns a list of positions of weaker pieces.
-    - is_dark: Checks if the piece belongs to the dark side.
-    - is_light: Checks if the piece belongs to the light side.
+    - copy(self): Copy the piece.
+    - left(self, step, board): Get the cell to the left.
+    - right(self, step, board): Get the cell to the right.
+    - up(self, step, board): Get the cell above.
+    - down(self, step, board): Get the cell below.
+    - can_defeat(self, piece): Check if the piece can defeat another piece.
+    - is_valid_cell(self, cell): Check if the cell is a valid move.
+    - available_cells(self, board): Get the available cells.
+    - weaker_pieces_positions(self, board): Get the positions of weaker pieces.
+    - is_dark: Check if the piece belongs to the dark side.
+    - is_light: Check if the piece belongs to the light side.
     '''
 
     def __init__(self, name, detail, position, atk, side, image_path=None, artwork_path=None):
@@ -40,11 +39,11 @@ class Piece:
             position (tuple): The position of the piece on the board.
             atk (int): The attack power of the piece.
             side (PlayerSide): The side the piece belongs to.
-            image_path (str): The image path of the piece.
-            artwork_path (str): The artwork path of the piece.
-
+            image_path (str): The path to the image of the piece.
+            artwork_path (str): The path to the artwork of the piece.
+            
         Returns:
-            Piece: A new Piece instance.
+            Piece: The new instance of the Piece class.
         '''
         self.name = name
         self.image = image_path and transform.scale(image.load(image_path), Size.CELL) or None
@@ -59,7 +58,7 @@ class Piece:
         Creates a copy of the piece.
         
         Returns:
-            Piece: The copied piece.
+            Piece: The copy of the piece.
         '''
         return Piece(self.name, self.detail, self.position, self.atk, self.side)
 
@@ -109,7 +108,7 @@ class Piece:
         Args:
             step (int): The step size.
             board (Board): The board.
-        
+            
         Returns:
             Cell: The cell below the piece.
         '''
@@ -121,9 +120,9 @@ class Piece:
         
         Args:
             piece (Piece): The piece.
-            
+        
         Returns:
-            bool: True if the piece can defeat the other piece, False otherwise.
+            bool: True if the piece can defeat another piece, False otherwise.
         '''
         return not piece or self.atk >= piece.atk
 
@@ -149,14 +148,14 @@ class Piece:
         Returns:
             list: A list of available cells for the piece.
         '''
-        # Get the available cells in all directions
+        # Get the available cells
         result = [cell for direction in [self.left, self.right, self.up, self.down] if (cell := direction(1, board)) and self.is_valid_cell(cell)]
 
-        # If the piece is a lion, add the den position to the available cells
+        # Check if the piece is a rat
         if board.forbidden_move and board.forbidden_move[0] == self.position and board.forbidden_cell in result:
             result.remove(board.forbidden_cell)
 
-        # Return the result
+        # Return the available cells
         return result
 
     def weaker_pieces_positions(self, board):

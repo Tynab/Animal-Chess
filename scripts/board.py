@@ -8,30 +8,31 @@ import scripts.pieces.leopard as leopard
 import scripts.pieces.tiger as tiger
 import scripts.pieces.lion as lion
 import scripts.pieces.elephant as elephant
-from scripts.common import CellLabel, CellImage, CellPosition, PlayerSide
+from scripts.common import *
 
 class Board:
     '''
     Board class.
-
+    
     Attributes:
-    - cells: The cells of the board.
-    - captured_pieces: The list of captured pieces.
-    - pieces: The list of pieces on the board.
-    - pieces_of: The pieces of each player.
-    - forbidden_move: The forbidden move.
-
+    - cells (list): The cells of the board.
+    - pieces (list): The pieces on the board.
+    - pieces_of (dict): The pieces of each player.
+    - captured_pieces (list): The captured pieces.
+    - move_history (list): The move history.
+    - forbidden_move (tuple): The forbidden move.
+    
     Methods:
     - __init__: Constructor of the class.
     - copy: Return a copy of the board.
     - get_cell: Get the cell at the given position.
     - get_valid_moves: Get the valid moves for the given side.
+    - get_forbidden: Get the forbidden move.
     - make_move: Make a move on the board.
     - undo_move: Undo a move on the board.
     - update_pieces: Update the pieces on the board.
     - is_opponent_pieceless: Check if the opponent has no pieces left.
     - is_opponent_den_invaded: Check if the opponent's den is invaded.
-    - forbidden_cell: Get the forbidden cell.
     - is_dark_win: Check if the dark side wins.
     - is_light_win: Check if the light side wins.
     - is_game_over: Check if the game is over.
@@ -43,9 +44,9 @@ class Board:
         Constructor of the class.
         
         Args:
-            with_pieces (bool, optional): Whether to place pieces on the board. Defaults to True.
-            is_copy (bool, optional): True if the board is a copy, False otherwise. Defaults to False.
-
+            with_pieces (bool): True if the board should have pieces, False otherwise.
+            is_copy (bool): True if the board is a copy, False otherwise.
+            
         Returns:
             Board: A new Board instance.
         '''
@@ -78,6 +79,7 @@ class Board:
         self.cells[CellPosition.DARK_DEN[0]][CellPosition.DARK_DEN[1]].label = CellLabel.DARK_DEN
         self.cells[CellPosition.LIGHT_DEN[0]][CellPosition.LIGHT_DEN[1]].label = CellLabel.LIGHT_DEN
         
+        # Set the images for the river cells
         if not is_copy:
             # Set the images for the river cells
             self.cells[CellPosition.RIVER_1_1[0]][CellPosition.RIVER_1_1[1]].set_image(CellImage.RIVER_1)
@@ -105,8 +107,9 @@ class Board:
             self.cells[CellPosition.DARK_DEN[0]][CellPosition.DARK_DEN[1]].set_image(CellImage.DEN)
             self.cells[CellPosition.LIGHT_DEN[0]][CellPosition.LIGHT_DEN[1]].set_image(CellImage.DEN)
         
-        # Add pieces to the board if with_pieces is True
+        # Add the pieces to the board
         if with_pieces:
+            # Add the dark pieces to the board
             self.cells[CellPosition.DARK_RAT[0]][CellPosition.DARK_RAT[1]].add_piece(rat.Rat(PlayerSide.DARK))
             self.cells[CellPosition.DARK_CAT[0]][CellPosition.DARK_CAT[1]].add_piece(cat.Cat(PlayerSide.DARK))
             self.cells[CellPosition.DARK_DOG[0]][CellPosition.DARK_DOG[1]].add_piece(dog.Dog(PlayerSide.DARK))
@@ -115,6 +118,8 @@ class Board:
             self.cells[CellPosition.DARK_TIGER[0]][CellPosition.DARK_TIGER[1]].add_piece(tiger.Tiger(PlayerSide.DARK))
             self.cells[CellPosition.DARK_LION[0]][CellPosition.DARK_LION[1]].add_piece(lion.Lion(PlayerSide.DARK))
             self.cells[CellPosition.DARK_ELEPHANT[0]][CellPosition.DARK_ELEPHANT[1]].add_piece(elephant.Elephant(PlayerSide.DARK))
+
+            # Add the light pieces to the board
             self.cells[CellPosition.LIGHT_RAT[0]][CellPosition.LIGHT_RAT[1]].add_piece(rat.Rat(PlayerSide.LIGHT))
             self.cells[CellPosition.LIGHT_CAT[0]][CellPosition.LIGHT_CAT[1]].add_piece(cat.Cat(PlayerSide.LIGHT))
             self.cells[CellPosition.LIGHT_DOG[0]][CellPosition.LIGHT_DOG[1]].add_piece(dog.Dog(PlayerSide.LIGHT))
@@ -124,10 +129,11 @@ class Board:
             self.cells[CellPosition.LIGHT_LION[0]][CellPosition.LIGHT_LION[1]].add_piece(lion.Lion(PlayerSide.LIGHT))
             self.cells[CellPosition.LIGHT_ELEPHANT[0]][CellPosition.LIGHT_ELEPHANT[1]].add_piece(elephant.Elephant(PlayerSide.LIGHT))
         
-        # Initialize the captured pieces
+        # Update the pieces on the board
+        self.move_history = []
         self.captured_pieces = []
-        self.update_pieces()
         self.forbidden_move = None
+        self.update_pieces()
 
     def copy(self):
         '''
@@ -139,6 +145,7 @@ class Board:
         # Create a new board
         result = Board(False, True)
         result.cells = [[cell.copy() for cell in row] for row in self.cells]
+        result.move_history = self.move_history.copy()
         result.update_pieces()
 
         # Copy the captured pieces
@@ -150,7 +157,7 @@ class Board:
         
         Args:
             position (tuple): The position of the cell.
-            
+        
         Returns:
             Cell: The cell at the given position.
         '''
@@ -162,12 +169,25 @@ class Board:
         
         Args:
             side (PlayerSide): The side of the player.
-            
+        
         Returns:
-            list: The list of valid moves.
+            list: A list of valid moves for the given side.
         '''
         return [(pin.position, cell.position) for pin in self.pieces_of[side] for cell in pin.available_cells(self) if (pin.position, cell.position) != self.forbidden_move]
 
+    def get_forbidden(self):
+        '''
+        Get the forbidden move.
+        
+        Returns:
+            tuple: The forbidden move.
+        '''
+        # Get the last 3 moves
+        moves = [move for move in self.move_history[-4:-13:-4]]
+
+        # Check if the last 3 moves are the same
+        return moves[0] if len(moves) == 3 and len(set(moves)) == 1 else None
+    
     def make_move(self, move):
         '''
         Make a move on the board.
@@ -179,7 +199,7 @@ class Board:
         source_cell = self.get_cell(move[0])
         target_cell = self.get_cell(move[1])
         
-        # Check if the target cell has a piece and capture it if it does
+        # Check if the target cell is in the available cells of the selected piece
         if target_cell.piece:
             self.captured_pieces.append((target_cell.piece, move[1]))
             target_cell.remove_piece()
@@ -188,7 +208,9 @@ class Board:
         target_cell.add_piece(source_cell.piece)
         source_cell.remove_piece()
         
-        # Update the pieces on the board
+        # Update the move history
+        self.move_history.append(move)
+        self.forbidden_move = self.get_forbidden()
         self.update_pieces()
 
     def undo_move(self, move):
@@ -202,16 +224,17 @@ class Board:
         source_cell = self.get_cell(move[0])
         target_cell = self.get_cell(move[1])
         
-        # Move the piece from the source cell to the target cell
+        # Move the piece from the target cell to the source cell
         source_cell.add_piece(target_cell.piece)
         target_cell.remove_piece()
         
-        # Check if a piece was captured and restore it to the target cell
+        # Restore the captured piece if it exists
         if self.captured_pieces and self.captured_pieces[-1][1] == move[1]:
             captured_piece, _ = self.captured_pieces.pop()
             target_cell.add_piece(captured_piece)
         
-        # Update the pieces on the board
+        # Update the move history
+        self.move_history.remove(move)
         self.update_pieces()
 
     def update_pieces(self):
@@ -225,7 +248,7 @@ class Board:
             PlayerSide.LIGHT: []
         }
         
-        # Add each piece to the corresponding player's list
+        # Update the pieces of each player
         for piece in self.pieces:
             self.pieces_of[piece.side].append(piece)
 
@@ -235,7 +258,7 @@ class Board:
         
         Args:
             side (PlayerSide): The side of the player.
-            
+        
         Returns:
             bool: Whether the opponent has no pieces left.
         '''
@@ -259,7 +282,7 @@ class Board:
         Get the forbidden cell.
         
         Returns:
-            tuple: The forbidden cell.
+            Cell: The forbidden cell.
         '''
         return self.forbidden_move and self.get_cell(self.forbidden_move[1]) or None
 
@@ -289,14 +312,14 @@ class Board:
         Returns:
             bool: Whether the light side wins.
         '''
-        # Get the available moves for the light side
+        # Get the available moves for the dark side
         available_moves = self.get_valid_moves(PlayerSide.DARK)
 
         # Remove the forbidden move if it exists
         if self.forbidden_move and self.forbidden_move in available_moves:
             available_moves.remove(self.forbidden_move)
         
-        # Check if the dark side wins
+        # Check if the light side wins
         return self.is_opponent_den_invaded(PlayerSide.LIGHT) or self.is_opponent_pieceless(PlayerSide.DARK) or len(available_moves) == 0
     
     @property

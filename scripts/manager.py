@@ -1,15 +1,14 @@
 import random
-from scripts.board import Board
-from scripts.bot import Bot
-from scripts.common import GameState, PlayerSide, GameMode, Size
+from scripts.board import *
+from scripts.bot import *
+from scripts.common import *
 from scripts.log import Log
 
 class GameManager:
     '''
-    Game manager class.
-
+    The game manager.
+    
     Attributes:
-    - log (Log): The log.
     - board (Board): The board.
     - game_state (GameState): The game state.
     - game_mode (GameMode): The game mode.
@@ -18,27 +17,26 @@ class GameManager:
     - opponent_side (PlayerSide): The opponent side.
     - selected_piece (Piece): The selected piece.
     - focused_piece (Piece): The focused piece.
-
+    
     Methods:
-    - __init__: Initialize the game manager.
-    - reset_game: Reset the game.
-    - switch_player: Switch the player.
-    - handle_piece_focus: Handle the piece focus.
-    - handle_piece_selection: Handle the piece selection.
-    - handle_piece_move: Handle the piece move.
-    - computer_move: Make the computer move.
-    - is_game_end: Check if the game ends.
+    - reset_game(self): Reset the game.
+    - switch_player(self): Switch the player.
+    - handle_piece_focus(self, mouse_position): Handle the piece focus.
+    - handle_piece_selection(self, mouse_position): Handle the piece selection.
+    - handle_piece_move(self, mouse_position): Handle the piece move.
+    - computer_move(self): Make the computer move.
+    - is_game_end(self): Check if the game ends.
     '''
 
     def __init__(self, game_mode=GameMode.PvC):
         '''
         Initialize the game manager.
-
+        
         Args:
             game_mode (GameMode): The game mode.
-
+        
         Returns:
-            GameManager: A new GameManager instance.
+            GameManager: The game manager.
         '''
         self.log = Log()
         self.board = Board()
@@ -78,7 +76,7 @@ class GameManager:
             # Get the cell at the mouse position
             cell = self.board.get_cell((mouse_position[0] // 100, mouse_position[1] // 100))
             
-            # Check if the cell has a piece and if it belongs to the current player
+            # Check if the cell has a piece
             if cell.piece:
                 self.focused_piece = cell.piece
     
@@ -93,7 +91,7 @@ class GameManager:
             # Get the cell at the mouse position
             cell = self.board.get_cell((mouse_position[0] // 100, mouse_position[1] // 100))
             
-            # Check if the cell has a piece and if it belongs to the current player
+            # Check if the cell has a piece
             if cell.piece and cell.piece.side == self.current_side:
                 self.selected_piece = cell.piece
 
@@ -103,11 +101,11 @@ class GameManager:
         
         Args:
             mouse_position (tuple): The mouse position.
-            
+        
         Returns:
-            bool: True if the move is valid, False otherwise.
+            bool: True if the game ends, False otherwise.
         '''
-        # Check if a piece is selected
+        # Check if the selected piece exists
         if not self.selected_piece:
             return False
         
@@ -115,7 +113,7 @@ class GameManager:
         source_cell = self.board.get_cell(self.selected_piece.position)
         target_cell = self.board.get_cell((mouse_position[0] // 100, mouse_position[1] // 100))
 
-        # Check if the target cell is in the available cells of the selected piece
+        # Check if the target cell is occupied by the player's own piece
         if target_cell in self.selected_piece.available_cells(self.board):
             # Make the move
             move = (source_cell.position, target_cell.position)
@@ -125,10 +123,7 @@ class GameManager:
 
             # Check if the game ends
             if self.is_game_end:
-                # Save the log
                 self.log.save()
-                
-                # Return True to indicate that the game ends
                 return True
             
             # Switch the player
@@ -137,7 +132,7 @@ class GameManager:
             # Check if the game mode is PvC
             return True
         
-        # Check if the target cell is occupied by the opponent's piece
+        # Check if the target cell is occupied by the player's own piece
         return False
     
     def computer_move(self):
@@ -150,39 +145,36 @@ class GameManager:
         min_path = float('inf')
         moves = []
 
-        # Iterate over the pieces of the current side
+        # Iterate through the pieces
         for piece in self.board.pieces_of[self.current_side]:
-            # Find all possible paths for the piece
+            # Get the valid paths
             paths = Bot.breadth_first_search(self.board, piece, piece.position, piece.weaker_pieces_positions(self.board))
             
-            # Check if there are valid paths
+            # Check if the paths exist
             if paths and paths[0] and paths[0][0]:
                 # Get the path length and the valid moves
                 path_length = paths[0][0][0]
                 valid_moves = [move for move in [tuple(path[1][:2]) for path in paths[0]] if move in best_moves]
                 
-                # Continue to the next piece if there are no valid moves
+                # Check if the valid moves exist
                 if not valid_moves:
                     continue
                 
-                # Update the move with the shortest path
+                # Update the minimum path and the moves
                 if path_length < min_path:
                     min_path = path_length
                     moves = valid_moves
                 elif path_length == min_path:
                     moves.extend(valid_moves)
         
-        # Make the best move
+        # Get the best move
         best_move = random.choice([1, 2]) == 1 and moves and random.choice(moves) or random.choice(best_moves)
         self.board.make_move(best_move)
         self.log.insert_chess_record(self.board, best_move)
 
         # Check if the game ends
         if self.is_game_end:
-            # Save the log
             self.log.save()
-
-            # Return to exit the function
             return
 
         # Switch the player
@@ -196,14 +188,14 @@ class GameManager:
         Returns:
             bool: True if the game ends, False otherwise.
         '''
-        # Check if the opponent has no pieces or if the opponent's den is invaded
+        # Check if the game is over
         if self.board.is_game_over:
-            # Set the game state and result
+            # Update the game state and the game result
             self.game_state = GameState.OVER
             self.game_result = f'{self.board.winner.upper()}\nWIN!!!'
 
             # Return True to indicate that the game ends
             return True
         
-        # Return False to indicate that the game continues
+        # Check if the move is forbidden
         return False

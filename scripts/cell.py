@@ -1,32 +1,31 @@
 import scripts.common as common
-from pygame import transform, image
-from scripts.common import Size, CellLabel, PieceAtk
-from scripts.pieces.rat import Rat
-from scripts.pieces.cat import Cat
-from scripts.pieces.dog import Dog
-from scripts.pieces.wolf import Wolf
-from scripts.pieces.leopard import Leopard
-from scripts.pieces.tiger import Tiger
-from scripts.pieces.lion import Lion
-from scripts.pieces.elephant import Elephant
+from pygame import *
+from scripts.common import *
+from scripts.pieces.rat import *
+from scripts.pieces.cat import *
+from scripts.pieces.dog import *
+from scripts.pieces.wolf import *
+from scripts.pieces.leopard import *
+from scripts.pieces.tiger import *
+from scripts.pieces.lion import *
+from scripts.pieces.elephant import *
 
 class Cell:
     '''
-    Cell class.
-
+    The cell.
+    
     Attributes:
     - label (CellLabel): The label.
     - position (tuple): The position.
-    - image: The image of the cell.
-    - piece: The piece on the cell.
-
+    - image (Surface): The image.
+    - piece (Piece): The piece.
+    
     Methods:
-    - __init__: Initialize the cell.
-    - copy: Copy the cell.
-    - set_image: Set the image of the cell.
-    - add_piece: Add a piece to the cell.
-    - remove_piece: Remove the piece from the cell.
-    - is_occupied_own: Check if the cell is occupied by the player's own piece.
+    - copy(self): Copy the cell.
+    - set_image(self, image_path): Set the image of the cell.
+    - add_piece(self, piece): Add a piece to the cell.
+    - remove_piece(self): Remove the piece from the cell.
+    - is_occupied_own(self, side): Check if the cell is occupied by the player's own piece.
     - is_in_board: Check if the cell is in the board.
     - is_river: Check if the cell is a river.
     - is_dark_trap: Check if the cell is a dark trap.
@@ -46,7 +45,7 @@ class Cell:
             position (tuple): The position.
         
         Returns:
-            Cell: A new Cell instance.
+            Cell: The cell.
         '''
         self.label = label
         self.position = position
@@ -58,12 +57,12 @@ class Cell:
         Copy the cell.
         
         Returns:
-            Cell: The copied cell.
+            Cell: The new cell.
         '''
-        # Create a new Cell object with the same label and position
+        # Create a new cell with the same label and position
         cell = Cell(self.label, self.position)
         
-        # If the current cell has a piece, add a copy of the piece to the new cell
+        # Set the image of the new cell
         if self.piece:
             cell.add_piece(self.piece.copy())
         

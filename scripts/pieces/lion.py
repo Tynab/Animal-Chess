@@ -1,5 +1,5 @@
-from scripts.common import PieceName, PieceDetail, CellPosition, PieceAtk, PieceAvatar, PieceArtWork
-from scripts.piece import Piece
+from scripts.common import *
+from scripts.piece import *
 
 class Lion(Piece):
     '''
@@ -7,13 +7,7 @@ class Lion(Piece):
     
     Attributes:
     - side (PlayerSide): The player side.
-    - name (PieceName): The piece name.
-    - detail (PieceDetail): The piece detail.
-    - position (CellPosition): The initial position.
-    - atk (PieceAtk): The piece attack value.
-    - avatar (PieceAvatar): The piece avatar.
-    - artwork (PieceArtWork): The piece artwork.
-
+    
     Methods:
     - __init__: Initialize the lion.
     - copy: Creates a copy of the lion.
@@ -28,7 +22,7 @@ class Lion(Piece):
         Args:
             side (PlayerSide): The player side.
             is_copy (bool): True if the piece is a copy, False otherwise.
-
+        
         Returns:
             Lion: A new Lion instance.
         '''
@@ -39,7 +33,7 @@ class Lion(Piece):
         Creates a copy of the lion.
         
         Returns:
-            Lion: The copied lion.
+            Lion: A new Lion instance.
         '''
         return Lion(self.side, True)
 
@@ -51,12 +45,12 @@ class Lion(Piece):
             board (Board): The board.
         
         Returns:
-            list: The list of available cells.
+            list: A list of available cells for the lion.
         '''
-        # Get the available cells in all directions
+        # Initialize the result
         result = [cell for direction in [self.left, self.right, self.up, self.down] if (cell := Lion.jump_over_river(direction(1, board), direction, board) or direction(1, board)) and self.is_valid_cell(cell)]
 
-        # If the piece is a lion, add the den position to the available cells
+        # Remove the forbidden cell if the forbidden move is the same as the lion's position
         if board.forbidden_move and board.forbidden_move[0] == self.position and board.forbidden_cell in result:
             result.remove(board.forbidden_cell)
 
@@ -70,25 +64,25 @@ class Lion(Piece):
         
         Args:
             cell (Cell): The cell.
-            direction (function): The direction.
+            direction (function): The direction function.
             board (Board): The board.
         
         Returns:
             Cell: The cell.
         '''
-        # If the cell is invalid, return None
+        # Return None if the cell is invalid
         if not cell:
             return cell
         
-        # Set the step to 1
+        # Initialize the step
         step = 1
 
-        # While the cell is a river, keep moving
+        # Jump over the river
         while cell.is_river:
             # Get the next cell
             cell = direction(step, board)
 
-            # If the cell is invalid, return None
+            # Return None if the cell is invalid
             if cell and cell.piece:
                 return cell.is_river and None or cell
             
