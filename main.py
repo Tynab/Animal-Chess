@@ -1,3 +1,4 @@
+import asyncio
 import pygame
 from pygame import display, time, mouse, event, Color
 
@@ -58,7 +59,7 @@ def handle_events(game_manager, mouse_position):
     # Return True if the game should continue running
     return True
 
-def main():
+async def main():
     '''
     The main function.
     '''
@@ -106,6 +107,9 @@ def main():
     # Quit the game
     pygame.quit()
 
+    # Wait for the next frame
+    await asyncio.sleep(0)
+
 # Run the main function
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+asyncio.run(main())
