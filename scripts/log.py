@@ -49,7 +49,7 @@ class Log:
             DataFrame: The data frame.
         '''
         self.id = str(uuid.uuid4())
-        self.df = DataFrame(columns=['Id', 'board', 'side', 'piece', 'atk', 'move', 'position', 'river', 'trap', 'den', 'score', 'winner'])
+        self.df = DataFrame(columns=['id', 'board', 'side', 'piece', 'atk', 'move', 'position', 'river', 'trap', 'den', 'score', 'winner'])
 
     def insert_chess_record(self, board, move):
         '''
@@ -61,7 +61,7 @@ class Log:
         '''
         cell = board.get_cell(move[1])
         self.df = pandas.concat([self.df, DataFrame([{
-            'Id': self.id,
+            'id': self.id,
             'board': Log.board_to_enum(board),
             'side': Log.side_to_enum(cell.piece.side),
             'piece': Log.cell_piece_to_enum(cell),
