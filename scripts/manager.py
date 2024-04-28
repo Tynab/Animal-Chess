@@ -4,6 +4,10 @@ from scripts.bot import *
 from scripts.common import *
 from scripts.log import Log
 
+from tensorflow.keras.models import load_model
+import numpy as np
+from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
+
 class GameManager:
     '''
     The game manager.
@@ -47,6 +51,22 @@ class GameManager:
         self.opponent_side = PlayerSide.opponent_of(self.current_side)
         self.selected_piece = None
         self.focused_piece = None
+        self.ohe = OneHotEncoder()
+        self.scaler = MinMaxScaler()
+
+        # Giả sử 'trap' và 'den' nhận các giá trị từ -1, 0, đến 1
+        example_data = np.array([
+            [0, 0],  # Không phải bẫy hoặc hang
+            [1, 0],  # Bẫy cho đối phương
+            [-1, 0], # Bẫy cho bên mình
+            [0, 1],  # Hang đối phương
+            [0, -1]  # Hang bên mình
+        ])
+        self.ohe.fit(example_data)
+
+        # Huấn luyện MinMaxScaler với giá trị 'atk' giả định từ -8 đến 8
+        example_atk = np.array([[i] for i in range(-8, 9)])
+        self.scaler.fit(example_atk)
 
     def reset_game(self):
         '''
@@ -168,7 +188,9 @@ class GameManager:
                     moves.extend(valid_moves)
         
         # Get the best move
-        best_move = random.choice([1, 2]) == 1 and moves and random.choice(moves) or random.choice(best_moves)
+        # best_move = random.choice([1, 2]) == 1 and moves and random.choice(moves) or random.choice(best_moves)
+        # best_move = self.computer_move_v2()
+        best_move = self.computer_move_v3()
         self.board.make_move(best_move)
         self.log.insert_chess_record(self.board, best_move)
 
@@ -179,6 +201,70 @@ class GameManager:
 
         # Switch the player
         self.switch_player()
+
+    def computer_move_v2(self):
+        model = load_model('my_chess_model.h5')
+
+        # Mã hóa trạng thái bàn cờ hiện tại
+        board_encoded = GameManager.encode_board(Log.board_to_enum(self.board))
+        board_encoded_flattened = board_encoded.flatten().reshape(1, -1)
+
+
+        # Giả sử chúng ta đã có sẵn danh sách các nước đi hợp lệ
+        possible_moves = self.board.get_valid_moves(self.current_side)
+        best_move = None
+        best_score = float('-inf')
+        
+        # Duyệt qua từng nước đi và dự đoán điểm số cho mỗi nước đi
+        for move in possible_moves:
+            move_encoded = GameManager.encode_move(Log.move_to_enum(move))
+            move_encoded_flattened = np.array(move_encoded).reshape(1, -1)
+            
+            # Mã hóa các thuộc tính khác
+            cell = self.board.get_cell(move[0])
+            categorical_features = self.ohe.transform([[GameManager.encode_trap(cell), GameManager.encode_den(cell)]]).toarray()
+            atk_encoded = np.array([GameManager.encode_piece(Log.map_piece_name(cell.piece))]).reshape(1, -1)
+            numeric_features = self.scaler.transform(atk_encoded)
+
+            input_features = np.concatenate([board_encoded_flattened, move_encoded_flattened, categorical_features, numeric_features], axis=1)
+            
+            # Dự đoán điểm số cho nước đi này
+            predicted_score = model.predict(input_features)
+            
+            # Chọn nước đi với điểm số cao nhất
+            if predicted_score > best_score:
+                best_score = predicted_score
+                best_move = move
+        
+        return best_move
+    
+    def computer_move_v3(self):
+        model = load_model('best_model.h5')
+
+        possible_moves = self.board.get_valid_moves(self.current_side)
+        best_move = None
+        best_score = float('-inf')
+
+        # Duyệt qua từng nước đi và dự đoán điểm số cho mỗi nước đi
+        for move in possible_moves:
+            new_board = self.board.copy()
+
+            # Thực hiện nước đi
+            new_board.make_move(move)
+
+            # Mã hóa trạng thái bàn cờ hiện tại
+            board_encoded = GameManager.encode_board(Log.board_to_enum(new_board))
+            board_encoded_reshaped = board_encoded.reshape(1, *board_encoded.shape)  # Đảm bảo kích thước phù hợp với mô hình
+
+            # Dự đoán điểm số cho nước đi này
+            predicted_score = model.predict(board_encoded_reshaped)
+
+            # Chọn nước đi với điểm số cao nhất
+            if predicted_score > best_score:
+                best_score = predicted_score
+                best_move = move
+
+        return best_move
 
     @property
     def is_game_end(self):
@@ -199,3 +285,32 @@ class GameManager:
         
         # Check if the move is forbidden
         return False
+    
+    @staticmethod
+    def encode_piece(piece_char):
+        piece_mapping = {'-': 0, 'r': 1, 'c': 2, 'd': 3, 'w': 4, 'p': 5, 't': 6, 'l': 7, 'e': 8, 'R': -1, 'C': -2, 'D': -3, 'W': -4, 'P': -5, 'T': -6, 'L': -7, 'E': -8}
+        return piece_mapping.get(piece_char, 0)
+    
+    @staticmethod
+    def encode_board(board_str):
+        board_matrix = np.zeros((9, 7))
+        for i, piece in enumerate(board_str[::-1]):
+            row, col = divmod(i, 9)
+            board_matrix[col][row] = GameManager.encode_piece(piece)
+        return np.flip(np.flip(board_matrix, 0), 1)
+    
+    @staticmethod
+    def encode_move(move_str):
+        col_from = ord(move_str[0]) - ord('A')
+        row_from = int(move_str[1]) - 1
+        col_to = ord(move_str[2]) - ord('A')
+        row_to = int(move_str[3]) - 1
+        return [row_from, col_from, row_to, col_to]
+    
+    @staticmethod
+    def encode_trap(cell):
+        return 1 if CellLabel.is_dark_trap(cell.label) else -1 if CellLabel.is_light_trap(cell.label) else 0
+    
+    @staticmethod
+    def encode_den(cell):
+        return 1 if CellLabel.is_dark_den(cell.label) else -1 if CellLabel.is_light_den(cell.label) else 0
