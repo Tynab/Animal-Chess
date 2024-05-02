@@ -73,7 +73,7 @@ async def main():
         # Check if the game is running
         if GameState.is_running(game_manager.game_state):
             if GameMode.is_cvc(game_manager.game_mode):
-                game_manager.computer_move()
+                game_manager.autoplay()
             else:
                 # Get the mouse position
                 mouse_position = mouse.get_pos()
@@ -81,7 +81,7 @@ async def main():
 
                 # Check if it is the computer's turn
                 if GameMode.is_pvc(game_manager.game_mode) and PlayerSide.is_dark(game_manager.current_side):
-                    game_manager.computer_move()
+                    game_manager.autoplay()
                 else:
                     running = handle_events(game_manager, mouse_position)
 
