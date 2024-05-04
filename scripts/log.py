@@ -21,7 +21,6 @@ class Log:
     - map_piece_name(piece): Map the piece name.
     - side_to_enum(side): Convert the side to enum.
     - enum_to_side(enum): Convert the enum to side.
-    - position_to_enum(position): Convert the position to enum.
     - enum_to_postion(enum): Convert the enum to position.
     - move_to_enum(move): Convert the move to enum.
     - enum_to_move(enum): Convert the enum to move.
@@ -49,7 +48,7 @@ class Log:
             DataFrame: The data frame.
         '''
         self.id = str(uuid.uuid4())
-        self.df = DataFrame(columns=['id', 'board', 'side', 'piece', 'atk', 'move', 'position', 'river', 'trap', 'den', 'score', 'winner'])
+        self.df = DataFrame(columns=['id', 'board', 'side', 'piece', 'atk', 'move', 'river', 'trap', 'den', 'score', 'winner'])
 
     def insert_chess_record(self, board, move):
         '''
@@ -67,7 +66,6 @@ class Log:
             'piece': Log.cell_piece_to_enum(cell),
             'atk': cell.piece.atk,
             'move': Log.move_to_enum(move),
-            'position': Log.position_to_enum(cell.position),
             'river': Log.cell_river_to_enum(cell),
             'trap': Log.cell_trap_to_enum(cell),
             'den': Log.cell_den_to_enum(cell),
@@ -133,20 +131,7 @@ class Log:
             PlayerSide: The side.
         '''
         return PlayerSide.DARK if enum == 1 else PlayerSide.LIGHT if enum == -1 else None
-    
-    @staticmethod
-    def position_to_enum(position):
-        '''
-        Convert the position to enum.
-        
-        Args:
-            position (tuple): The position.
-        
-        Returns:
-            str: The enum.
-        '''
-        return f"{chr(ord('A') + position[0])}{position[1] + 1}"
-    
+
     @staticmethod
     def enum_to_postion(enum):
         '''
