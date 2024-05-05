@@ -167,12 +167,13 @@ class GameManager:
             tuple: The best move.
         '''
         # Get the best moves
-        _, best_moves = random.choice([1, 2]) == 1 and Bot.minimax(self.board.copy(), self.current_side, 2, True) or Bot.minimax_alpha_beta_pruning(self.board.copy(), self.current_side, 2, float('-inf'), float('inf'), True)
+        new_board = self.board.copy()
+        _, best_moves = random.choice([1, 2]) == 1 and Bot.minimax(new_board, self.current_side, 2, True) or Bot.minimax_alpha_beta_pruning(new_board, self.current_side, 2, float('-inf'), float('inf'), True)
 
-        # Check if there is only one best move
-        if len(best_moves) == 1:
-            return best_moves[0]
-        
+        # Check if the best moves exist
+        if not best_moves:
+            best_moves = (None, self.board.get_valid_moves(self.current_side))
+
         # Declare the minimum path and the moves
         min_path = float('inf')
         moves = []
@@ -180,7 +181,8 @@ class GameManager:
         # Iterate through the pieces
         for piece in self.board.pieces_of[self.current_side]:
             # Get the valid paths
-            paths = Bot.breadth_first_search(self.board, piece, piece.position, piece.weaker_pieces_positions(self.board))
+            ends = piece.weaker_pieces_positions(self.board)
+            paths = random.choice([1, 2]) == 1 and Bot.breadth_first_search(self.board, piece, piece.position, ends) or Bot.a_star_search(self.board, piece, piece.position, ends)
             
             # Check if the paths exist
             if paths and paths[0] and paths[0][0]:
@@ -199,8 +201,7 @@ class GameManager:
                 elif path_length == min_path:
                     moves.extend(valid_moves)
 
-        # Return the best move
-        return random.choice([1, 2]) == 1 and moves and random.choice(moves) or random.choice(best_moves)
+        return random.choice(best_moves) if random.choice([1, 2, 3]) == 1 else random.choice(moves) if moves else random.choice(best_moves)
 
     def ai_move(self):
         '''

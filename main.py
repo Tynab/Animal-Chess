@@ -11,7 +11,7 @@ from scripts.common import *
 from scripts.manager import *
 
 # Constants
-LOOP = 10000
+LOOP = 10_000
 
 # Global variables
 _game_mode = GameMode.PvC

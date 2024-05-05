@@ -77,7 +77,7 @@ class Log:
         '''
         Save the chess record to a CSV file.
         '''
-        self.df.to_csv('animal_chess.csv', mode='a', header=not os.path.isfile('animal_chess.csv'), index=False)
+        self.df.to_csv('dark.csv', mode='a', header=not os.path.isfile('dark.csv'), index=False)
         self.new_df()
 
     @staticmethod

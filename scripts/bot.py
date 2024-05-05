@@ -1,4 +1,5 @@
 from collections import *
+from queue import *
 from scripts.common import *
 
 class Bot:
@@ -11,6 +12,7 @@ class Bot:
     - minimax(board, current_side, depth, maximizing_player): Minimax algorithm.
     - minimax_alpha_beta_pruning(board, current_side, depth, alpha, beta, maximizing_player): Minimax algorithm with alpha-beta pruning.
     - breadth_first_search(board, piece, start, ends): Breadth-first search algorithm.
+    - a_star_search(board, piece, start, ends): A* search algorithm.
     '''
 
     @staticmethod
@@ -176,15 +178,15 @@ class Bot:
         # Initialize the current board, the current piece, the queue, the visited set, the paths, and the minimum distance
         current_board = board.copy()
         current_piece = piece.copy()
-        queue = deque([([start], 0)])
+        q = deque([([start], 0)])
         visited = set()
         paths = []
         min_distance = float('inf')
 
         # Iterate through the queue
-        while queue:
+        while q:
             # Get the path and the distance
-            path, distance = queue.popleft()
+            path, distance = q.popleft()
             current_position = path[-1]
             current_board.get_cell(current_position).add_piece(current_piece)
 
@@ -211,7 +213,62 @@ class Bot:
                 # Iterate through the available cells
                 for cell in current_piece.available_cells(current_board):
                     if cell.position not in visited:
-                        queue.append((path + [cell.position], distance + 1))
+                        q.append((path + [cell.position], distance + 1))
         
         # Return the paths and the piece
+        return paths or None, None
+
+    @staticmethod
+    def a_star_search(board, piece, start, ends):
+        '''
+        A* search algorithm.
+
+        Args:
+            board (Board): The board.
+            piece (Piece): The piece.
+            start (tuple): The start position.
+            ends (list): List of end positions, assumed to be objects with `position` and `piece` attributes.
+
+        Returns:
+            tuple: The list of paths sorted by their cost, and the piece.
+        '''
+        # Initialize the current board, the current piece, the priority queue, the visited set, and the paths list
+        current_board = board.copy()
+        current_piece = piece.copy()
+        pq = PriorityQueue()
+        visited = set()
+        paths = []
+        
+        # Function to calculate heuristic based on the piece attack value at the end position
+        def heuristic(pos):
+            for end in ends:
+                if end == pos:
+                    cell = current_board.get_cell(pos)
+                    return cell.piece and -cell.piece.atk / 10 or -1
+            return float('inf')
+        
+        # Initialize priority queue with the start position and initial cost
+        pq.put((heuristic(start), 0, [start]))
+        
+        while not pq.empty():
+            # Get the estimated total cost, path cost, and path
+            estimated_total_cost, path_cost, path = pq.get()
+            current_position = path[-1]
+            current_board.get_cell(current_position).add_piece(current_piece)
+            
+            # Check if the current position is an end position
+            if any(end == current_position for end in ends):
+                paths.append((estimated_total_cost, path))
+                ends.remove(next(end for end in ends if end == current_position))
+                if not ends:
+                    break
+            # Iterate through the available cells
+            if current_position not in visited:
+                visited.add(current_position)
+                for cell in current_piece.available_cells(current_board):
+                    if cell.position not in visited:
+                        new_path_cost = path_cost + 1
+                        estimated_cost = new_path_cost + heuristic(cell.position)
+                        pq.put((estimated_cost, new_path_cost, path + [cell.position]))
+        
         return paths or None, None
