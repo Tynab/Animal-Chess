@@ -49,7 +49,7 @@ class Rat(Piece):
         Returns:
             bool: True if the rat can defeat the piece, False otherwise.
         '''
-        return isinstance(piece, elephant.Elephant) or self.atk >= piece.atk
+        return isinstance(piece, elephant.Elephant) and self.atk != 0 or self.atk >= piece.atk
 
     def is_valid_cell(self, cell):
         '''
@@ -73,4 +73,4 @@ class Rat(Piece):
         Returns:
             list: A list of positions of weaker pieces.
         '''
-        return [PlayerSide.opponent_den_position(self.side)] + [piece.position for piece in board.pieces_of[PlayerSide.opponent_of(self.side)] if piece.atk < self.atk or isinstance(piece, elephant.Elephant)]
+        return [PlayerSide.opponent_den_position(self.side)] + [piece.position for piece in board.pieces_of[PlayerSide.opponent_of(self.side)] if piece.atk < self.atk or isinstance(piece, elephant.Elephant) and self.atk != 0]

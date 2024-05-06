@@ -1,6 +1,7 @@
 import os
 import pandas
 import uuid
+from datetime import *
 from pandas import *
 from scripts.bot import *
 from scripts.common import *
@@ -77,7 +78,7 @@ class Log:
         '''
         Save the chess record to a CSV file.
         '''
-        self.df.to_csv('dark.csv', mode='a', header=not os.path.isfile('dark.csv'), index=False)
+        self.df.to_csv(f'dark_{datetime.now().second}.csv', mode='a', header=not os.path.isfile(f'dark_{datetime.now().second}.csv'), index=False)
         self.new_df()
 
     @staticmethod

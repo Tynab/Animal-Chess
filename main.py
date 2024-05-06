@@ -11,10 +11,10 @@ from scripts.common import *
 from scripts.manager import *
 
 # Constants
-LOOP = 10_000
+LOOP = 5_000
 
 # Global variables
-_game_mode = GameMode.PvC
+_game_mode = GameMode.CvC
 _counter = LOOP
 _screen = display.set_mode(Size.TOTAL, pygame.SRCALPHA, 32)
 
@@ -61,7 +61,7 @@ async def main():
     global _counter
 
     # Initialize the game clock and the game manager
-    clock = time.Clock()
+    clock = pygame.time.Clock()
     game_manager = GameManager(_game_mode)
     running = True
 

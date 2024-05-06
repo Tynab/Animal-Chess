@@ -28,10 +28,13 @@ class GameManager:
     - handle_piece_move(self, mouse_position): Handle the piece move.
     - autoplay(self): Make the computer move.
     - computer_move(self): Make the computer move.
+    - breadth_first_search_moves(self, best_moves): Get the moves using the breadth-first search algorithm.
+    - a_star_search_moves(self, best_moves): Get the moves using the A* search algorithm.
     - ai_move(self): Make the computer move using the AI model.
     - is_game_end(self): Check if the game ends.
     - encode_piece(piece_char): Encode the piece.
     - encode_board(board_str): Encode the board.
+    - algorithm_random(opponent_pieces): Get the random algorithm.
     '''
 
     def __init__(self, game_mode=GameMode.PvC):
@@ -174,6 +177,19 @@ class GameManager:
         if not best_moves:
             best_moves = (None, self.board.get_valid_moves(self.current_side))
 
+        # Return the best move
+        return random.choice(GameManager.algorithm_random(len(self.board.pieces_of[self.opponent_side])) == 1 and self.breadth_first_search_moves(best_moves) or self.a_star_search_moves(best_moves) + best_moves)
+    
+    def breadth_first_search_moves(self, best_moves):
+        '''
+        Get the moves using the breadth-first search algorithm.
+        
+        Args:
+            best_moves (list): The best moves.
+        
+        Returns:
+            list: The moves.
+        '''
         # Declare the minimum path and the moves
         min_path = float('inf')
         moves = []
@@ -182,7 +198,7 @@ class GameManager:
         for piece in self.board.pieces_of[self.current_side]:
             # Get the valid paths
             ends = piece.weaker_pieces_positions(self.board)
-            paths = random.choice([1, 2]) == 1 and Bot.breadth_first_search(self.board, piece, piece.position, ends) or Bot.a_star_search(self.board, piece, piece.position, ends)
+            paths = Bot.breadth_first_search(self.board, piece, piece.position, ends)
             
             # Check if the paths exist
             if paths and paths[0] and paths[0][0]:
@@ -200,8 +216,49 @@ class GameManager:
                     moves = valid_moves
                 elif path_length == min_path:
                     moves.extend(valid_moves)
+        
+        # Return the moves
+        return moves
+    
+    def a_star_search_moves(self, best_moves):
+        '''
+        Get the moves using the A* search algorithm.
+        
+        Args:
+            best_moves (list): The best moves.
+        
+        Returns:
+            list: The moves.
+        '''
+        # Declare the minimum path and the moves
+        min_path = float('inf')
+        moves = []
 
-        return random.choice(best_moves) if random.choice([1, 2, 3]) == 1 else random.choice(moves) if moves else random.choice(best_moves)
+        # Iterate through the pieces
+        for piece in self.board.pieces_of[self.current_side]:
+            # Get the valid paths
+            ends = piece.weaker_pieces_positions(self.board)
+            paths = Bot.a_star_search(self.board, piece, piece.position, ends)
+            
+            # Check if the paths exist
+            if paths and paths[0] and paths[0][0]:
+                # Get the path length and the valid moves
+                path_length = paths[0][0][0]
+                valid_moves = [move for move in [tuple(path[1][:2]) for path in paths[0]] if move in best_moves]
+                
+                # Check if the valid moves exist
+                if not valid_moves:
+                    continue
+                
+                # Update the minimum path and the moves
+                if path_length < min_path:
+                    min_path = path_length
+                    moves = valid_moves
+                elif path_length == min_path:
+                    moves.extend(valid_moves)
+        
+        # Return the moves
+        return moves
 
     def ai_move(self):
         '''
@@ -298,3 +355,16 @@ class GameManager:
 
         # Return the board matrix
         return numpy.flip(numpy.flip(board_matrix, 0), 1)
+
+    @staticmethod
+    def algorithm_random(opponent_pieces):
+        '''
+        Get the random algorithm.
+        
+        Args:
+            opponent_pieces (int): The number of opponent pieces.
+        
+        Returns:
+            int: The algorithm.
+        '''
+        return random.choice([1] * (8 + opponent_pieces * 2) + [2] * (24 - opponent_pieces * 2))

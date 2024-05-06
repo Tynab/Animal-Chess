@@ -48,7 +48,7 @@ class Elephant(Piece):
         Returns:
             bool: True if the elephant can defeat the piece, False otherwise.
         '''
-        return not isinstance(piece, rat.Rat) and self.atk >= piece.atk
+        return piece.atk == 0 if isinstance(piece, rat.Rat) else self.atk >= piece.atk
 
     def weaker_pieces_positions(self, board):
         '''
@@ -60,4 +60,4 @@ class Elephant(Piece):
         Returns:
             list: A list of positions of weaker pieces.
         '''
-        return [PlayerSide.opponent_den_position(self.side)] + [piece.position for piece in board.pieces_of[PlayerSide.opponent_of(self.side)] if piece.atk < self.atk and not isinstance(piece, rat.Rat)]
+        return [PlayerSide.opponent_den_position(self.side)] + [piece.position for piece in board.pieces_of[PlayerSide.opponent_of(self.side)] if (isinstance(piece, rat.Rat) and piece.atk == 0) or (not isinstance(piece, rat.Rat) and piece.atk < self.atk)]
