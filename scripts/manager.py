@@ -149,8 +149,8 @@ class GameManager:
         Make the computer move.
         '''
         # Get the best move
-        best_move = self.computer_move()
-        # best_move = self.ai_move()
+        # best_move = self.computer_move()
+        best_move = self.ai_move()
         self.board.make_move(best_move)
         self.log.insert_chess_record(self.board, best_move)
 
