@@ -14,7 +14,7 @@ from scripts.manager import *
 LOOP = 5_000
 
 # Global variables
-_game_mode = GameMode.CvC
+_game_mode = GameMode.PvC
 _counter = LOOP
 _screen = display.set_mode(Size.TOTAL, pygame.SRCALPHA, 32)
 

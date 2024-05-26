@@ -4,7 +4,7 @@ from scripts.board import *
 from scripts.bot import *
 from scripts.common import *
 from scripts.log import *
-from tensorflow.keras import *
+from tensorflow.keras import models
 
 class GameManager:
     '''
