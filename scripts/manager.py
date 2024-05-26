@@ -175,7 +175,7 @@ class GameManager:
 
         # Check if the best moves exist
         if not best_moves:
-            best_moves = (None, self.board.get_valid_moves(self.current_side))
+            best_moves = self.board.get_valid_moves(self.current_side)
 
         # Return the best move
         return random.choice(GameManager.algorithm_random(len(self.board.pieces_of[self.opponent_side])) == 1 and self.breadth_first_search_moves(best_moves) or self.a_star_search_moves(best_moves) + best_moves)
